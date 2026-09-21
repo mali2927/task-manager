@@ -11,7 +11,7 @@
                 @endif
             </div>
             <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                Manage incoming user signup requests. Approve users to create accounts and dispatch secure access links.
+                Review public requester access requests and invite internal team members directly via email.
             </p>
         </div>
 
@@ -22,9 +22,9 @@
                 class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs transition-colors cursor-pointer"
             >
                 <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                 </svg>
-                <span>Add User Directly</span>
+                <span>Add Team Member via Email</span>
             </button>
         </div>
     </div>
@@ -112,7 +112,7 @@
                                     </span>
                                 @elseif($req->status === 'approved')
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                                        <span class="size-1.5 rounded-full bg-emerald-500"></span> Approved ({{ ucfirst($req->assigned_role) }})
+                                        <span class="size-1.5 rounded-full bg-emerald-500"></span> Approved ({{ in_array($req->assigned_role, ['guest', 'requester']) ? 'Requester' : ucfirst($req->assigned_role) }})
                                     </span>
                                 @else
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-500/10 text-rose-500 border border-rose-500/20">
@@ -190,14 +190,14 @@
         <div class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
             <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-base font-bold text-zinc-900 dark:text-white">Approve Access Request</h3>
+                    <h3 class="text-base font-bold text-zinc-900 dark:text-white">Approve Requester Request</h3>
                     <button wire:click="$set('showApproveModal', false)" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer">
                         <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
 
                 <p class="text-xs text-zinc-500 dark:text-zinc-400">
-                    Approving this request will provision an account and send a secure invitation email with instructions to set their password.
+                    Approving this request will provision a <strong>Requester</strong> account and dispatch an invitation email with a secure link to set their password.
                 </p>
 
                 <div>
@@ -206,9 +206,9 @@
                         wire:model="assignRole"
                         class="w-full text-xs px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200"
                     >
-                        <option value="member">Member (Standard contributor, task &amp; ticket workflows)</option>
-                        <option value="guest">Guest (View-only, raise personal tickets)</option>
-                        <option value="admin">Admin (Full workspace administration)</option>
+                        <option value="guest">Requester (Support / Ticket Access Only)</option>
+                        <option value="member">Member (Internal Team Contributor)</option>
+                        <option value="admin">Admin (Workspace Administrator)</option>
                     </select>
                 </div>
 
@@ -278,14 +278,14 @@
         <div class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
             <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-base font-bold text-zinc-900 dark:text-white">Provision User Directly</h3>
+                    <h3 class="text-base font-bold text-zinc-900 dark:text-white">Add Team Member via Email</h3>
                     <button wire:click="$set('showAddUserModal', false)" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer">
                         <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
 
                 <p class="text-xs text-zinc-500 dark:text-zinc-400">
-                    Directly provision a new team member. A welcome email with a link to set their password will be sent automatically.
+                    Invite an internal team member directly via email. A welcome email with a link to set their password will be sent automatically.
                 </p>
 
                 <div class="space-y-3">
@@ -327,9 +327,9 @@
                             wire:model="newUserRole"
                             class="w-full text-xs px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200"
                         >
-                            <option value="member">Member</option>
-                            <option value="guest">Guest</option>
-                            <option value="admin">Admin</option>
+                            <option value="member">Member (Internal Team Contributor)</option>
+                            <option value="admin">Admin (Workspace Administrator)</option>
+                            <option value="guest">Requester (Support / Ticket Access Only)</option>
                         </select>
                     </div>
                 </div>

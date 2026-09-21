@@ -79,6 +79,7 @@ class AccessRequestTest extends TestCase
             'email' => 'applicant@stmu.edu.pk',
             'department' => 'Computer Science',
             'status' => 'pending',
+            'assigned_role' => 'guest',
         ]);
     }
 
@@ -89,6 +90,7 @@ class AccessRequestTest extends TestCase
             'email' => 'applicant@stmu.edu.pk',
             'reason' => 'Existing reason for access request',
             'status' => 'pending',
+            'assigned_role' => 'guest',
         ]);
 
         Livewire::test(RequestAccess::class)
@@ -104,11 +106,12 @@ class AccessRequestTest extends TestCase
         Mail::fake();
 
         $request = AccessRequest::create([
-            'name' => 'Approved User',
-            'email' => 'approved@stmu.edu.pk',
+            'name' => 'Approved Requester',
+            'email' => 'requester@stmu.edu.pk',
             'department' => 'MIS Engineering',
-            'reason' => 'Valid request for MIS portal access',
+            'reason' => 'Valid request for support ticket access',
             'status' => 'pending',
+            'assigned_role' => 'guest',
             'workspace_id' => $this->workspace->id,
         ]);
 
@@ -116,26 +119,54 @@ class AccessRequestTest extends TestCase
 
         Livewire::test(AccessRequestManager::class, ['workspace' => $this->workspace])
             ->set('selectedRequestId', $request->id)
-            ->set('assignRole', 'member')
+            ->set('assignRole', 'guest')
             ->call('approveRequest');
 
         $this->assertDatabaseHas('users', [
-            'name' => 'Approved User',
-            'email' => 'approved@stmu.edu.pk',
+            'name' => 'Approved Requester',
+            'email' => 'requester@stmu.edu.pk',
         ]);
 
-        $newUser = User::where('email', 'approved@stmu.edu.pk')->first();
+        $newUser = User::where('email', 'requester@stmu.edu.pk')->first();
         $this->assertTrue($this->workspace->members()->where('users.id', $newUser->id)->exists());
+        $this->assertEquals('guest', $newUser->roleInWorkspace($this->workspace));
 
         $this->assertDatabaseHas('access_requests', [
             'id' => $request->id,
             'status' => 'approved',
-            'assigned_role' => 'member',
+            'assigned_role' => 'guest',
             'reviewed_by_id' => $this->admin->id,
         ]);
 
         Mail::assertQueued(AccessRequestApprovedMail::class, function ($mail) use ($newUser) {
             return $mail->user->id === $newUser->id;
+        });
+    }
+
+    public function test_admin_can_add_team_member_via_email(): void
+    {
+        Mail::fake();
+
+        $this->actingAs($this->admin);
+
+        Livewire::test(AccessRequestManager::class, ['workspace' => $this->workspace])
+            ->set('newUserName', 'Engineer Ali')
+            ->set('newUserEmail', 'engineer.ali@stmu.edu.pk')
+            ->set('newUserRole', 'member')
+            ->set('newUserJobTitle', 'Full Stack Developer')
+            ->call('createUserDirectly');
+
+        $this->assertDatabaseHas('users', [
+            'name' => 'Engineer Ali',
+            'email' => 'engineer.ali@stmu.edu.pk',
+            'job_title' => 'Full Stack Developer',
+        ]);
+
+        $user = User::where('email', 'engineer.ali@stmu.edu.pk')->first();
+        $this->assertEquals('member', $user->roleInWorkspace($this->workspace));
+
+        Mail::assertQueued(AccessRequestApprovedMail::class, function ($mail) use ($user) {
+            return $mail->user->id === $user->id;
         });
     }
 

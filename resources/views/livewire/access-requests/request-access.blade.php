@@ -3,12 +3,22 @@
         <div class="flex flex-col gap-1.5 text-center sm:text-left">
             <div class="inline-flex items-center gap-2 self-center sm:self-start px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold">
                 <span class="size-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                <span>Restricted Workspace Access</span>
+                <span>Requester Access Portal</span>
             </div>
             <h1 class="text-xl font-bold text-white tracking-tight">Request Platform Access</h1>
             <p class="text-xs text-slate-400">
-                STMU MIS is invite-only. Submit your application below for administrator review.
+                Public access is reserved strictly for <strong class="text-indigo-300">Support Requesters</strong> to submit and track service requests. Internal staff and project team members are added directly by administrators via email.
             </p>
+        </div>
+
+        <!-- Requester Notice Callout -->
+        <div class="p-3 rounded-xl bg-slate-900/80 border border-indigo-500/30 flex items-start gap-2.5 text-xs text-slate-300">
+            <svg class="size-4 text-indigo-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+                <span class="font-semibold text-white">Requester Account:</span> Approved requesters can raise support tickets and view personal requests. Internal team members must be invited by an administrator.
+            </div>
         </div>
 
         @if($isSubmitted)
@@ -18,9 +28,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
-                <h3 class="text-base font-bold text-white">Application Received!</h3>
+                <h3 class="text-base font-bold text-white">Requester Request Received!</h3>
                 <p class="text-xs text-slate-300 leading-relaxed">
-                    Your access request for <strong class="text-white">{{ $email }}</strong> has been submitted. Our administrators will review your credentials and email you an invitation once approved.
+                    Your request for a <strong class="text-indigo-400">Requester Account</strong> for <strong class="text-white">{{ $email }}</strong> has been submitted. Our administrators will review your credentials and email you a password setup link once approved.
                 </p>
                 <div class="pt-2">
                     <a href="{{ route('login') }}" class="inline-block px-4 py-2 text-xs font-semibold text-white bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition-colors" wire:navigate>

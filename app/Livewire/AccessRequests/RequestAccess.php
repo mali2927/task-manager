@@ -60,7 +60,7 @@ class RequestAccess extends Component
             'department' => trim($this->department) ?: null,
             'reason' => trim($this->reason),
             'status' => 'pending',
-            'assigned_role' => 'member',
+            'assigned_role' => 'guest', // Public signups are strictly for Requesters
         ]);
 
         $this->isSubmitted = true;

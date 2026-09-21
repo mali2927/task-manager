@@ -28,7 +28,7 @@ class AccessRequestManager extends Component
     // Approval Modal State
     public bool $showApproveModal = false;
     public ?int $selectedRequestId = null;
-    public string $assignRole = 'member'; // member, guest, admin
+    public string $assignRole = 'guest'; // guest (requester), member, admin
 
     // Rejection Modal State
     public bool $showRejectModal = false;
@@ -54,7 +54,7 @@ class AccessRequestManager extends Component
     {
         $this->selectedRequestId = $id;
         $req = AccessRequest::find($id);
-        $this->assignRole = $req?->assigned_role ?: 'member';
+        $this->assignRole = $req?->assigned_role ?: 'guest';
         $this->showApproveModal = true;
     }
 
@@ -74,28 +74,29 @@ class AccessRequestManager extends Component
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($randomPassword),
-                'job_title' => $request->department ?: 'Team Member',
+                'job_title' => $request->department ?: ($this->assignRole === 'guest' ? 'Requester' : 'Team Member'),
                 'timezone' => 'UTC',
             ]);
         }
 
         // Attach user to workspace with chosen role
+        $wsRole = ($this->assignRole === 'requester') ? 'guest' : $this->assignRole;
         if (!$this->workspace->members()->where('users.id', $user->id)->exists()) {
             $this->workspace->members()->attach($user->id, [
-                'role' => $this->assignRole,
+                'role' => $wsRole,
                 'job_title' => $user->job_title,
                 'timezone' => $user->timezone,
             ]);
         } else {
             $this->workspace->members()->updateExistingPivot($user->id, [
-                'role' => $this->assignRole,
+                'role' => $wsRole,
             ]);
         }
 
         // Sync Spatie role if defined
         $spatieRoleName = match ($this->assignRole) {
             'admin' => 'Admin',
-            'guest' => 'Guest',
+            'guest', 'requester' => \Spatie\Permission\Models\Role::where('name', 'Requester')->exists() ? 'Requester' : 'Guest',
             default => 'Member',
         };
         if (\Spatie\Permission\Models\Role::where('name', $spatieRoleName)->exists()) {

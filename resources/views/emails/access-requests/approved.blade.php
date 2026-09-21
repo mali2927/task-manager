@@ -14,8 +14,13 @@
             Hello <strong>{{ $user->name }}</strong>,
         </p>
         <p style="font-size: 14px; line-height: 22px; color: #52525b; margin-bottom: 24px;">
-            Your request to join the workspace has been approved with the role of <strong style="color: #4f46e5;">{{ ucfirst($role) }}</strong>. Please click the button below to set up your password and access your account.
+            Your account for the workspace has been activated with the role of <strong style="color: #4f46e5;">{{ in_array($role, ['guest', 'requester']) ? 'Requester' : ucfirst($role) }}</strong>. Please click the button below to set up your password and access your account.
         </p>
+        @if(in_array($role, ['guest', 'requester']))
+            <p style="font-size: 13px; line-height: 20px; color: #71717a; margin-top: -12px; margin-bottom: 24px; background: #f8fafc; border-left: 3px solid #4f46e5; padding: 10px 14px; border-radius: 4px;">
+                As a <strong>Requester</strong>, you have access to submit support tickets, track resolutions, and collaborate directly with our helpdesk team.
+            </p>
+        @endif
         <div style="margin-bottom: 28px;">
             <a href="{{ $passwordResetUrl }}" style="display: inline-block; background-color: #4f46e5; color: #ffffff; padding: 12px 24px; font-size: 14px; font-weight: 600; text-decoration: none; border-radius: 8px;">
                 Set Your Password &amp; Get Started

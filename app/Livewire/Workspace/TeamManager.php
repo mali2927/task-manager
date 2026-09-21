@@ -2,11 +2,16 @@
 
 namespace App\Livewire\Workspace;
 
+use App\Mail\AccessRequestApprovedMail;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Models\WorkspaceInvite;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -70,9 +75,50 @@ class TeamManager extends Component
                 'timezone' => $existing->timezone,
             ]);
             $invite->update(['status' => 'accepted']);
+        } else {
+            // Provision user account and dispatch invitation email
+            $randomPassword = Str::random(32);
+            $email = strtolower(trim($this->inviteEmail));
+            $namePart = explode('@', $email)[0];
+            $user = User::create([
+                'name' => ucwords(str_replace(['.', '_', '-'], ' ', $namePart)),
+                'email' => $email,
+                'password' => Hash::make($randomPassword),
+                'job_title' => $this->inviteRole === 'guest' ? 'Requester' : 'Team Member',
+                'timezone' => 'UTC',
+            ]);
+
+            $this->workspace->members()->attach($user->id, [
+                'role' => $this->inviteRole,
+                'job_title' => $user->job_title,
+                'timezone' => $user->timezone,
+            ]);
+
+            $spatieRoleName = match ($this->inviteRole) {
+                'admin' => 'Admin',
+                'guest' => 'Guest',
+                default => 'Member',
+            };
+            if (\Spatie\Permission\Models\Role::where('name', $spatieRoleName)->exists()) {
+                $user->syncRoles([$spatieRoleName]);
+            }
+
+            $token = Password::broker()->createToken($user);
+            $passwordResetUrl = url(route('password.reset', [
+                'token' => $token,
+                'email' => $user->email,
+            ], false));
+
+            try {
+                Mail::to($user->email)->queue(new AccessRequestApprovedMail($user, $passwordResetUrl, $this->inviteRole));
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
+            $invite->update(['status' => 'accepted']);
         }
 
-        $this->inviteSuccessMessage = "Invitation created successfully for {$this->inviteEmail}.";
+        $this->inviteSuccessMessage = "Invitation sent successfully via email to {$this->inviteEmail}.";
         $this->inviteEmail = '';
         $this->showInviteModal = false;
     }
