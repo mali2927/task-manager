@@ -226,7 +226,7 @@
         <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-4">
             <div class="flex items-start justify-between">
                 <div>
-                    <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">My Action Items</span>
+                    <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">My Pending Tasks</span>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-3xl font-black text-zinc-900 dark:text-white">{{ $myOpen }}</span>
                         @if($myOverdue > 0)

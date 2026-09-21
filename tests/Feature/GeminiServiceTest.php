@@ -188,4 +188,42 @@ class GeminiServiceTest extends TestCase
         $this->assertStringContainsString('Access Restricted by Role Hierarchy', $memberTeamSummary);
         $this->assertStringContainsString('restricted to Team Leads and Directors', $memberTeamSummary);
     }
+
+    public function test_gemini_service_project_intelligence_includes_tickets_and_lifecycle(): void
+    {
+        $owner = User::factory()->create(['name' => 'Alex Rivers', 'job_title' => 'CEO']);
+        $workspace = Workspace::create(['name' => 'Test Labs', 'owner_id' => $owner->id]);
+
+        $category = \App\Models\TicketCategory::create([
+            'workspace_id' => $workspace->id,
+            'name' => 'Bug Reports',
+        ]);
+
+        $ticket = \App\Models\Ticket::create([
+            'workspace_id' => $workspace->id,
+            'ticket_number' => 'TCK-9999',
+            'subject' => 'Payment Gateway Webhook Timeout',
+            'description' => 'Detailed webhook failure logs.',
+            'category_id' => $category->id,
+            'priority' => 'urgent',
+            'status' => 'reopened',
+            'raised_by_user_id' => $owner->id,
+            'assigned_to_user_id' => $owner->id,
+            'due_by' => now()->addHours(4),
+        ]);
+
+        $service = new GeminiService();
+        $context = $service->assembleWorkspaceIntelligenceContext($workspace, $owner);
+
+        $this->assertNotEmpty($context['tickets']);
+        $this->assertEquals('TCK-9999', $context['derived_metrics']['last_ticket']['ticket_number']);
+        $this->assertEquals('reopened', $context['derived_metrics']['last_ticket']['status']);
+
+        // Test local synthesis fallback
+        $answer = $service->synthesizeLocalQueryAnswer($context, 'When was the last ticket opened and what is its status?', $workspace, $owner, 'director');
+        $this->assertStringContainsString('TCK-9999', $answer);
+        $this->assertStringContainsString('Payment Gateway Webhook Timeout', $answer);
+        $this->assertStringContainsString('reopened', $answer);
+    }
 }
+

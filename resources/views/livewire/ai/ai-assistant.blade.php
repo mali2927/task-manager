@@ -66,10 +66,10 @@
                 </div>
                 <div class="min-w-0">
                     <h2 class="text-xs font-bold text-zinc-900 dark:text-white truncate">
-                        {{ $activeConversation ? $activeConversation->title : 'New AI Consultation' }}
+                        {{ $activeConversation ? $activeConversation->title : 'Project & Ticket Intelligence Agent' }}
                     </h2>
                     <span class="text-[10px] text-zinc-400 block truncate">
-                        Grounded in {{ $workspace->name }} tasks, statuses & assignments
+                        Grounded in {{ $workspace->name }} tasks, tickets, SLAs & activity history
                     </span>
                 </div>
             </div>
@@ -93,7 +93,7 @@
                 @endif
 
                 <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800">
-                    gemini-3.6-flash
+                    Gemini Intelligence Engine
                 </span>
             </div>
         </div>
@@ -109,14 +109,14 @@
                     </div>
 
                     <div>
-                        <h3 class="text-base font-bold text-zinc-900 dark:text-white">How can I assist you with your tasks today?</h3>
+                        <h3 class="text-base font-bold text-zinc-900 dark:text-white">How can I assist you with your project & tickets today?</h3>
                         <p class="text-xs text-zinc-500 dark:text-zinc-400 max-w-md mx-auto mt-1">
                             @if($userTier === 'director')
-                                As Director / Executive, you have full visibility across all teams, admission/ORIC/LMS projects, and member workloads.
+                                As Director / Executive, you have full analytical visibility across all teams, support tickets, admission/ORIC/LMS projects, and member capacities.
                             @elseif($userTier === 'lead')
-                                As Team Lead, you have visibility over your team's assigned projects, supervised members, and sprint deliverables.
+                                As Team Lead, you have visibility over your team's assigned projects, supervised members, team tickets, and sprint deliverables.
                             @else
-                                Under Role-Based Access Control, your AI consultation is strictly scoped to your assigned tasks and personal deliverables.
+                                Under Role-Based Access Control, your AI consultation is strictly scoped to your assigned tasks, deliverables, and personal support tickets.
                             @endif
                         </p>
                     </div>
@@ -125,72 +125,72 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto text-left pt-2">
                         @if($userTier === 'director')
                             <button 
-                                wire:click="askQuickQuery('Who is working on the Admission Project and what are their tasks?')" 
-                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group"
+                                wire:click="askQuickQuery('When was the last ticket opened and what is its status & lifecycle?')" 
+                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group cursor-pointer"
                             >
-                                <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">🎓 Admission Project Status</span>
-                                <p class="text-[11px] text-zinc-500 line-clamp-2">"Who is working on the Admission Project and what are their tasks?"</p>
+                                <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">🎫 Latest Ticket Intelligence</span>
+                                <p class="text-[11px] text-zinc-500 line-clamp-2">"When was the last ticket opened and what is its status & lifecycle?"</p>
                             </button>
 
                             <button 
                                 wire:click="askQuickQuery('What tasks are currently blocked across the workspace and why?')" 
-                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group"
+                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group cursor-pointer"
                             >
-                                <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">🛑 Active Blockers Review</span>
+                                <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">🛑 Active Blockers & Dependencies</span>
                                 <p class="text-[11px] text-zinc-500 line-clamp-2">"What tasks are currently blocked across the workspace and why?"</p>
                             </button>
 
                             <button 
-                                wire:click="askQuickQuery('Show me Ubaid ur Rehman\'s QA tasks and their status')" 
-                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group"
+                                wire:click="askQuickQuery('Analyze workload distribution and capacity saturation across our team')" 
+                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group cursor-pointer"
                             >
-                                <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">🧪 QA Tasks Overview</span>
-                                <p class="text-[11px] text-zinc-500 line-clamp-2">"Show me Ubaid ur Rehman's QA tasks and their status"</p>
+                                <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">👥 Workload & Capacity Saturation</span>
+                                <p class="text-[11px] text-zinc-500 line-clamp-2">"Analyze workload distribution and capacity saturation across our team"</p>
                             </button>
 
                             <button 
-                                wire:click="askQuickQuery('What urgent tasks are due in the next 3 days?')" 
-                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group"
+                                wire:click="askQuickQuery('What tasks are currently overdue and what is their deadline deficit?')" 
+                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group cursor-pointer"
                             >
-                                <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">⚡ Urgent Deadlines</span>
-                                <p class="text-[11px] text-zinc-500 line-clamp-2">"What urgent tasks are due in the next 3 days?"</p>
+                                <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">⚡ Overdue & Aging Items</span>
+                                <p class="text-[11px] text-zinc-500 line-clamp-2">"What tasks are currently overdue and what is their deadline deficit?"</p>
                             </button>
                         @elseif($userTier === 'lead')
                             <button 
-                                wire:click="askQuickQuery('What tasks are my team members currently working on?')" 
-                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group"
+                                wire:click="askQuickQuery('Analyze workload and capacity limits for my supervised team members')" 
+                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group cursor-pointer"
                             >
                                 <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">👥 Team Members Workload</span>
-                                <p class="text-[11px] text-zinc-500 line-clamp-2">"What tasks are my team members currently working on?"</p>
+                                <p class="text-[11px] text-zinc-500 line-clamp-2">"Analyze workload and capacity limits for my supervised team members"</p>
                             </button>
 
                             <button 
-                                wire:click="askQuickQuery('What blocked tasks are in our team right now?')" 
-                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group"
+                                wire:click="askQuickQuery('What tasks or tickets are blocked by external dependencies?')" 
+                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group cursor-pointer"
                             >
                                 <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">🛑 Team Blockers</span>
-                                <p class="text-[11px] text-zinc-500 line-clamp-2">"What blocked tasks are in our team right now?"</p>
+                                <p class="text-[11px] text-zinc-500 line-clamp-2">"What tasks or tickets are blocked by external dependencies?"</p>
                             </button>
 
                             <button 
                                 wire:click="askQuickQuery('What urgent tasks are due in our team this week?')" 
-                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group"
+                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group cursor-pointer"
                             >
                                 <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">⚡ Team Deadlines</span>
                                 <p class="text-[11px] text-zinc-500 line-clamp-2">"What urgent tasks are due in our team this week?"</p>
                             </button>
 
                             <button 
-                                wire:click="askQuickQuery('Summarize our team sprint progress and completed milestones')" 
-                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group"
+                                wire:click="askQuickQuery('Summarize our team sprint progress, ticket volume, and completed milestones')" 
+                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group cursor-pointer"
                             >
                                 <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">📊 Sprint Velocity</span>
-                                <p class="text-[11px] text-zinc-500 line-clamp-2">"Summarize our team sprint progress and completed milestones"</p>
+                                <p class="text-[11px] text-zinc-500 line-clamp-2">"Summarize our team sprint progress, ticket volume, and completed milestones"</p>
                             </button>
                         @else
                             <button 
                                 wire:click="askQuickQuery('What tasks are currently assigned to me and what are their statuses?')" 
-                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group"
+                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group cursor-pointer"
                             >
                                 <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">📋 My Assigned Tasks</span>
                                 <p class="text-[11px] text-zinc-500 line-clamp-2">"What tasks are currently assigned to me and what are their statuses?"</p>
@@ -198,7 +198,7 @@
 
                             <button 
                                 wire:click="askQuickQuery('What urgent tasks or upcoming deadlines do I need to prioritize?')" 
-                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group"
+                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group cursor-pointer"
                             >
                                 <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">⚡ My Urgent Deadlines</span>
                                 <p class="text-[11px] text-zinc-500 line-clamp-2">"What urgent tasks or upcoming deadlines do I need to prioritize?"</p>
@@ -206,18 +206,18 @@
 
                             <button 
                                 wire:click="askQuickQuery('Are any of my assigned tasks currently marked as blocked?')" 
-                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group"
+                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group cursor-pointer"
                             >
                                 <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">🛑 My Blockers</span>
                                 <p class="text-[11px] text-zinc-500 line-clamp-2">"Are any of my assigned tasks currently marked as blocked?"</p>
                             </button>
 
                             <button 
-                                wire:click="askQuickQuery('What is Director Khubaib Ahmed working on?')" 
-                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group"
+                                wire:click="askQuickQuery('Show my raised and assigned support tickets and their statuses')" 
+                                class="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80 transition-all text-xs space-y-1 group cursor-pointer"
                             >
-                                <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">🔒 Role Hierarchy Test</span>
-                                <p class="text-[11px] text-zinc-500 line-clamp-2">"What is Director Khubaib Ahmed working on? (Tests privacy boundary)"</p>
+                                <span class="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">🎫 My Support Tickets</span>
+                                <p class="text-[11px] text-zinc-500 line-clamp-2">"Show my raised and assigned support tickets and their statuses"</p>
                             </button>
                         @endif
                     </div>
@@ -254,7 +254,7 @@
                     </div>
                     <div class="rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-4 py-3 text-xs text-zinc-500 flex items-center gap-2">
                         <span class="animate-spin size-3.5 border-2 border-indigo-500 border-t-transparent rounded-full"></span>
-                        <span>Querying workspace records and consulting Gemini 3.6 Flash...</span>
+                        <span>Synthesizing workspace & ticket intelligence with Gemini...</span>
                     </div>
                 </div>
             @endif
@@ -266,7 +266,7 @@
                 <input 
                     type="text" 
                     wire:model="userQuery" 
-                    placeholder="Ask anything about tasks, spaces, blockers, or team members..." 
+                    placeholder="Ask anything about tasks, support tickets, team capacity, blockers, or velocity..." 
                     class="flex-1 text-xs rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/60 px-4 py-3 text-zinc-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
                 />
                 <button 
