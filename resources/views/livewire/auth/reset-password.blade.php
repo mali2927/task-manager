@@ -13,7 +13,7 @@
             <!-- Email Address -->
             <flux:input
                 name="email"
-                value="{{ request('email') }}"
+                value="{{ old('email', request('email')) }}"
                 :label="__('Email')"
                 type="email"
                 required
@@ -50,5 +50,12 @@
                 </flux:button>
             </div>
         </form>
+
+        <div class="space-y-1 text-center text-xs text-zinc-500 dark:text-zinc-400">
+            <span>{{ __('Link expired or invalid?') }}</span>
+            <flux:link :href="route('password.request')" class="text-xs text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+                {{ __('Request a new password reset link') }}
+            </flux:link>
+        </div>
     </div>
 </x-layouts::auth>

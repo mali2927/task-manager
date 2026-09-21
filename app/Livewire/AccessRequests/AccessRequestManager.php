@@ -129,6 +129,33 @@ class AccessRequestManager extends Component
         $this->feedbackMessage = "Access approved for {$user->name}. Invitation email dispatched.";
     }
 
+    public function resendInvitation(int $id): void
+    {
+        abort_unless(Auth::user()->isWorkspaceAdmin($this->workspace), 403);
+
+        $request = AccessRequest::findOrFail($id);
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user) {
+            $this->feedbackMessage = "User account not found for {$request->email}.";
+            return;
+        }
+
+        $token = Password::broker()->createToken($user);
+        $passwordResetUrl = url(route('password.reset', [
+            'token' => $token,
+            'email' => $user->email,
+        ], false));
+
+        try {
+            Mail::to($user->email)->queue(new AccessRequestApprovedMail($user, $passwordResetUrl, $request->assigned_role ?? 'member'));
+            $this->feedbackMessage = "Fresh invitation & password setup link sent to {$user->email}.";
+        } catch (\Throwable $e) {
+            report($e);
+            $this->feedbackMessage = "Failed to dispatch email. Please check mail settings.";
+        }
+    }
+
     public function openRejectModal(int $id): void
     {
         $this->selectedRequestId = $id;

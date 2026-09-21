@@ -148,6 +148,15 @@
                                             Reject
                                         </button>
                                     </div>
+                                @elseif($req->status === 'approved')
+                                    <button 
+                                        wire:click="resendInvitation({{ $req->id }})"
+                                        class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 transition-colors cursor-pointer inline-flex items-center gap-1"
+                                        title="Send fresh password setup link"
+                                    >
+                                        <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                                        Resend Invite
+                                    </button>
                                 @else
                                     <span class="text-zinc-400 text-xs">Archived</span>
                                 @endif
