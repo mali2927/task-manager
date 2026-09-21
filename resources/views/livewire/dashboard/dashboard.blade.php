@@ -30,7 +30,18 @@
                 title="Download CSV export"
             >
                 <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                <span>Export CSV</span>
+                <span>Tasks CSV</span>
+            </button>
+
+            <!-- Export Tickets CSV Button -->
+            <button 
+                wire:click="exportTicketsCsv" 
+                type="button" 
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 transition-colors"
+                title="Download Tickets CSV export"
+            >
+                <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                <span>Tickets CSV</span>
             </button>
 
             <!-- Gemini AI Standup Generator -->
@@ -138,6 +149,71 @@
                 <div>
                     <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Due This Week</span>
                     <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5">{{ $myDueThisWeek }}</p>
+                </div>
+                <div class="size-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1.5 SUPPORT TICKETS OVERVIEW KPI BLOCK -->
+    <div class="space-y-3">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="size-2 rounded-full bg-indigo-500"></span>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white">Support &amp; Helpdesk Metrics</h3>
+            </div>
+            <div class="flex items-center gap-3 text-xs">
+                <a href="{{ route('workspace.tickets.my', ['workspace' => $workspace->slug]) }}" class="text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 font-medium" wire:navigate>
+                    My Tickets
+                </a>
+                <span class="text-zinc-300 dark:text-zinc-700">•</span>
+                <a href="{{ route('workspace.tickets.queue', ['workspace' => $workspace->slug]) }}" class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline" wire:navigate>
+                    Triage Queue &rarr;
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <!-- Open Tickets -->
+            <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Open in Triage</span>
+                    <p class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-0.5">{{ $ticketsOpen }}</p>
+                </div>
+                <div class="size-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                    <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" /></svg>
+                </div>
+            </div>
+
+            <!-- Overdue SLA -->
+            <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border {{ $ticketsOverdue > 0 ? 'border-rose-500/40 bg-rose-500/5' : 'border-zinc-200/80 dark:border-zinc-800' }} shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-medium {{ $ticketsOverdue > 0 ? 'text-rose-500 font-semibold' : 'text-zinc-500 dark:text-zinc-400' }}">Overdue SLA</span>
+                    <p class="text-2xl font-black {{ $ticketsOverdue > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-zinc-900 dark:text-white' }} mt-0.5">{{ $ticketsOverdue }}</p>
+                </div>
+                <div class="size-10 rounded-xl {{ $ticketsOverdue > 0 ? 'bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400' : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-400' }} flex items-center justify-center">
+                    <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+            </div>
+
+            <!-- Assigned to Me -->
+            <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Assigned to Me</span>
+                    <p class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-0.5">{{ $ticketsAssignedToMe }}</p>
+                </div>
+                <div class="size-10 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                    <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                </div>
+            </div>
+
+            <!-- Avg Resolution Time -->
+            <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Avg Resolution</span>
+                    <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5">{{ $avgResolutionTime }}</p>
                 </div>
                 <div class="size-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                     <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>

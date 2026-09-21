@@ -91,6 +91,93 @@
                     @endif
                 </flux:sidebar.group>
 
+                <!-- Support & Helpdesk -->
+                @if($currentWorkspace)
+                    <flux:sidebar.group :heading="__('Support & Helpdesk')" class="grid gap-0.5 mt-3">
+                        <!-- My Tickets -->
+                        <flux:sidebar.item 
+                            icon="ticket" 
+                            :href="route('workspace.tickets.my', ['workspace' => $currentWorkspace->slug])" 
+                            :current="request()->routeIs('workspace.tickets.my')" 
+                            wire:navigate
+                        >
+                            {{ __('My Tickets') }}
+                        </flux:sidebar.item>
+
+                        <!-- Raise Ticket -->
+                        <flux:sidebar.item 
+                            icon="plus-circle" 
+                            :href="route('workspace.tickets.raise', ['workspace' => $currentWorkspace->slug])" 
+                            :current="request()->routeIs('workspace.tickets.raise')" 
+                            wire:navigate
+                        >
+                            {{ __('Raise Ticket') }}
+                        </flux:sidebar.item>
+
+                        @if(auth()->user()->isWorkspaceAdmin($currentWorkspace))
+                            <!-- Triage Queue -->
+                            <flux:sidebar.item 
+                                icon="inbox-stack" 
+                                :href="route('workspace.tickets.queue', ['workspace' => $currentWorkspace->slug])" 
+                                :current="request()->routeIs('workspace.tickets.queue')" 
+                                wire:navigate
+                            >
+                                <div class="flex items-center justify-between w-full">
+                                    <span>{{ __('Triage Queue') }}</span>
+                                    @php
+                                        $openTicketsCount = \App\Models\Ticket::where('workspace_id', $currentWorkspace->id)->where('status', 'open')->count();
+                                    @endphp
+                                    @if($openTicketsCount > 0)
+                                        <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-indigo-500/20 text-indigo-500">
+                                            {{ $openTicketsCount }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </flux:sidebar.item>
+
+                            <!-- Team Capacity -->
+                            <flux:sidebar.item 
+                                icon="chart-bar" 
+                                :href="route('workspace.tickets.capacity', ['workspace' => $currentWorkspace->slug])" 
+                                :current="request()->routeIs('workspace.tickets.capacity')" 
+                                wire:navigate
+                            >
+                                {{ __('Team Capacity') }}
+                            </flux:sidebar.item>
+
+                            <!-- Categories & Routing -->
+                            <flux:sidebar.item 
+                                icon="tag" 
+                                :href="route('workspace.tickets.categories', ['workspace' => $currentWorkspace->slug])" 
+                                :current="request()->routeIs('workspace.tickets.categories')" 
+                                wire:navigate
+                            >
+                                {{ __('Categories & Routing') }}
+                            </flux:sidebar.item>
+
+                            <!-- Access Requests -->
+                            <flux:sidebar.item 
+                                icon="user-plus" 
+                                :href="route('workspace.access-requests', ['workspace' => $currentWorkspace->slug])" 
+                                :current="request()->routeIs('workspace.access-requests')" 
+                                wire:navigate
+                            >
+                                <div class="flex items-center justify-between w-full">
+                                    <span>{{ __('Access Requests') }}</span>
+                                    @php
+                                        $pendingAccessCount = \App\Models\AccessRequest::where(fn ($q) => $q->where('workspace_id', $currentWorkspace->id)->orWhereNull('workspace_id'))->where('status', 'pending')->count();
+                                    @endphp
+                                    @if($pendingAccessCount > 0)
+                                        <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-500">
+                                            {{ $pendingAccessCount }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </flux:sidebar.item>
+                        @endif
+                    </flux:sidebar.group>
+                @endif
+
                 <!-- Spaces Hierarchy Tree -->
                 @if(isset($workspaceSpaces) && $workspaceSpaces->count() > 0)
                     <flux:sidebar.group :heading="__('Spaces & Folders')" class="grid gap-0.5 mt-4">

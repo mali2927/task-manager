@@ -12,5 +12,13 @@ class TeamMember extends Pivot
         'team_id',
         'user_id',
         'role', // lead, member
+        'capacity_limit',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'capacity_limit' => 'integer',
+        ];
+    }
 }

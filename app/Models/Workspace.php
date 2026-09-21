@@ -79,6 +79,21 @@ class Workspace extends Model
         return $this->hasMany(CustomField::class);
     }
 
+    public function ticketCategories(): HasMany
+    {
+        return $this->hasMany(TicketCategory::class);
+    }
+
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    public function accessRequests(): HasMany
+    {
+        return $this->hasMany(AccessRequest::class);
+    }
+
     public function allTasks()
     {
         return Task::whereHas('taskList.project.space', function ($q) {

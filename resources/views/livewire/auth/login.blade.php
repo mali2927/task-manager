@@ -191,11 +191,11 @@
             </div>
         </form>
 
-        <!-- Link to Register -->
+        <!-- Link to Request Access -->
         <div class="pt-2 border-t border-slate-800/80 text-center text-xs text-slate-400">
             <span>{{ __('New to STMU MIS?') }}</span>
-            <flux:link :href="route('register')" class="text-indigo-400 hover:text-indigo-300 font-semibold ml-1" wire:navigate>
-                {{ __('Create an account') }}
+            <flux:link :href="route('access-requests.create')" class="text-indigo-400 hover:text-indigo-300 font-semibold ml-1" wire:navigate>
+                {{ __('Request Access') }}
             </flux:link>
         </div>
     </div>

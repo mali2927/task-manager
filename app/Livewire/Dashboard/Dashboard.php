@@ -77,6 +77,11 @@ class Dashboard extends Component
         return redirect()->route('workspace.export', ['workspace' => $this->workspace->slug]);
     }
 
+    public function exportTicketsCsv()
+    {
+        return redirect()->route('workspace.tickets.export', ['workspace' => $this->workspace->slug]);
+    }
+
     public function render()
     {
         $user = Auth::user();
@@ -133,6 +138,28 @@ class Dashboard extends Component
 
         $spaces = $this->workspace->spaces;
 
+        // 6. Tickets KPI Metrics
+        $workspaceTickets = \App\Models\Ticket::where('workspace_id', $this->workspace->id)->get();
+        $ticketsOpen = $workspaceTickets->where('status', 'open')->count();
+        $ticketsOverdue = $workspaceTickets->filter(fn ($t) => $t->isOverdue())->count();
+        $ticketsAssignedToMe = $workspaceTickets->where('assigned_to_user_id', $user->id)
+            ->filter(fn ($t) => !in_array($t->status, ['resolved', 'closed']))
+            ->count();
+
+        $resolvedTickets = $workspaceTickets->filter(fn ($t) => $t->resolved_at !== null);
+        $avgResolutionTime = 'N/A';
+        if ($resolvedTickets->count() > 0) {
+            $totalMinutes = $resolvedTickets->sum(fn ($t) => $t->created_at->diffInMinutes($t->resolved_at));
+            $avgMinutes = $totalMinutes / $resolvedTickets->count();
+            if ($avgMinutes < 60) {
+                $avgResolutionTime = round($avgMinutes) . 'm';
+            } elseif ($avgMinutes < 1440) {
+                $avgResolutionTime = round($avgMinutes / 60, 1) . 'h';
+            } else {
+                $avgResolutionTime = round($avgMinutes / 1440, 1) . 'd';
+            }
+        }
+
         return view('livewire.dashboard.dashboard', [
             'myOpen' => $myOpen->count(),
             'myOverdue' => $myOverdue->count(),
@@ -148,6 +175,10 @@ class Dashboard extends Component
             'overdueList' => $overdueList,
             'recentActivities' => $recentActivities,
             'spaces' => $spaces,
+            'ticketsOpen' => $ticketsOpen,
+            'ticketsOverdue' => $ticketsOverdue,
+            'ticketsAssignedToMe' => $ticketsAssignedToMe,
+            'avgResolutionTime' => $avgResolutionTime,
         ]);
     }
 }

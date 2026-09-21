@@ -14,6 +14,12 @@ use App\Models\TaskList;
 use App\Models\TaskStatus;
 use App\Models\TaskTimeEntry;
 use App\Models\Team;
+use App\Models\AccessRequest;
+use App\Models\Ticket;
+use App\Models\TicketActivityLog;
+use App\Models\TicketAttachment;
+use App\Models\TicketCategory;
+use App\Models\TicketComment;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Database\Seeder;
@@ -213,12 +219,12 @@ class DatabaseSeeder extends Seeder
             ]
         );
         $teamMis->members()->syncWithoutDetaching([
-            $khubaib->id => ['role' => 'lead'],
-            $khurram->id => ['role' => 'lead'],
-            $hamza->id => ['role' => 'member'],
-            $aliAltaf->id => ['role' => 'member'],
-            $muhammadAli->id => ['role' => 'member'],
-            $ubaid->id => ['role' => 'member'],
+            $khubaib->id => ['role' => 'lead', 'capacity_limit' => 6],
+            $khurram->id => ['role' => 'lead', 'capacity_limit' => 5],
+            $hamza->id => ['role' => 'member', 'capacity_limit' => 4],
+            $aliAltaf->id => ['role' => 'member', 'capacity_limit' => 5],
+            $muhammadAli->id => ['role' => 'member', 'capacity_limit' => 5],
+            $ubaid->id => ['role' => 'member', 'capacity_limit' => 4],
         ]);
 
         $teamEng = Team::firstOrCreate(
@@ -226,9 +232,9 @@ class DatabaseSeeder extends Seeder
             ['description' => 'Responsible for distributed infrastructure, API services, and core database scale.', 'color' => '#6366f1', 'icon' => 'code-bracket']
         );
         $teamEng->members()->syncWithoutDetaching([
-            $owner->id => ['role' => 'lead'],
-            $sarah->id => ['role' => 'member'],
-            $marcus->id => ['role' => 'member'],
+            $owner->id => ['role' => 'lead', 'capacity_limit' => 6],
+            $sarah->id => ['role' => 'member', 'capacity_limit' => 5],
+            $marcus->id => ['role' => 'member', 'capacity_limit' => 4],
         ]);
 
         $teamDesign = Team::firstOrCreate(
@@ -236,8 +242,8 @@ class DatabaseSeeder extends Seeder
             ['description' => 'User research, interface prototyping, design system tokens, and usability testing.', 'color' => '#ec4899', 'icon' => 'swatch']
         );
         $teamDesign->members()->syncWithoutDetaching([
-            $elena->id => ['role' => 'lead'],
-            $sarah->id => ['role' => 'member'],
+            $elena->id => ['role' => 'lead', 'capacity_limit' => 5],
+            $sarah->id => ['role' => 'member', 'capacity_limit' => 4],
         ]);
 
         // 5. Default Task Statuses
@@ -778,5 +784,211 @@ class DatabaseSeeder extends Seeder
             'role' => 'assistant',
             'content' => "### 🧪 Ubaid ur Rehman — QA Tasks & Status\n**Ubaid ur Rehman** is currently assigned to **5 tasks** across Admissions, ORIC, and LMS:\n\n* **In Progress (2):**\n  * *End-to-End QA automation suite for Fall 2026 admission intake* (Urgent, Admission Project)\n  * *Interactive QR code and Geofenced classroom attendance tracker* (Urgent, LMS)\n\n* **In Review (1):**\n  * *Automated Matric & Inter equivalence calculation formula engine* (High, Admission Project)\n\n* **Blocked (1):**\n  * *Conduct concurrent stress test on LMS assignment submission gateway* (High, LMS)\n\n* **Done (1):**\n  * *QA Security audit on proprietary patent documentation vault* (Urgent, ORIC)",
         ]);
+
+        // ==========================================
+        // 12. SEED TICKET CATEGORIES & DEFAULT ROUTING
+        // ==========================================
+        $catBug = TicketCategory::firstOrCreate(
+            ['workspace_id' => $workspace->id, 'name' => 'Bug Report'],
+            [
+                'description' => 'System errors, 500 exceptions, and functional regressions.',
+                'default_team_id' => $teamEng->id,
+            ]
+        );
+
+        $catIt = TicketCategory::firstOrCreate(
+            ['workspace_id' => $workspace->id, 'name' => 'IT & Infrastructure'],
+            [
+                'description' => 'VPN, server access, workstation setup, and hardware provisioning.',
+                'default_team_id' => $teamMis->id,
+            ]
+        );
+
+        $catUi = TicketCategory::firstOrCreate(
+            ['workspace_id' => $workspace->id, 'name' => 'UI/UX & Feature Request'],
+            [
+                'description' => 'Design improvements, dashboard enhancements, and user journey optimization.',
+                'default_team_id' => $teamDesign->id,
+            ]
+        );
+
+        $catGeneral = TicketCategory::firstOrCreate(
+            ['workspace_id' => $workspace->id, 'name' => 'General Support'],
+            [
+                'description' => 'Account inquiries, billing questions, and general guidance.',
+                'default_team_id' => null,
+            ]
+        );
+
+        // ==========================================
+        // 13. SEED SAMPLE TICKETS & AUDIT TRAIL
+        // ==========================================
+        // Ticket 1: Urgent Overdue Open Bug
+        $tck1 = Ticket::firstOrCreate(
+            ['workspace_id' => $workspace->id, 'ticket_number' => 'TCK-1001'],
+            [
+                'subject' => 'Critical: Biometric verification service failure during peak student intake',
+                'description' => "Students submitting their admission applications are receiving timeout errors when authenticating via NADRA Verisys. The API gateway returns HTTP 504 Gateway Timeout intermittently.\n\nImmediate triage required to prevent drop-off in active admission intake.",
+                'category_id' => $catBug->id,
+                'priority' => 'urgent',
+                'status' => 'open',
+                'raised_by_user_id' => $hamza->id,
+                'assigned_team_id' => $teamEng->id,
+                'assigned_to_user_id' => null,
+                'due_by' => now()->subHours(2), // Overdue for demonstration!
+                'created_at' => now()->subHours(6),
+            ]
+        );
+        TicketActivityLog::log($tck1, $hamza, 'created', null, 'Ticket created with urgent priority');
+
+        // Ticket 2: High Priority In Progress Ticket
+        $tck2 = Ticket::firstOrCreate(
+            ['workspace_id' => $workspace->id, 'ticket_number' => 'TCK-1002'],
+            [
+                'subject' => 'VPN Gateway certificate expiration affecting remote developers',
+                'description' => "The primary WireGuard SSL certificate for the engineering subnet will expire within 48 hours. Team members working remotely are unable to connect to the staging cluster.",
+                'category_id' => $catIt->id,
+                'priority' => 'high',
+                'status' => 'in_progress',
+                'raised_by_user_id' => $ubaid->id,
+                'assigned_team_id' => $teamMis->id,
+                'assigned_to_user_id' => $khurram->id,
+                'due_by' => now()->addHours(18),
+                'created_at' => now()->subHours(6),
+            ]
+        );
+        TicketActivityLog::log($tck2, $ubaid, 'created', null, 'Ticket created with high priority');
+        TicketActivityLog::log($tck2, $khubaib, 'assigned_team', null, 'MIS');
+        TicketActivityLog::log($tck2, $khubaib, 'assigned_user', null, 'Khurram Ahmed');
+        TicketActivityLog::log($tck2, $khurram, 'status_changed', 'assigned', 'in_progress');
+
+        TicketComment::create([
+            'ticket_id' => $tck2->id,
+            'user_id' => $khurram->id,
+            'body' => 'I have generated the CSR and submitted it to our institutional CA. Expecting updated cert files within 2 hours.',
+            'is_internal_note' => false,
+            'created_at' => now()->subHours(3),
+        ]);
+
+        TicketComment::create([
+            'ticket_id' => $tck2->id,
+            'user_id' => $khubaib->id,
+            'body' => 'Internal Note: Ensure the failover backup profile on server 10.0.1.50 is tested before applying to production.',
+            'is_internal_note' => true,
+            'created_at' => now()->subHours(2),
+        ]);
+
+        // Ticket 3: Normal Priority Assigned Ticket
+        $tck3 = Ticket::firstOrCreate(
+            ['workspace_id' => $workspace->id, 'ticket_number' => 'TCK-1003'],
+            [
+                'subject' => 'Mobile navigation drawer closes unexpectedly on iOS Safari',
+                'description' => 'When tapping on the filter drawer in the student admissions review screen on Safari iOS 17.5, the drawer flickers and dismisses without applying chosen filter values.',
+                'category_id' => $catUi->id,
+                'priority' => 'normal',
+                'status' => 'assigned',
+                'raised_by_user_id' => $aliAltaf->id,
+                'assigned_team_id' => $teamDesign->id,
+                'assigned_to_user_id' => $elena->id,
+                'due_by' => now()->addDays(2),
+                'created_at' => now()->subDay(),
+            ]
+        );
+        TicketActivityLog::log($tck3, $aliAltaf, 'created', null, 'Ticket created');
+        TicketActivityLog::log($tck3, $owner, 'assigned_team', null, 'Product Design & UI/UX');
+        TicketActivityLog::log($tck3, $owner, 'assigned_user', null, 'Elena Rostova');
+
+        // Ticket 4: Resolved Ticket with Summary
+        $tck4 = Ticket::firstOrCreate(
+            ['workspace_id' => $workspace->id, 'ticket_number' => 'TCK-1004'],
+            [
+                'subject' => 'Student grade report PDF export character encoding glitch in Urdu names',
+                'description' => 'Transcripts exported as PDF displayed broken Arabic/Nastaliq glyphs for student names written in Urdu.',
+                'category_id' => $catBug->id,
+                'priority' => 'high',
+                'status' => 'resolved',
+                'raised_by_user_id' => $muhammadAli->id,
+                'assigned_team_id' => $teamEng->id,
+                'assigned_to_user_id' => $sarah->id,
+                'due_by' => now()->subHours(10),
+                'resolution_summary' => 'Integrated Noto Sans Arabic variable TrueType font into the DomPDF rendering pipeline and configured UTF-8 font-family fallbacks in CSS.',
+                'resolved_at' => now()->subHours(4),
+                'created_at' => now()->subDays(2),
+            ]
+        );
+        TicketActivityLog::log($tck4, $muhammadAli, 'created', null, 'Ticket created');
+        TicketActivityLog::log($tck4, $owner, 'assigned_user', null, 'Sarah Jenkins');
+        TicketActivityLog::log($tck4, $sarah, 'status_changed', 'in_progress', 'resolved');
+
+        // Ticket 5: General Support Ticket
+        $tck5 = Ticket::firstOrCreate(
+            ['workspace_id' => $workspace->id, 'ticket_number' => 'TCK-1005'],
+            [
+                'subject' => 'Request for secondary monitor and ergonomic keyboard setup',
+                'description' => 'Need an additional 27-inch 4K monitor and mechanical keyboard for the new workstation setup in MIS Room 302.',
+                'category_id' => $catGeneral->id,
+                'priority' => 'low',
+                'status' => 'open',
+                'raised_by_user_id' => $ubaid->id,
+                'due_by' => now()->addDays(4),
+                'created_at' => now()->subHours(2),
+            ]
+        );
+        TicketActivityLog::log($tck5, $ubaid, 'created', null, 'Ticket created');
+
+        // ==========================================
+        // 14. SEED SAMPLE ACCESS REQUESTS
+        // ==========================================
+        AccessRequest::firstOrCreate(
+            ['email' => 'ayesha.tariq@stmu.edu.pk'],
+            [
+                'name' => 'Dr. Ayesha Tariq',
+                'workspace_id' => $workspace->id,
+                'department' => 'Department of Pathology & Diagnostics',
+                'reason' => 'Leading the pathology lab digitization module. Require access to collaborate on clinical trial task lists and track lab software bug reports.',
+                'status' => 'pending',
+                'assigned_role' => 'member',
+            ]
+        );
+
+        AccessRequest::firstOrCreate(
+            ['email' => 'zainab.malik@stmu.edu.pk'],
+            [
+                'name' => 'Zainab Malik',
+                'workspace_id' => $workspace->id,
+                'department' => 'Examination & Accreditation Cell',
+                'reason' => 'Need access to inspect semester grade audit workflows and review QA checklist items before official transcripts release.',
+                'status' => 'pending',
+                'assigned_role' => 'member',
+            ]
+        );
+
+        AccessRequest::firstOrCreate(
+            ['email' => 'faisal.kamran@partner.stmu.edu.pk'],
+            [
+                'name' => 'Faisal Kamran',
+                'workspace_id' => $workspace->id,
+                'department' => 'External Systems Auditor',
+                'reason' => 'External security compliance auditor for ISO 27001 accreditation.',
+                'status' => 'approved',
+                'assigned_role' => 'guest',
+                'reviewed_by_id' => $owner->id,
+                'reviewed_at' => now()->subDays(1),
+            ]
+        );
+
+        AccessRequest::firstOrCreate(
+            ['email' => 'spammer@randomdomain.xyz'],
+            [
+                'name' => 'John Anonymous',
+                'workspace_id' => $workspace->id,
+                'department' => 'Unknown',
+                'reason' => 'Looking around.',
+                'status' => 'rejected',
+                'rejection_reason' => 'Non-institutional email address provided. Please register using your verified STMU faculty or staff credentials.',
+                'reviewed_by_id' => $owner->id,
+                'reviewed_at' => now()->subDays(2),
+            ]
+        );
     }
 }

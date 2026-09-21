@@ -90,8 +90,24 @@ class User extends Authenticatable implements PasskeyUser
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, 'team_members')
-            ->withPivot('role')
+            ->using(TeamMember::class)
+            ->withPivot(['role', 'capacity_limit'])
             ->withTimestamps();
+    }
+
+    public function raisedTickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'raised_by_user_id');
+    }
+
+    public function assignedTickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'assigned_to_user_id');
+    }
+
+    public function ticketComments(): HasMany
+    {
+        return $this->hasMany(TicketComment::class);
     }
 
     public function assignedTasks(): BelongsToMany
@@ -217,6 +233,41 @@ class User extends Authenticatable implements PasskeyUser
     public function canManageWorkspaceMembers(Workspace $workspace): bool
     {
         return $this->isWorkspaceAdmin($workspace);
+    }
+
+    public function canTriageTickets(Workspace $workspace): bool
+    {
+        return $this->isWorkspaceAdmin($workspace);
+    }
+
+    public function canManageTicketCategories(Workspace $workspace): bool
+    {
+        return $this->isWorkspaceAdmin($workspace);
+    }
+
+    public function canViewTicket(Ticket $ticket, Workspace $workspace): bool
+    {
+        // 1. Workspace Admins / Owners can view all tickets
+        if ($this->isWorkspaceAdmin($workspace)) {
+            return true;
+        }
+
+        // 2. Requester can view their own ticket
+        if ($ticket->raised_by_user_id === $this->id) {
+            return true;
+        }
+
+        // 3. Directly assigned user can view
+        if ($ticket->assigned_to_user_id === $this->id) {
+            return true;
+        }
+
+        // 4. If assigned to a team, any member of that team can view
+        if ($ticket->assigned_team_id) {
+            return $this->teams()->where('teams.id', $ticket->assigned_team_id)->exists();
+        }
+
+        return false;
     }
 
     /**
