@@ -2,14 +2,18 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h1 class="text-xl font-bold text-zinc-900 dark:text-white">My Support Tickets</h1>
+            <h1 class="text-xl font-bold text-zinc-900 dark:text-white">
+                {{ $isRequester ? 'My Support Tickets' : 'My Support Tickets' }}
+            </h1>
             <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                Track issues assigned to you or monitor tickets you've raised across the workspace.
+                {{ $isRequester 
+                    ? 'Track the live status of tickets you have submitted or raise a new request.' 
+                    : "Track issues assigned to you or monitor tickets you've raised across the workspace." }}
             </p>
         </div>
 
         <div class="flex items-center gap-2">
-            @if(auth()->user()->isWorkspaceAdmin($workspace))
+            @if(!$isRequester && auth()->user()->isWorkspaceAdmin($workspace))
                 <a 
                     href="{{ route('workspace.tickets.queue', ['workspace' => $workspace->slug]) }}" 
                     class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 transition-colors"
@@ -31,33 +35,56 @@
         </div>
     </div>
 
-    <!-- View Switcher Tabs -->
-    <div class="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2">
-        <button 
-            wire:click="$set('viewMode', 'assigned')" 
-            class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer {{ $viewMode === 'assigned' ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200' }}"
-        >
-            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-            <span>Assigned to Me</span>
-            <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $assignedTotalCount > 0 ? 'bg-indigo-500 text-white' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400' }}">
-                {{ $assignedTotalCount }}
-            </span>
-        </button>
+    @if(!$isRequester)
+        <!-- View Switcher Tabs -->
+        <div class="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-2">
+            <button 
+                wire:click="$set('viewMode', 'assigned')" 
+                class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer {{ $viewMode === 'assigned' ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200' }}"
+            >
+                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                <span>Assigned to Me</span>
+                <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $assignedTotalCount > 0 ? 'bg-indigo-500 text-white' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400' }}">
+                    {{ $assignedTotalCount }}
+                </span>
+            </button>
 
-        <button 
-            wire:click="$set('viewMode', 'raised')" 
-            class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer {{ $viewMode === 'raised' ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200' }}"
-        >
-            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-            <span>Raised by Me</span>
-            <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $raisedTotalCount > 0 ? 'bg-indigo-500 text-white' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400' }}">
-                {{ $raisedTotalCount }}
-            </span>
-        </button>
-    </div>
+            <button 
+                wire:click="$set('viewMode', 'raised')" 
+                class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer {{ $viewMode === 'raised' ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20' : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200' }}"
+            >
+                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                <span>Raised by Me</span>
+                <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $raisedTotalCount > 0 ? 'bg-indigo-500 text-white' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400' }}">
+                    {{ $raisedTotalCount }}
+                </span>
+            </button>
+        </div>
+    @endif
 
-    <!-- Groups Layout -->
-    <div class="space-y-6">
+    @if($isRequester && $inProgress->count() === 0 && $open->count() === 0 && $resolved->count() === 0)
+        <div class="p-12 text-center bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 space-y-4 max-w-lg mx-auto mt-8">
+            <div class="size-14 mx-auto rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                <svg class="size-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" /></svg>
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-zinc-900 dark:text-white">No Tickets Submitted Yet</h3>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-sm mx-auto">
+                    You haven't submitted any support requests. If you need assistance, want to report a problem, or request service, raise a ticket now.
+                </p>
+            </div>
+            <a 
+                href="{{ route('workspace.tickets.raise', ['workspace' => $workspace->slug]) }}" 
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs transition-colors"
+                wire:navigate
+            >
+                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                <span>Raise Your First Ticket</span>
+            </a>
+        </div>
+    @else
+        <!-- Groups Layout -->
+        <div class="space-y-6">
         <!-- 1. Active Working (In Progress & Assigned) -->
         <div class="space-y-2">
             <div class="flex items-center justify-between">
@@ -191,6 +218,7 @@
             </div>
         @endif
     </div>
+    @endif
 
     <!-- Slide-over Ticket Detail Drawer -->
     <livewire:tickets.ticket-detail />

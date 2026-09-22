@@ -148,6 +148,39 @@ class User extends Authenticatable implements PasskeyUser
         return in_array($role, ['owner', 'admin']);
     }
 
+    public function isWorkspaceRequester(?Workspace $workspace = null): bool
+    {
+        if ($workspace) {
+            if ($this->id === $workspace->owner_id) {
+                return false;
+            }
+            $role = $this->roleInWorkspace($workspace);
+            if (in_array($role, ['requester', 'guest'])) {
+                return true;
+            }
+            if (in_array($role, ['owner', 'admin', 'member'])) {
+                return false;
+            }
+        }
+
+        if ($this->hasAnyRole(['Requester', 'Guest'])) {
+            return true;
+        }
+
+        $firstWs = $this->workspaces()->first();
+        if ($firstWs) {
+            $role = $firstWs->pivot->role ?? null;
+            return in_array($role, ['requester', 'guest']);
+        }
+
+        return false;
+    }
+
+    public function isTicketOnlyUser(?Workspace $workspace = null): bool
+    {
+        return $this->isWorkspaceRequester($workspace);
+    }
+
     /**
      * Check if user can invite people to the workspace.
      * Strictly restricted to Owner and Admin roles.

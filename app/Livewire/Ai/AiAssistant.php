@@ -30,6 +30,11 @@ class AiAssistant extends Component
             $this->workspace = $workspace;
         }
 
+        if ($this->workspace && Auth::user()?->isWorkspaceRequester($this->workspace)) {
+            $this->redirect(route('workspace.tickets.my', ['workspace' => $this->workspace->slug]), navigate: true);
+            return;
+        }
+
         // If activeConversationId is not set, load the most recent conversation or stay on new chat
         if ($this->activeConversationId) {
             $convo = AiConversation::where('id', $this->activeConversationId)

@@ -23,6 +23,11 @@ class MyTickets extends Component
             $this->workspace = $workspace;
         }
 
+        if (Auth::user()?->isWorkspaceRequester($this->workspace)) {
+            $this->viewMode = 'raised';
+            return;
+        }
+
         // If the user has 0 assigned tickets but has raised tickets, default to 'raised'
         $assignedCount = Ticket::where('workspace_id', $this->workspace->id)
             ->where('assigned_to_user_id', Auth::id())
@@ -42,6 +47,11 @@ class MyTickets extends Component
     public function render()
     {
         $userId = Auth::id();
+        $isRequester = Auth::user()?->isWorkspaceRequester($this->workspace) ?? false;
+
+        if ($isRequester) {
+            $this->viewMode = 'raised';
+        }
 
         $query = Ticket::where('workspace_id', $this->workspace->id)
             ->with(['category', 'assignedTeam', 'assignedTo', 'raisedBy']);
@@ -78,6 +88,7 @@ class MyTickets extends Component
             'overdueCount' => $overdueCount,
             'assignedTotalCount' => $assignedTotalCount,
             'raisedTotalCount' => $raisedTotalCount,
+            'isRequester' => $isRequester,
         ]);
     }
 }

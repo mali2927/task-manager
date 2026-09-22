@@ -49,6 +49,11 @@ class Dashboard extends Component
                 ]);
             }
         }
+
+        if ($user && $this->workspace && $user->isWorkspaceRequester($this->workspace)) {
+            $this->redirect(route('workspace.tickets.my', ['workspace' => $this->workspace->slug]), navigate: true);
+            return;
+        }
     }
 
     public function setTab(string $tab): void

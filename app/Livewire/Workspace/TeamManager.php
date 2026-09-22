@@ -36,6 +36,10 @@ class TeamManager extends Component
     public function mount(Workspace $workspace): void
     {
         $this->workspace = $workspace;
+        if (Auth::user()?->isWorkspaceRequester($this->workspace)) {
+            $this->redirect(route('workspace.tickets.my', ['workspace' => $this->workspace->slug]), navigate: true);
+            return;
+        }
     }
 
     public function inviteMember(): void
@@ -48,7 +52,7 @@ class TeamManager extends Component
 
         $this->validate([
             'inviteEmail' => 'required|email',
-            'inviteRole' => 'required|in:admin,member,guest',
+            'inviteRole' => 'required|in:admin,member,guest,requester',
         ]);
 
         // Check if existing member
@@ -84,7 +88,7 @@ class TeamManager extends Component
                 'name' => ucwords(str_replace(['.', '_', '-'], ' ', $namePart)),
                 'email' => $email,
                 'password' => Hash::make($randomPassword),
-                'job_title' => $this->inviteRole === 'guest' ? 'Requester' : 'Team Member',
+                'job_title' => in_array($this->inviteRole, ['guest', 'requester']) ? 'Requester' : 'Team Member',
                 'timezone' => 'UTC',
             ]);
 
@@ -96,7 +100,7 @@ class TeamManager extends Component
 
             $spatieRoleName = match ($this->inviteRole) {
                 'admin' => 'Admin',
-                'guest' => 'Guest',
+                'guest', 'requester' => \Spatie\Permission\Models\Role::where('name', 'Requester')->exists() ? 'Requester' : 'Guest',
                 default => 'Member',
             };
             if (\Spatie\Permission\Models\Role::where('name', $spatieRoleName)->exists()) {
@@ -131,7 +135,7 @@ class TeamManager extends Component
             'Unauthorized. Only workspace owners and admins can update member roles.'
         );
 
-        if (!in_array($newRole, ['owner', 'admin', 'member', 'guest'])) return;
+        if (!in_array($newRole, ['owner', 'admin', 'member', 'guest', 'requester'])) return;
 
         // Prevent modifying owner unless logged in user is owner
         if ($this->workspace->owner_id === $userId && Auth::id() !== $userId) return;
@@ -139,6 +143,19 @@ class TeamManager extends Component
         $this->workspace->members()->updateExistingPivot($userId, [
             'role' => $newRole,
         ]);
+
+        $targetUser = User::find($userId);
+        if ($targetUser) {
+            $spatieRoleName = match ($newRole) {
+                'owner' => 'Owner',
+                'admin' => 'Admin',
+                'guest', 'requester' => \Spatie\Permission\Models\Role::where('name', 'Requester')->exists() ? 'Requester' : 'Guest',
+                default => 'Member',
+            };
+            if (\Spatie\Permission\Models\Role::where('name', $spatieRoleName)->exists()) {
+                $targetUser->syncRoles([$spatieRoleName]);
+            }
+        }
     }
 
     public function removeMember(int $userId): void

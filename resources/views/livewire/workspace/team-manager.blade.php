@@ -135,17 +135,17 @@
                                             class="text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 py-1 px-2.5 cursor-pointer"
                                         >
                                             <option value="admin" {{ $m->pivot->role === 'admin' ? 'selected' : '' }}>Admin</option>
-                                            <option value="member" {{ $m->pivot->role === 'member' ? 'selected' : '' }}>Member</option>
-                                            <option value="guest" {{ $m->pivot->role === 'guest' ? 'selected' : '' }}>Guest (View only)</option>
+                                            <option value="member" {{ $m->pivot->role === 'member' ? 'selected' : '' }}>Member (Tasks & Projects)</option>
+                                            <option value="requester" {{ in_array($m->pivot->role, ['requester', 'guest']) ? 'selected' : '' }}>Requester (Tickets Only)</option>
                                         </select>
                                     @else
                                         @if($m->pivot->role === 'admin')
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800">
                                                 Admin
                                             </span>
-                                        @elseif($m->pivot->role === 'guest')
+                                        @elseif(in_array($m->pivot->role, ['guest', 'requester']))
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
-                                                Guest
+                                                Requester
                                             </span>
                                         @else
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
@@ -221,7 +221,7 @@
                         <select wire:model="inviteRole" class="w-full text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 py-2 px-3">
                             <option value="admin">Admin (Can manage spaces, lists, and invite members)</option>
                             <option value="member">Member (Can create, edit, and complete tasks)</option>
-                            <option value="guest">Guest (View-only access)</option>
+                            <option value="requester">Requester (Submit and track tickets only)</option>
                         </select>
                     </div>
 

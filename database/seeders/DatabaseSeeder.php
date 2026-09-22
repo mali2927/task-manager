@@ -50,11 +50,13 @@ class DatabaseSeeder extends Seeder
         $adminRole = Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
         $memberRole = Role::firstOrCreate(['name' => 'Member', 'guard_name' => 'web']);
         $guestRole = Role::firstOrCreate(['name' => 'Guest', 'guard_name' => 'web']);
+        $requesterRole = Role::firstOrCreate(['name' => 'Requester', 'guard_name' => 'web']);
 
         $ownerRole->syncPermissions($permissions);
         $adminRole->syncPermissions($permissions);
         $memberRole->syncPermissions([]);
         $guestRole->syncPermissions([]);
+        $requesterRole->syncPermissions([]);
 
         // 2. Demo Users (Original + MIS Team)
         $owner = User::updateOrCreate(
@@ -185,6 +187,18 @@ class DatabaseSeeder extends Seeder
         );
         $elena->assignRole('Member');
 
+        $requester = User::updateOrCreate(
+            ['email' => 'requester@example.com'],
+            [
+                'name' => 'Sara Requester',
+                'password' => Hash::make('password'),
+                'job_title' => 'Faculty Department Requester',
+                'timezone' => 'Asia/Karachi',
+                'avatar_url' => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+            ]
+        );
+        $requester->assignRole('Requester');
+
         // 3. Demo Workspace
         $workspace = Workspace::updateOrCreate(
             ['slug' => 'acme-labs'],
@@ -207,6 +221,7 @@ class DatabaseSeeder extends Seeder
             $sarah->id => ['role' => 'admin', 'job_title' => 'Senior Frontend Engineer', 'timezone' => 'America/Los_Angeles'],
             $marcus->id => ['role' => 'member', 'job_title' => 'Cloud & DevOps Architect', 'timezone' => 'Europe/London'],
             $elena->id => ['role' => 'member', 'job_title' => 'Lead UX/UI Designer', 'timezone' => 'Europe/Berlin'],
+            $requester->id => ['role' => 'requester', 'job_title' => 'Faculty Department Requester', 'timezone' => 'Asia/Karachi'],
         ]);
 
         // 4. Teams (including requested MIS Team)
@@ -825,8 +840,9 @@ class DatabaseSeeder extends Seeder
         // ==========================================
         // Ticket 1: Urgent Overdue Open Bug
         $tck1 = Ticket::firstOrCreate(
-            ['workspace_id' => $workspace->id, 'ticket_number' => 'TCK-1001'],
+            ['ticket_number' => 'TCK-1001'],
             [
+                'workspace_id' => $workspace->id,
                 'subject' => 'Critical: Biometric verification service failure during peak student intake',
                 'description' => "Students submitting their admission applications are receiving timeout errors when authenticating via NADRA Verisys. The API gateway returns HTTP 504 Gateway Timeout intermittently.\n\nImmediate triage required to prevent drop-off in active admission intake.",
                 'category_id' => $catBug->id,
@@ -839,12 +855,15 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now()->subHours(6),
             ]
         );
-        TicketActivityLog::log($tck1, $hamza, 'created', null, 'Ticket created with urgent priority');
+        if (!TicketActivityLog::where('ticket_id', $tck1->id)->exists()) {
+            TicketActivityLog::log($tck1, $hamza, 'created', null, 'Ticket created with urgent priority');
+        }
 
         // Ticket 2: High Priority In Progress Ticket
         $tck2 = Ticket::firstOrCreate(
-            ['workspace_id' => $workspace->id, 'ticket_number' => 'TCK-1002'],
+            ['ticket_number' => 'TCK-1002'],
             [
+                'workspace_id' => $workspace->id,
                 'subject' => 'VPN Gateway certificate expiration affecting remote developers',
                 'description' => "The primary WireGuard SSL certificate for the engineering subnet will expire within 48 hours. Team members working remotely are unable to connect to the staging cluster.",
                 'category_id' => $catIt->id,
@@ -857,31 +876,38 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now()->subHours(6),
             ]
         );
-        TicketActivityLog::log($tck2, $ubaid, 'created', null, 'Ticket created with high priority');
-        TicketActivityLog::log($tck2, $khubaib, 'assigned_team', null, 'MIS');
-        TicketActivityLog::log($tck2, $khubaib, 'assigned_user', null, 'Khurram Ahmed');
-        TicketActivityLog::log($tck2, $khurram, 'status_changed', 'assigned', 'in_progress');
+        if (!TicketActivityLog::where('ticket_id', $tck2->id)->exists()) {
+            TicketActivityLog::log($tck2, $ubaid, 'created', null, 'Ticket created with high priority');
+            TicketActivityLog::log($tck2, $khubaib, 'assigned_team', null, 'MIS');
+            TicketActivityLog::log($tck2, $khubaib, 'assigned_user', null, 'Khurram Ahmed');
+            TicketActivityLog::log($tck2, $khurram, 'status_changed', 'assigned', 'in_progress');
+        }
 
-        TicketComment::create([
-            'ticket_id' => $tck2->id,
-            'user_id' => $khurram->id,
-            'body' => 'I have generated the CSR and submitted it to our institutional CA. Expecting updated cert files within 2 hours.',
-            'is_internal_note' => false,
-            'created_at' => now()->subHours(3),
-        ]);
+        if (!TicketComment::where('ticket_id', $tck2->id)->where('is_internal_note', false)->exists()) {
+            TicketComment::create([
+                'ticket_id' => $tck2->id,
+                'user_id' => $khurram->id,
+                'body' => 'I have generated the CSR and submitted it to our institutional CA. Expecting updated cert files within 2 hours.',
+                'is_internal_note' => false,
+                'created_at' => now()->subHours(3),
+            ]);
+        }
 
-        TicketComment::create([
-            'ticket_id' => $tck2->id,
-            'user_id' => $khubaib->id,
-            'body' => 'Internal Note: Ensure the failover backup profile on server 10.0.1.50 is tested before applying to production.',
-            'is_internal_note' => true,
-            'created_at' => now()->subHours(2),
-        ]);
+        if (!TicketComment::where('ticket_id', $tck2->id)->where('is_internal_note', true)->exists()) {
+            TicketComment::create([
+                'ticket_id' => $tck2->id,
+                'user_id' => $khubaib->id,
+                'body' => 'Internal Note: Ensure the failover backup profile on server 10.0.1.50 is tested before applying to production.',
+                'is_internal_note' => true,
+                'created_at' => now()->subHours(2),
+            ]);
+        }
 
         // Ticket 3: Normal Priority Assigned Ticket
         $tck3 = Ticket::firstOrCreate(
-            ['workspace_id' => $workspace->id, 'ticket_number' => 'TCK-1003'],
+            ['ticket_number' => 'TCK-1003'],
             [
+                'workspace_id' => $workspace->id,
                 'subject' => 'Mobile navigation drawer closes unexpectedly on iOS Safari',
                 'description' => 'When tapping on the filter drawer in the student admissions review screen on Safari iOS 17.5, the drawer flickers and dismisses without applying chosen filter values.',
                 'category_id' => $catUi->id,
@@ -894,14 +920,17 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now()->subDay(),
             ]
         );
-        TicketActivityLog::log($tck3, $aliAltaf, 'created', null, 'Ticket created');
-        TicketActivityLog::log($tck3, $owner, 'assigned_team', null, 'Product Design & UI/UX');
-        TicketActivityLog::log($tck3, $owner, 'assigned_user', null, 'Elena Rostova');
+        if (!TicketActivityLog::where('ticket_id', $tck3->id)->exists()) {
+            TicketActivityLog::log($tck3, $aliAltaf, 'created', null, 'Ticket created');
+            TicketActivityLog::log($tck3, $owner, 'assigned_team', null, 'Product Design & UI/UX');
+            TicketActivityLog::log($tck3, $owner, 'assigned_user', null, 'Elena Rostova');
+        }
 
         // Ticket 4: Resolved Ticket with Summary
         $tck4 = Ticket::firstOrCreate(
-            ['workspace_id' => $workspace->id, 'ticket_number' => 'TCK-1004'],
+            ['ticket_number' => 'TCK-1004'],
             [
+                'workspace_id' => $workspace->id,
                 'subject' => 'Student grade report PDF export character encoding glitch in Urdu names',
                 'description' => 'Transcripts exported as PDF displayed broken Arabic/Nastaliq glyphs for student names written in Urdu.',
                 'category_id' => $catBug->id,
@@ -916,14 +945,17 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now()->subDays(2),
             ]
         );
-        TicketActivityLog::log($tck4, $muhammadAli, 'created', null, 'Ticket created');
-        TicketActivityLog::log($tck4, $owner, 'assigned_user', null, 'Sarah Jenkins');
-        TicketActivityLog::log($tck4, $sarah, 'status_changed', 'in_progress', 'resolved');
+        if (!TicketActivityLog::where('ticket_id', $tck4->id)->exists()) {
+            TicketActivityLog::log($tck4, $muhammadAli, 'created', null, 'Ticket created');
+            TicketActivityLog::log($tck4, $owner, 'assigned_user', null, 'Sarah Jenkins');
+            TicketActivityLog::log($tck4, $sarah, 'status_changed', 'in_progress', 'resolved');
+        }
 
         // Ticket 5: General Support Ticket
         $tck5 = Ticket::firstOrCreate(
-            ['workspace_id' => $workspace->id, 'ticket_number' => 'TCK-1005'],
+            ['ticket_number' => 'TCK-1005'],
             [
+                'workspace_id' => $workspace->id,
                 'subject' => 'Request for secondary monitor and ergonomic keyboard setup',
                 'description' => 'Need an additional 27-inch 4K monitor and mechanical keyboard for the new workstation setup in MIS Room 302.',
                 'category_id' => $catGeneral->id,
@@ -934,7 +966,42 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now()->subHours(2),
             ]
         );
-        TicketActivityLog::log($tck5, $ubaid, 'created', null, 'Ticket created');
+        if (!TicketActivityLog::where('ticket_id', $tck5->id)->exists()) {
+            TicketActivityLog::log($tck5, $ubaid, 'created', null, 'Ticket created');
+        }
+
+        // Ticket 6: Ticket raised by Sara Requester
+        $tck6 = Ticket::firstOrCreate(
+            ['ticket_number' => 'TCK-1006'],
+            [
+                'workspace_id' => $workspace->id,
+                'subject' => 'Faculty Grade Portal submission timeout for Spring 2026',
+                'description' => 'When submitting midterm evaluation grades for Pathology Section B, the portal encounters a timeout and marks are not saved.',
+                'category_id' => $catBug->id,
+                'priority' => 'high',
+                'status' => 'in_progress',
+                'raised_by_user_id' => $requester->id,
+                'assigned_team_id' => $teamMis->id,
+                'assigned_to_user_id' => $khurram->id,
+                'due_by' => now()->addHours(12),
+                'created_at' => now()->subHours(5),
+            ]
+        );
+        if (!TicketActivityLog::where('ticket_id', $tck6->id)->exists()) {
+            TicketActivityLog::log($tck6, $requester, 'created', null, 'Ticket created with high priority');
+            TicketActivityLog::log($tck6, $khubaib, 'assigned_team', null, 'MIS');
+            TicketActivityLog::log($tck6, $khubaib, 'assigned_user', null, 'Khurram Ahmed');
+            TicketActivityLog::log($tck6, $khurram, 'status_changed', 'open', 'in_progress');
+        }
+
+        if (!TicketComment::where('ticket_id', $tck6->id)->exists()) {
+            TicketComment::create([
+                'ticket_id' => $tck6->id,
+                'user_id' => $khurram->id,
+                'body' => 'We have identified a table lock on grade records during concurrent submissions. Applying an index fix now.',
+                'is_internal_note' => false,
+            ]);
+        }
 
         // ==========================================
         // 14. SEED SAMPLE ACCESS REQUESTS

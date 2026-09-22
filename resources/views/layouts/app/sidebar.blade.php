@@ -6,6 +6,9 @@
     <body class="min-h-screen bg-white dark:bg-zinc-950 font-sans antialiased selection:bg-indigo-500 selection:text-white">
         
         <!-- Sidebar -->
+        @php
+            $isRequester = auth()->user()->isWorkspaceRequester($currentWorkspace);
+        @endphp
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 w-64">
             
             <!-- Workspace Brand / Switcher Header -->
@@ -19,7 +22,7 @@
                                 STMU MIS
                             </h2>
                             <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
-                                Portal
+                                {{ $isRequester ? 'Requester' : 'Portal' }}
                             </span>
                         </div>
                         <span class="text-[10px] text-zinc-500 dark:text-zinc-400 block truncate font-medium">
@@ -33,67 +36,69 @@
 
             <!-- Main Navigation Group -->
             <flux:sidebar.nav>
-                <flux:sidebar.group :heading="__('Workspace')" class="grid gap-0.5">
-                    <!-- Dashboard -->
-                    <flux:sidebar.item 
-                        icon="layout-grid" 
-                        :href="route('dashboard')" 
-                        :current="request()->routeIs('dashboard')" 
-                        wire:navigate
-                    >
-                        {{ __('Dashboard') }}
-                    </flux:sidebar.item>
-
-                    <!-- My Tasks -->
-                    <flux:sidebar.item 
-                        icon="clipboard-document-check" 
-                        :href="route('my-tasks')" 
-                        :current="request()->routeIs('my-tasks')" 
-                        wire:navigate
-                    >
-                        {{ __('My Tasks') }}
-                    </flux:sidebar.item>
-
-                    <!-- All Tasks (Board / List / Gantt) -->
-                    @if($currentWorkspace)
+                @if(!$isRequester)
+                    <flux:sidebar.group :heading="__('Workspace')" class="grid gap-0.5">
+                        <!-- Dashboard -->
                         <flux:sidebar.item 
-                            icon="squares-2x2" 
-                            :href="route('workspace.tasks', ['workspace' => $currentWorkspace->slug])" 
-                            :current="request()->routeIs('workspace.tasks')" 
+                            icon="layout-grid" 
+                            :href="route('dashboard')" 
+                            :current="request()->routeIs('dashboard')" 
                             wire:navigate
                         >
-                            {{ __('Task Board') }}
+                            {{ __('Dashboard') }}
                         </flux:sidebar.item>
 
-                        <!-- AI Assistant -->
+                        <!-- My Tasks -->
                         <flux:sidebar.item 
-                            icon="sparkles" 
-                            :href="route('workspace.ai', ['workspace' => $currentWorkspace->slug])" 
-                            :current="request()->routeIs('workspace.ai')" 
+                            icon="clipboard-document-check" 
+                            :href="route('my-tasks')" 
+                            :current="request()->routeIs('my-tasks')" 
                             wire:navigate
-                            class="group relative"
                         >
-                            <span class="flex items-center justify-between w-full">
-                                <span>{{ __('AI Assistant') }}</span>
-                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-600 dark:text-purple-400">Gemini</span>
-                            </span>
+                            {{ __('My Tasks') }}
                         </flux:sidebar.item>
 
-                        <!-- Teams & Members -->
-                        <flux:sidebar.item 
-                            icon="user-group" 
-                            :href="route('workspace.teams', ['workspace' => $currentWorkspace->slug])" 
-                            :current="request()->routeIs('workspace.teams')" 
-                            wire:navigate
-                        >
-                            {{ __('Teams & People') }}
-                        </flux:sidebar.item>
-                    @endif
-                </flux:sidebar.group>
+                        <!-- All Tasks (Board / List / Gantt) -->
+                        @if($currentWorkspace)
+                            <flux:sidebar.item 
+                                icon="squares-2x2" 
+                                :href="route('workspace.tasks', ['workspace' => $currentWorkspace->slug])" 
+                                :current="request()->routeIs('workspace.tasks')" 
+                                wire:navigate
+                            >
+                                {{ __('Task Board') }}
+                            </flux:sidebar.item>
+
+                            <!-- AI Assistant -->
+                            <flux:sidebar.item 
+                                icon="sparkles" 
+                                :href="route('workspace.ai', ['workspace' => $currentWorkspace->slug])" 
+                                :current="request()->routeIs('workspace.ai')" 
+                                wire:navigate
+                                class="group relative"
+                            >
+                                <span class="flex items-center justify-between w-full">
+                                    <span>{{ __('AI Assistant') }}</span>
+                                    <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-600 dark:text-purple-400">Gemini</span>
+                                </span>
+                            </flux:sidebar.item>
+
+                            <!-- Teams & Members -->
+                            <flux:sidebar.item 
+                                icon="user-group" 
+                                :href="route('workspace.teams', ['workspace' => $currentWorkspace->slug])" 
+                                :current="request()->routeIs('workspace.teams')" 
+                                wire:navigate
+                            >
+                                {{ __('Teams & People') }}
+                            </flux:sidebar.item>
+                        @endif
+                    </flux:sidebar.group>
+                @endif
 
                 <!-- Support & Helpdesk -->
                 @if($currentWorkspace)
-                    <flux:sidebar.group :heading="__('Support & Helpdesk')" class="grid gap-0.5 mt-3">
+                    <flux:sidebar.group :heading="$isRequester ? __('Support Tickets') : __('Support & Helpdesk')" class="grid gap-0.5 {{ $isRequester ? '' : 'mt-3' }}">
                         <!-- My Tickets -->
                         <flux:sidebar.item 
                             icon="ticket" 
@@ -114,7 +119,7 @@
                             {{ __('Raise Ticket') }}
                         </flux:sidebar.item>
 
-                        @if(auth()->user()->isWorkspaceAdmin($currentWorkspace))
+                        @if(!$isRequester && auth()->user()->isWorkspaceAdmin($currentWorkspace))
                             <!-- Triage Queue -->
                             <flux:sidebar.item 
                                 icon="inbox-stack" 
@@ -179,7 +184,7 @@
                 @endif
 
                 <!-- Spaces Hierarchy Tree -->
-                @if(isset($workspaceSpaces) && $workspaceSpaces->count() > 0)
+                @if(!$isRequester && isset($workspaceSpaces) && $workspaceSpaces->count() > 0)
                     <flux:sidebar.group :heading="__('Spaces & Folders')" class="grid gap-0.5 mt-4">
                         @foreach($workspaceSpaces as $sp)
                             <flux:sidebar.item 
@@ -212,7 +217,7 @@
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
             <!-- Search Quick Action -->
-            @if($currentWorkspace)
+            @if(!$isRequester && $currentWorkspace)
                 <div class="hidden sm:flex items-center gap-2 max-w-md w-full ml-2">
                     <a 
                         href="{{ route('workspace.ai', ['workspace' => $currentWorkspace->slug]) }}" 

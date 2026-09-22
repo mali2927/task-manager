@@ -25,6 +25,11 @@ class MyTasks extends Component
         } else {
             $this->workspace = $workspace;
         }
+
+        if ($this->workspace && Auth::user()?->isWorkspaceRequester($this->workspace)) {
+            $this->redirect(route('workspace.tickets.my', ['workspace' => $this->workspace->slug]), navigate: true);
+            return;
+        }
     }
 
     public function generateAiDigest(GeminiService $gemini): void

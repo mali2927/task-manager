@@ -59,6 +59,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // 8. CSV Export of Workspace Tasks
     Route::get('/workspace/{workspace:slug}/export', function (Workspace $workspace) {
+        abort_if(Auth::user()->isWorkspaceRequester($workspace), 403, 'Unauthorized. Requesters cannot export workspace internal tasks.');
+
         $tasks = Task::whereHas('taskList.project.space', fn ($q) => $q->where('workspace_id', $workspace->id))
             ->with(['status', 'assignees', 'taskList.project.space', 'checklists'])
             ->get();
@@ -99,6 +101,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // 9. CSV Export of Workspace Tickets
     Route::get('/workspace/{workspace:slug}/tickets/export', function (Workspace $workspace) {
+        abort_if(Auth::user()->isWorkspaceRequester($workspace), 403, 'Unauthorized.');
+
         $tickets = Ticket::where('workspace_id', $workspace->id)
             ->with(['category', 'raisedBy', 'assignedTeam', 'assignedTo'])
             ->get();

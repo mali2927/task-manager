@@ -64,6 +64,11 @@ class TaskManager extends Component
 
     public function mount(?string $view = null): void
     {
+        if (isset($this->workspace) && Auth::user()?->isWorkspaceRequester($this->workspace)) {
+            $this->redirect(route('workspace.tickets.my', ['workspace' => $this->workspace->slug]), navigate: true);
+            return;
+        }
+
         if ($view && in_array($view, ['list', 'board', 'calendar', 'gantt'])) {
             $this->activeView = $view;
         }

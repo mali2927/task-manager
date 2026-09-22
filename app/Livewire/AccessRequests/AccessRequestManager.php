@@ -195,7 +195,7 @@ class AccessRequestManager extends Component
         $this->validate([
             'newUserName' => 'required|string|max:255',
             'newUserEmail' => 'required|email|max:255|unique:users,email',
-            'newUserRole' => 'required|in:admin,member,guest',
+            'newUserRole' => 'required|in:admin,member,guest,requester',
             'newUserJobTitle' => 'nullable|string|max:100',
         ]);
 
@@ -204,7 +204,7 @@ class AccessRequestManager extends Component
             'name' => trim($this->newUserName),
             'email' => strtolower(trim($this->newUserEmail)),
             'password' => Hash::make($randomPassword),
-            'job_title' => trim($this->newUserJobTitle) ?: 'Team Member',
+            'job_title' => trim($this->newUserJobTitle) ?: (in_array($this->newUserRole, ['guest', 'requester']) ? 'Requester' : 'Team Member'),
             'timezone' => 'UTC',
         ]);
 
@@ -216,7 +216,7 @@ class AccessRequestManager extends Component
 
         $spatieRoleName = match ($this->newUserRole) {
             'admin' => 'Admin',
-            'guest' => 'Guest',
+            'guest', 'requester' => \Spatie\Permission\Models\Role::where('name', 'Requester')->exists() ? 'Requester' : 'Guest',
             default => 'Member',
         };
         if (\Spatie\Permission\Models\Role::where('name', $spatieRoleName)->exists()) {
