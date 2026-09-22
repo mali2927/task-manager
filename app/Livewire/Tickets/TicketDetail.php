@@ -33,6 +33,7 @@ class TicketDetail extends Component
     // Editable status & priority
     public string $status = 'open';
     public string $priority = 'normal';
+    public ?int $projectId = null;
     public ?int $assignedTeamId = null;
     public ?int $assignedToUserId = null;
 
@@ -63,6 +64,7 @@ class TicketDetail extends Component
             $this->isOpen = true;
             $this->status = $this->ticket->status;
             $this->priority = $this->ticket->priority;
+            $this->projectId = $this->ticket->project_id;
             $this->assignedTeamId = $this->ticket->assigned_team_id;
             $this->assignedToUserId = $this->ticket->assigned_to_user_id;
 
@@ -89,6 +91,7 @@ class TicketDetail extends Component
         $this->ticket = Ticket::with([
             'workspace',
             'category',
+            'project.space',
             'raisedBy',
             'assignedTeam.members',
             'assignedTo',
@@ -396,6 +399,23 @@ class TicketDetail extends Component
         $this->loadTicket();
     }
 
+    public function updateProject(?int $newProjectId): void
+    {
+        if (!$this->ticket) return;
+
+        $user = Auth::user();
+        $oldProject = $this->ticket->project?->name;
+        $newProject = $newProjectId ? \App\Models\Project::find($newProjectId) : null;
+
+        $this->ticket->update(['project_id' => $newProjectId]);
+        $this->projectId = $newProjectId;
+
+        TicketActivityLog::log($this->ticket, $user, 'project_changed', $oldProject, $newProject?->name);
+
+        $this->loadTicket();
+        $this->dispatch('ticket-updated');
+    }
+
     public function render()
     {
         $user = Auth::user();
@@ -410,11 +430,13 @@ class TicketDetail extends Component
         $canManageAssignment = $workspace ? $user->isWorkspaceAdmin($workspace) : false;
 
         $teams = $workspace ? $workspace->teams()->with('members')->get() : collect();
+        $projects = $workspace ? $workspace->projects()->with('space')->orderBy('name')->get() : collect();
 
         return view('livewire.tickets.ticket-detail', [
             'isStaff' => $isStaff,
             'canManageAssignment' => $canManageAssignment,
             'teams' => $teams,
+            'projects' => $projects,
         ]);
     }
 }

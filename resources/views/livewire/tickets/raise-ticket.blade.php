@@ -65,8 +65,27 @@
                 @error('subject') <span class="text-[11px] text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
 
-            <!-- Category & Priority Row -->
+            <!-- Project & Category Row -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Related Project -->
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                        Related Project <span class="text-zinc-400 font-normal">(Optional)</span>
+                    </label>
+                    <select 
+                        wire:model="projectId"
+                        class="w-full text-xs px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
+                    >
+                        <option value="">General / No Project</option>
+                        @foreach($projects as $proj)
+                            <option value="{{ $proj->id }}">
+                                {{ $proj->name }} @if($proj->space)({{ $proj->space->name }})@endif
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('projectId') <span class="text-[11px] text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                </div>
+
                 <!-- Category -->
                 <div>
                     <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
@@ -83,30 +102,30 @@
                     </select>
                     @error('categoryId') <span class="text-[11px] text-red-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
+            </div>
 
-                <!-- Priority Selector with SLA -->
-                <div>
-                    <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                        Priority &amp; SLA
-                    </label>
-                    <div class="grid grid-cols-4 gap-2">
-                        @foreach([
-                            'urgent' => ['label' => 'Urgent', 'sla' => '4 hrs', 'color' => 'peer-checked:border-red-500 peer-checked:bg-red-500/10 peer-checked:text-red-500'],
-                            'high' => ['label' => 'High', 'sla' => '24 hrs', 'color' => 'peer-checked:border-amber-500 peer-checked:bg-amber-500/10 peer-checked:text-amber-500'],
-                            'normal' => ['label' => 'Normal', 'sla' => '3 days', 'color' => 'peer-checked:border-blue-500 peer-checked:bg-blue-500/10 peer-checked:text-blue-500'],
-                            'low' => ['label' => 'Low', 'sla' => '5 days', 'color' => 'peer-checked:border-zinc-500 peer-checked:bg-zinc-500/10 peer-checked:text-zinc-400'],
-                        ] as $val => $meta)
-                            <label class="cursor-pointer">
-                                <input type="radio" wire:model="priority" value="{{ $val }}" class="sr-only peer" />
-                                <div class="px-2 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 text-center transition-all hover:bg-zinc-50 dark:hover:bg-zinc-800/40 {{ $meta['color'] }}">
-                                    <div class="text-[11px] font-bold">{{ $meta['label'] }}</div>
-                                    <div class="text-[9px] text-zinc-400">{{ $meta['sla'] }}</div>
-                                </div>
-                            </label>
-                        @endforeach
-                    </div>
-                    @error('priority') <span class="text-[11px] text-red-500 mt-1 block">{{ $message }}</span> @enderror
+            <!-- Priority Selector with SLA -->
+            <div>
+                <label class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                    Priority &amp; SLA
+                </label>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    @foreach([
+                        'urgent' => ['label' => 'Urgent', 'sla' => '4 hrs', 'color' => 'peer-checked:border-red-500 peer-checked:bg-red-500/10 peer-checked:text-red-500'],
+                        'high' => ['label' => 'High', 'sla' => '24 hrs', 'color' => 'peer-checked:border-amber-500 peer-checked:bg-amber-500/10 peer-checked:text-amber-500'],
+                        'normal' => ['label' => 'Normal', 'sla' => '3 days', 'color' => 'peer-checked:border-blue-500 peer-checked:bg-blue-500/10 peer-checked:text-blue-500'],
+                        'low' => ['label' => 'Low', 'sla' => '5 days', 'color' => 'peer-checked:border-zinc-500 peer-checked:bg-zinc-500/10 peer-checked:text-zinc-400'],
+                    ] as $val => $meta)
+                        <label class="cursor-pointer">
+                            <input type="radio" wire:model="priority" value="{{ $val }}" class="sr-only peer" />
+                            <div class="px-2 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 text-center transition-all hover:bg-zinc-50 dark:hover:bg-zinc-800/40 {{ $meta['color'] }}">
+                                <div class="text-[11px] font-bold">{{ $meta['label'] }}</div>
+                                <div class="text-[9px] text-zinc-400">{{ $meta['sla'] }}</div>
+                            </div>
+                        </label>
+                    @endforeach
                 </div>
+                @error('priority') <span class="text-[11px] text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
 
             <!-- Description -->

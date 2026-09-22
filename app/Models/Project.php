@@ -45,4 +45,9 @@ class Project extends Model
     {
         return $this->hasManyThrough(Task::class, TaskList::class);
     }
+
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
+    }
 }

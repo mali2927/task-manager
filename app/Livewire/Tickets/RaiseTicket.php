@@ -4,6 +4,7 @@ namespace App\Livewire\Tickets;
 
 use App\Mail\TicketRaisedAdminMail;
 use App\Models\AppNotification;
+use App\Models\Project;
 use App\Models\Ticket;
 use App\Models\TicketActivityLog;
 use App\Models\TicketAttachment;
@@ -25,6 +26,7 @@ class RaiseTicket extends Component
     public string $subject = '';
     public string $description = '';
     public ?int $categoryId = null;
+    public ?int $projectId = null;
     public string $priority = 'normal'; // urgent, high, normal, low
     public array $attachments = [];
 
@@ -47,6 +49,7 @@ class RaiseTicket extends Component
             'subject' => 'required|string|max:255',
             'description' => 'required|string|min:10',
             'categoryId' => 'nullable|exists:ticket_categories,id',
+            'projectId' => 'nullable|exists:projects,id',
             'priority' => 'required|in:urgent,high,normal,low',
             'attachments.*' => 'nullable|file|max:10240', // 10MB each
         ]);
@@ -65,6 +68,7 @@ class RaiseTicket extends Component
             'subject' => trim($this->subject),
             'description' => trim($this->description),
             'category_id' => $this->categoryId,
+            'project_id' => $this->projectId,
             'priority' => $this->priority,
             'status' => 'open',
             'raised_by_user_id' => $user->id,
@@ -133,9 +137,11 @@ class RaiseTicket extends Component
     public function render()
     {
         $categories = $this->workspace->ticketCategories()->get();
+        $projects = Project::whereHas('space', fn ($q) => $q->where('workspace_id', $this->workspace->id))->orderBy('name')->get();
 
         return view('livewire.tickets.raise-ticket', [
             'categories' => $categories,
+            'projects' => $projects,
         ]);
     }
 }

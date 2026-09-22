@@ -19,6 +19,7 @@ class Ticket extends Model
         'subject',
         'description',
         'category_id',
+        'project_id',
         'priority',
         'status',
         'raised_by_user_id',
@@ -47,6 +48,11 @@ class Ticket extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(TicketCategory::class, 'category_id');
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
     }
 
     public function raisedBy(): BelongsTo

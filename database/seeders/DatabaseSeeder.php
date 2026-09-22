@@ -835,6 +835,24 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        $catFeature = TicketCategory::firstOrCreate(
+            ['workspace_id' => $workspace->id, 'name' => 'Feature Request'],
+            [
+                'description' => 'New module proposals and capability additions.',
+                'default_team_id' => $teamEng->id,
+            ]
+        );
+
+        $catAccess = TicketCategory::firstOrCreate(
+            ['workspace_id' => $workspace->id, 'name' => 'System & Access Permissions'],
+            [
+                'description' => 'Role assignment, portal permissions, and access delegations.',
+                'default_team_id' => $teamMis->id,
+            ]
+        );
+
+        // ==========================================
+        // 13. SEED SAMPLE TICKETS & AUDIT TRAIL
         // ==========================================
         // 13. SEED SAMPLE TICKETS & AUDIT TRAIL
         // ==========================================
@@ -843,6 +861,7 @@ class DatabaseSeeder extends Seeder
             ['ticket_number' => 'TCK-1001'],
             [
                 'workspace_id' => $workspace->id,
+                'project_id' => $projAdmission->id,
                 'subject' => 'Critical: Biometric verification service failure during peak student intake',
                 'description' => "Students submitting their admission applications are receiving timeout errors when authenticating via NADRA Verisys. The API gateway returns HTTP 504 Gateway Timeout intermittently.\n\nImmediate triage required to prevent drop-off in active admission intake.",
                 'category_id' => $catBug->id,
@@ -855,6 +874,7 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now()->subHours(6),
             ]
         );
+        $tck1->update(['project_id' => $projAdmission->id]);
         if (!TicketActivityLog::where('ticket_id', $tck1->id)->exists()) {
             TicketActivityLog::log($tck1, $hamza, 'created', null, 'Ticket created with urgent priority');
         }
@@ -864,6 +884,7 @@ class DatabaseSeeder extends Seeder
             ['ticket_number' => 'TCK-1002'],
             [
                 'workspace_id' => $workspace->id,
+                'project_id' => $projAdmission->id,
                 'subject' => 'VPN Gateway certificate expiration affecting remote developers',
                 'description' => "The primary WireGuard SSL certificate for the engineering subnet will expire within 48 hours. Team members working remotely are unable to connect to the staging cluster.",
                 'category_id' => $catIt->id,
@@ -876,6 +897,7 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now()->subHours(6),
             ]
         );
+        $tck2->update(['project_id' => $projAdmission->id]);
         if (!TicketActivityLog::where('ticket_id', $tck2->id)->exists()) {
             TicketActivityLog::log($tck2, $ubaid, 'created', null, 'Ticket created with high priority');
             TicketActivityLog::log($tck2, $khubaib, 'assigned_team', null, 'MIS');
@@ -908,6 +930,7 @@ class DatabaseSeeder extends Seeder
             ['ticket_number' => 'TCK-1003'],
             [
                 'workspace_id' => $workspace->id,
+                'project_id' => $projLms->id,
                 'subject' => 'Mobile navigation drawer closes unexpectedly on iOS Safari',
                 'description' => 'When tapping on the filter drawer in the student admissions review screen on Safari iOS 17.5, the drawer flickers and dismisses without applying chosen filter values.',
                 'category_id' => $catUi->id,
@@ -920,6 +943,7 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now()->subDay(),
             ]
         );
+        $tck3->update(['project_id' => $projLms->id]);
         if (!TicketActivityLog::where('ticket_id', $tck3->id)->exists()) {
             TicketActivityLog::log($tck3, $aliAltaf, 'created', null, 'Ticket created');
             TicketActivityLog::log($tck3, $owner, 'assigned_team', null, 'Product Design & UI/UX');
@@ -931,6 +955,7 @@ class DatabaseSeeder extends Seeder
             ['ticket_number' => 'TCK-1004'],
             [
                 'workspace_id' => $workspace->id,
+                'project_id' => $projAdmission->id,
                 'subject' => 'Student grade report PDF export character encoding glitch in Urdu names',
                 'description' => 'Transcripts exported as PDF displayed broken Arabic/Nastaliq glyphs for student names written in Urdu.',
                 'category_id' => $catBug->id,
@@ -945,6 +970,7 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now()->subDays(2),
             ]
         );
+        $tck4->update(['project_id' => $projAdmission->id]);
         if (!TicketActivityLog::where('ticket_id', $tck4->id)->exists()) {
             TicketActivityLog::log($tck4, $muhammadAli, 'created', null, 'Ticket created');
             TicketActivityLog::log($tck4, $owner, 'assigned_user', null, 'Sarah Jenkins');
@@ -956,6 +982,7 @@ class DatabaseSeeder extends Seeder
             ['ticket_number' => 'TCK-1005'],
             [
                 'workspace_id' => $workspace->id,
+                'project_id' => null,
                 'subject' => 'Request for secondary monitor and ergonomic keyboard setup',
                 'description' => 'Need an additional 27-inch 4K monitor and mechanical keyboard for the new workstation setup in MIS Room 302.',
                 'category_id' => $catGeneral->id,
@@ -975,6 +1002,7 @@ class DatabaseSeeder extends Seeder
             ['ticket_number' => 'TCK-1006'],
             [
                 'workspace_id' => $workspace->id,
+                'project_id' => $projAdmission->id,
                 'subject' => 'Faculty Grade Portal submission timeout for Spring 2026',
                 'description' => 'When submitting midterm evaluation grades for Pathology Section B, the portal encounters a timeout and marks are not saved.',
                 'category_id' => $catBug->id,
@@ -987,6 +1015,7 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now()->subHours(5),
             ]
         );
+        $tck6->update(['project_id' => $projAdmission->id]);
         if (!TicketActivityLog::where('ticket_id', $tck6->id)->exists()) {
             TicketActivityLog::log($tck6, $requester, 'created', null, 'Ticket created with high priority');
             TicketActivityLog::log($tck6, $khubaib, 'assigned_team', null, 'MIS');
@@ -1002,6 +1031,211 @@ class DatabaseSeeder extends Seeder
                 'is_internal_note' => false,
             ]);
         }
+
+        // --- ADDITIONAL SEPTEMBER 2026 TICKETS (Current Month) ---
+        $tck7 = Ticket::firstOrCreate(
+            ['ticket_number' => 'TCK-1007'],
+            [
+                'workspace_id' => $workspace->id,
+                'project_id' => $projLms->id,
+                'subject' => 'Offline lecture video caching feature request for mobile app',
+                'description' => 'Medical students on hospital clinical rotations requested an offline download button for recorded surgery lecture modules.',
+                'category_id' => $catFeature->id,
+                'priority' => 'normal',
+                'status' => 'resolved',
+                'raised_by_user_id' => $requester->id,
+                'assigned_team_id' => $teamEng->id,
+                'assigned_to_user_id' => $sarah->id,
+                'resolution_summary' => 'Implemented SQLite local encrypted storage cache with background download manager.',
+                'resolved_at' => \Carbon\Carbon::create(2026, 9, 8, 16, 0, 0),
+                'created_at' => \Carbon\Carbon::create(2026, 9, 5, 11, 30, 0),
+            ]
+        );
+
+        $tck8 = Ticket::firstOrCreate(
+            ['ticket_number' => 'TCK-1008'],
+            [
+                'workspace_id' => $workspace->id,
+                'project_id' => $projLms->id,
+                'subject' => 'Push notification sound fails to trigger on Android 15',
+                'description' => 'Urgent exam announcement push alerts do not produce audible notification sound on latest Android builds.',
+                'category_id' => $catBug->id,
+                'priority' => 'normal',
+                'status' => 'open',
+                'raised_by_user_id' => $hamza->id,
+                'created_at' => \Carbon\Carbon::create(2026, 9, 14, 9, 15, 0),
+            ]
+        );
+
+        $tck9 = Ticket::firstOrCreate(
+            ['ticket_number' => 'TCK-1009'],
+            [
+                'workspace_id' => $workspace->id,
+                'project_id' => $projOric->id,
+                'subject' => 'Principal Investigator portal permission grant for Dr. Ayesha',
+                'description' => 'Need PI elevated permissions assigned to grant submission workspace for NIH clinical trials funding application.',
+                'category_id' => $catAccess->id,
+                'priority' => 'high',
+                'status' => 'resolved',
+                'raised_by_user_id' => $muhammadAli->id,
+                'assigned_team_id' => $teamMis->id,
+                'assigned_to_user_id' => $khurram->id,
+                'resolution_summary' => 'Granted ORIC PI workspace credentials and configured two-factor approval routing.',
+                'resolved_at' => \Carbon\Carbon::create(2026, 9, 11, 15, 0, 0),
+                'created_at' => \Carbon\Carbon::create(2026, 9, 10, 10, 0, 0),
+            ]
+        );
+
+        $tck17 = Ticket::firstOrCreate(
+            ['ticket_number' => 'TCK-1017'],
+            [
+                'workspace_id' => $workspace->id,
+                'project_id' => $projOric->id,
+                'subject' => 'Budget breakdown Excel macro import throwing formula parse error',
+                'description' => 'When researchers upload annual grant spending forecasts, subtotal formulas in xlsx format fail validation.',
+                'category_id' => $catBug->id,
+                'priority' => 'normal',
+                'status' => 'in_progress',
+                'raised_by_user_id' => $ubaid->id,
+                'assigned_team_id' => $teamEng->id,
+                'assigned_to_user_id' => $sarah->id,
+                'created_at' => \Carbon\Carbon::create(2026, 9, 18, 14, 20, 0),
+            ]
+        );
+
+        // --- AUGUST 2026 TICKETS (Previous Month Comparative Baseline) ---
+        $tck10 = Ticket::firstOrCreate(
+            ['ticket_number' => 'TCK-1010'],
+            [
+                'workspace_id' => $workspace->id,
+                'project_id' => $projAdmission->id,
+                'subject' => 'Applicant CNIC duplicate validation failure in batch uploads',
+                'description' => 'Batch applicant ingestion script failed to deduplicate Pakistani CNIC numbers with hyphenation.',
+                'category_id' => $catBug->id,
+                'priority' => 'high',
+                'status' => 'resolved',
+                'raised_by_user_id' => $hamza->id,
+                'assigned_team_id' => $teamEng->id,
+                'assigned_to_user_id' => $sarah->id,
+                'resolution_summary' => 'Added regex normalizer stripping hyphens prior to database unique index constraint verification.',
+                'resolved_at' => \Carbon\Carbon::create(2026, 8, 12, 17, 0, 0),
+                'created_at' => \Carbon\Carbon::create(2026, 8, 10, 14, 0, 0),
+            ]
+        );
+
+        $tck11 = Ticket::firstOrCreate(
+            ['ticket_number' => 'TCK-1011'],
+            [
+                'workspace_id' => $workspace->id,
+                'project_id' => $projAdmission->id,
+                'subject' => 'Fee voucher 1Link payment reconciliation automated webhook',
+                'description' => 'Kuickpay / 1Link instant payment reconciliation webhook implementation for admissions challans.',
+                'category_id' => $catFeature->id,
+                'priority' => 'normal',
+                'status' => 'resolved',
+                'raised_by_user_id' => $ubaid->id,
+                'assigned_team_id' => $teamEng->id,
+                'assigned_to_user_id' => $sarah->id,
+                'resolution_summary' => 'Integrated secure HMAC webhook listener with real-time fee payment status updates.',
+                'resolved_at' => \Carbon\Carbon::create(2026, 8, 18, 11, 0, 0),
+                'created_at' => \Carbon\Carbon::create(2026, 8, 15, 9, 30, 0),
+            ]
+        );
+
+        $tck12 = Ticket::firstOrCreate(
+            ['ticket_number' => 'TCK-1012'],
+            [
+                'workspace_id' => $workspace->id,
+                'project_id' => $projLms->id,
+                'subject' => 'Dark mode contrast issues on attendance calendar view',
+                'description' => 'Certain calendar dates had low contrast ratios failing WCAG 2.1 AA standards in dark mode.',
+                'category_id' => $catUi->id,
+                'priority' => 'normal',
+                'status' => 'resolved',
+                'raised_by_user_id' => $aliAltaf->id,
+                'assigned_team_id' => $teamDesign->id,
+                'assigned_to_user_id' => $elena->id,
+                'resolution_summary' => 'Updated Tailwind palette tokens to zinc-400 and verified 4.5:1 contrast ratio across displays.',
+                'resolved_at' => \Carbon\Carbon::create(2026, 8, 14, 16, 0, 0),
+                'created_at' => \Carbon\Carbon::create(2026, 8, 12, 10, 0, 0),
+            ]
+        );
+
+        $tck13 = Ticket::firstOrCreate(
+            ['ticket_number' => 'TCK-1013'],
+            [
+                'workspace_id' => $workspace->id,
+                'project_id' => $projLms->id,
+                'subject' => 'Push notification token renewal deadlock during token refresh',
+                'description' => 'FCM registration tokens were being refreshed concurrently causing occasional lock wait timeouts.',
+                'category_id' => $catBug->id,
+                'priority' => 'high',
+                'status' => 'resolved',
+                'raised_by_user_id' => $hamza->id,
+                'assigned_team_id' => $teamEng->id,
+                'assigned_to_user_id' => $sarah->id,
+                'resolution_summary' => 'Implemented atomic cache lock during token refresh cycle.',
+                'resolved_at' => \Carbon\Carbon::create(2026, 8, 21, 14, 0, 0),
+                'created_at' => \Carbon\Carbon::create(2026, 8, 20, 11, 0, 0),
+            ]
+        );
+
+        $tck14 = Ticket::firstOrCreate(
+            ['ticket_number' => 'TCK-1014'],
+            [
+                'workspace_id' => $workspace->id,
+                'project_id' => $projOric->id,
+                'subject' => 'Annual research audit report submission role permission for Dean',
+                'description' => 'Dean of Medical Faculty requires audit review approval role in the ORIC grant workflow.',
+                'category_id' => $catAccess->id,
+                'priority' => 'normal',
+                'status' => 'resolved',
+                'raised_by_user_id' => $muhammadAli->id,
+                'assigned_team_id' => $teamMis->id,
+                'assigned_to_user_id' => $khurram->id,
+                'resolution_summary' => 'Assigned custom Executive Reviewer RBAC role.',
+                'resolved_at' => \Carbon\Carbon::create(2026, 8, 19, 12, 0, 0),
+                'created_at' => \Carbon\Carbon::create(2026, 8, 18, 9, 0, 0),
+            ]
+        );
+
+        $tck15 = Ticket::firstOrCreate(
+            ['ticket_number' => 'TCK-1015'],
+            [
+                'workspace_id' => $workspace->id,
+                'project_id' => $projOric->id,
+                'subject' => 'Research lab network switch firmware upgrade and VLAN isolation',
+                'description' => 'Cisco Catalyst switch in Block D research lab requires VLAN segmentation for HIPAA/IRB compliance.',
+                'category_id' => $catIt->id,
+                'priority' => 'high',
+                'status' => 'resolved',
+                'raised_by_user_id' => $ubaid->id,
+                'assigned_team_id' => $teamMis->id,
+                'assigned_to_user_id' => $khurram->id,
+                'resolution_summary' => 'Applied firmware 17.9.4 and configured 802.1Q tagged VLAN 120 with strict firewall rules.',
+                'resolved_at' => \Carbon\Carbon::create(2026, 8, 26, 18, 0, 0),
+                'created_at' => \Carbon\Carbon::create(2026, 8, 25, 14, 0, 0),
+            ]
+        );
+
+        $tck16 = Ticket::firstOrCreate(
+            ['ticket_number' => 'TCK-1016'],
+            [
+                'workspace_id' => $workspace->id,
+                'project_id' => null,
+                'subject' => 'Main auditorium AV projector HDMI over IP extender replacement',
+                'description' => 'Video feed in Auditorium 1 flickers during medical conferences when transmitting 4K presentations.',
+                'category_id' => $catIt->id,
+                'priority' => 'low',
+                'status' => 'resolved',
+                'raised_by_user_id' => $requester->id,
+                'assigned_team_id' => $teamMis->id,
+                'assigned_to_user_id' => $khurram->id,
+                'resolution_summary' => 'Replaced faulty transceiver balun and tested with 4K60Hz HDR test pattern.',
+                'resolved_at' => \Carbon\Carbon::create(2026, 8, 29, 15, 0, 0),
+                'created_at' => \Carbon\Carbon::create(2026, 8, 28, 10, 0, 0),
+            ]
+        );
 
         // ==========================================
         // 14. SEED SAMPLE ACCESS REQUESTS

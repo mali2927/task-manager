@@ -189,6 +189,743 @@
         </div>
     @endif
 
+    <!-- ========================================================================= -->
+    <!-- INTERACTIVE PROJECT INFLUX & COMPARATIVE ANALYTICS HUB                     -->
+    <!-- ========================================================================= -->
+    <div class="space-y-6">
+        
+        <!-- Interactive Time-Travel & Analytics Toolbar -->
+        <div class="rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/90 p-5 shadow-xs">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                
+                <!-- Left Title & Period Indicator -->
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                        <span class="p-1.5 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </span>
+                        <h2 class="text-base font-black text-zinc-900 dark:text-white tracking-tight">
+                            Interactive Influx &amp; Workload Analytics
+                        </h2>
+                    </div>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400 flex flex-wrap items-center gap-1.5">
+                        <span>Comparing</span>
+                        <strong class="text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.2 rounded border border-indigo-200 dark:border-indigo-800/60 font-semibold">
+                            {{ $timeBoundaries['label'] }}
+                        </strong>
+                        <span>vs previous period</span>
+                        <strong class="text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800/80 px-1.5 py-0.2 rounded border border-zinc-200 dark:border-zinc-700 font-medium">
+                            {{ $timeBoundaries['prev_label'] }}
+                        </strong>
+                    </p>
+                </div>
+
+                <!-- Right Controls: Filter Pills, Selectors, View Toggles -->
+                <div class="flex flex-wrap items-center gap-2.5">
+                    
+                    <!-- Time Granularity Switcher Pills -->
+                    <div class="inline-flex items-center p-1 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700/80 text-xs">
+                        <button 
+                            wire:click="setTimeRange('month')"
+                            class="px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $timeRange === 'month' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white' }}"
+                        >
+                            Month-Wise
+                        </button>
+                        <button 
+                            wire:click="setTimeRange('last_month')"
+                            class="px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $timeRange === 'last_month' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white' }}"
+                        >
+                            Last Month
+                        </button>
+                        <button 
+                            wire:click="setTimeRange('year')"
+                            class="px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $timeRange === 'year' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white' }}"
+                        >
+                            Year-Wise
+                        </button>
+                        <button 
+                            wire:click="setTimeRange('all')"
+                            class="px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $timeRange === 'all' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white' }}"
+                        >
+                            12 Months
+                        </button>
+                    </div>
+
+                    <!-- Year Selector -->
+                    <select 
+                        wire:model.live="selectedYear"
+                        class="text-xs font-semibold rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 py-1.5 px-2.5 shadow-xs focus:ring-1 focus:ring-indigo-500"
+                        title="Select Year"
+                    >
+                        @foreach([2024, 2025, 2026, 2027] as $yr)
+                            <option value="{{ $yr }}">{{ $yr }}</option>
+                        @endforeach
+                    </select>
+
+                    <!-- Month Selector (when in month view) -->
+                    @if(in_array($timeRange, ['month', 'last_month']))
+                        <select 
+                            wire:model.live="selectedMonth"
+                            class="text-xs font-semibold rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 py-1.5 px-2.5 shadow-xs focus:ring-1 focus:ring-indigo-500"
+                            title="Select Month"
+                        >
+                            @for($m = 1; $m <= 12; $m++)
+                                <option value="{{ $m }}">
+                                    {{ \Carbon\Carbon::create(2026, $m, 1)->format('M (F)') }}
+                                </option>
+                            @endfor
+                        </select>
+                    @endif
+
+                    <!-- Project Filter Dropdown -->
+                    <select 
+                        wire:model.live="filterProjectId"
+                        class="text-xs font-semibold rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 py-1.5 px-2.5 shadow-xs focus:ring-1 focus:ring-indigo-500 max-w-[170px] truncate"
+                        title="Filter by Project"
+                    >
+                        <option value="">All Projects Scope</option>
+                        @foreach($workspaceProjects as $p)
+                            <option value="{{ $p->id }}">{{ $p->name }}</option>
+                        @endforeach
+                    </select>
+
+                    <!-- Chart Style Toggle (Line vs Bar) -->
+                    <div class="inline-flex items-center p-1 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700/80 text-xs">
+                        <button 
+                            wire:click="setChartType('line')"
+                            class="p-1.5 rounded-lg transition-colors cursor-pointer {{ $chartType === 'line' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200' }}"
+                            title="Line Curve View"
+                        >
+                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                            </svg>
+                        </button>
+                        <button 
+                            wire:click="setChartType('bar')"
+                            class="p-1.5 rounded-lg transition-colors cursor-pointer {{ $chartType === 'bar' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200' }}"
+                            title="Bar Columns View"
+                        >
+                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparative Velocity & Influx KPI Cards (4 Delta Cards) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <!-- 1. Tickets Influx Delta -->
+            <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-3">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Incoming Ticket Influx</span>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <span class="text-3xl font-black text-zinc-900 dark:text-white">{{ $ticketCreationDelta['current'] }}</span>
+                            <span class="inline-flex items-center gap-0.5 text-[11px] font-bold px-1.5 py-0.5 rounded-md {{ $ticketCreationDelta['pct'] > 0 ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20' : ($ticketCreationDelta['pct'] < 0 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500') }}">
+                                @if($ticketCreationDelta['pct'] > 0)
+                                    &uarr; +{{ $ticketCreationDelta['pct'] }}%
+                                @elseif($ticketCreationDelta['pct'] < 0)
+                                    &darr; {{ $ticketCreationDelta['pct'] }}%
+                                @else
+                                    0%
+                                @endif
+                            </span>
+                        </div>
+                    </div>
+                    <div class="size-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                        <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                    <span>Prior period: <strong class="text-zinc-800 dark:text-zinc-200">{{ $ticketCreationDelta['previous'] }}</strong></span>
+                    <span>Net: <strong class="{{ $ticketCreationDelta['delta'] >= 0 ? 'text-amber-500' : 'text-emerald-500' }}">{{ $ticketCreationDelta['delta'] > 0 ? '+' : '' }}{{ $ticketCreationDelta['delta'] }}</strong></span>
+                </div>
+            </div>
+
+            <!-- 2. Tickets Resolved Delta -->
+            <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-3">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Tickets Resolved</span>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <span class="text-3xl font-black text-zinc-900 dark:text-white">{{ $ticketResolutionDelta['current'] }}</span>
+                            <span class="inline-flex items-center gap-0.5 text-[11px] font-bold px-1.5 py-0.5 rounded-md {{ $ticketResolutionDelta['pct'] >= 0 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20' }}">
+                                @if($ticketResolutionDelta['pct'] > 0)
+                                    &uarr; +{{ $ticketResolutionDelta['pct'] }}%
+                                @elseif($ticketResolutionDelta['pct'] < 0)
+                                    &darr; {{ $ticketResolutionDelta['pct'] }}%
+                                @else
+                                    0%
+                                @endif
+                            </span>
+                        </div>
+                    </div>
+                    <div class="size-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                        <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                    <span>Prior period: <strong class="text-zinc-800 dark:text-zinc-200">{{ $ticketResolutionDelta['previous'] }}</strong></span>
+                    <span>Net: <strong class="{{ $ticketResolutionDelta['delta'] >= 0 ? 'text-emerald-500' : 'text-rose-500' }}">{{ $ticketResolutionDelta['delta'] > 0 ? '+' : '' }}{{ $ticketResolutionDelta['delta'] }}</strong></span>
+                </div>
+            </div>
+
+            <!-- 3. Tasks Created Delta -->
+            <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-3">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Tasks Created</span>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <span class="text-3xl font-black text-zinc-900 dark:text-white">{{ $taskCreationDelta['current'] }}</span>
+                            <span class="inline-flex items-center gap-0.5 text-[11px] font-bold px-1.5 py-0.5 rounded-md {{ $taskCreationDelta['pct'] >= 0 ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                @if($taskCreationDelta['pct'] > 0)
+                                    &uarr; +{{ $taskCreationDelta['pct'] }}%
+                                @elseif($taskCreationDelta['pct'] < 0)
+                                    &darr; {{ $taskCreationDelta['pct'] }}%
+                                @else
+                                    0%
+                                @endif
+                            </span>
+                        </div>
+                    </div>
+                    <div class="size-10 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center">
+                        <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                    <span>Prior period: <strong class="text-zinc-800 dark:text-zinc-200">{{ $taskCreationDelta['previous'] }}</strong></span>
+                    <span>Net: <strong class="text-sky-500">{{ $taskCreationDelta['delta'] > 0 ? '+' : '' }}{{ $taskCreationDelta['delta'] }}</strong></span>
+                </div>
+            </div>
+
+            <!-- 4. Tasks Completed Delta -->
+            <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-3">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Tasks Completed</span>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <span class="text-3xl font-black text-zinc-900 dark:text-white">{{ $taskCompletionDelta['current'] }}</span>
+                            <span class="inline-flex items-center gap-0.5 text-[11px] font-bold px-1.5 py-0.5 rounded-md {{ $taskCompletionDelta['pct'] >= 0 ? 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20' }}">
+                                @if($taskCompletionDelta['pct'] > 0)
+                                    &uarr; +{{ $taskCompletionDelta['pct'] }}%
+                                @elseif($taskCompletionDelta['pct'] < 0)
+                                    &darr; {{ $taskCompletionDelta['pct'] }}%
+                                @else
+                                    0%
+                                @endif
+                            </span>
+                        </div>
+                    </div>
+                    <div class="size-10 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+                        <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                    <span>Prior period: <strong class="text-zinc-800 dark:text-zinc-200">{{ $taskCompletionDelta['previous'] }}</strong></span>
+                    <span>Net: <strong class="{{ $taskCompletionDelta['delta'] >= 0 ? 'text-teal-500' : 'text-rose-500' }}">{{ $taskCompletionDelta['delta'] > 0 ? '+' : '' }}{{ $taskCompletionDelta['delta'] }}</strong></span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Interactive Visual Analytics Charts (Playable Canvases) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Chart 1 (2 Columns): Velocity Curve: Tickets vs Tasks Trend -->
+            <div class="lg:col-span-2 p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="size-2 rounded-full bg-indigo-500"></span>
+                            <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Tickets vs Tasks Inflow &amp; Velocity Trend</h3>
+                        </div>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                            Click any legend item to toggle datasets. Hover over points for exact counts.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-[11px] text-zinc-400">
+                        <span class="inline-flex items-center gap-1">
+                            <span class="size-2 rounded-full bg-indigo-500"></span> Tickets Influx
+                        </span>
+                        <span class="inline-flex items-center gap-1">
+                            <span class="size-2 rounded-full bg-emerald-500"></span> Resolved
+                        </span>
+                        <span class="inline-flex items-center gap-1">
+                            <span class="size-2 rounded-full bg-sky-400"></span> Tasks Created
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Canvas Wrapper -->
+                <div 
+                    class="h-72 w-full relative"
+                    x-data="{
+                        chart: null,
+                        init() {
+                            this.buildChart();
+                        },
+                        buildChart() {
+                            if (this.chart) this.chart.destroy();
+                            const ctx = this.$refs.canvas.getContext('2d');
+                            this.chart = new Chart(ctx, {
+                                type: '{{ $chartType }}',
+                                data: {
+                                    labels: @json($chartLabels),
+                                    datasets: [
+                                        {
+                                            label: 'Tickets Influx',
+                                            data: @json($chartTicketsCreated),
+                                            borderColor: '#6366f1',
+                                            backgroundColor: '{{ $chartType === 'line' ? 'rgba(99, 102, 241, 0.12)' : 'rgba(99, 102, 241, 0.85)' }}',
+                                            fill: true,
+                                            tension: 0.35,
+                                            borderWidth: 2.5,
+                                            pointRadius: 4,
+                                            pointHoverRadius: 6,
+                                        },
+                                        {
+                                            label: 'Tickets Resolved',
+                                            data: @json($chartTicketsResolved),
+                                            borderColor: '#10b981',
+                                            backgroundColor: '{{ $chartType === 'line' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(16, 185, 129, 0.85)' }}',
+                                            fill: true,
+                                            tension: 0.35,
+                                            borderWidth: 2.5,
+                                            pointRadius: 4,
+                                            pointHoverRadius: 6,
+                                        },
+                                        {
+                                            label: 'Tasks Created',
+                                            data: @json($chartTasksCreated),
+                                            borderColor: '#38bdf8',
+                                            backgroundColor: '{{ $chartType === 'line' ? 'rgba(56, 189, 248, 0.1)' : 'rgba(56, 189, 248, 0.85)' }}',
+                                            fill: false,
+                                            borderDash: [4, 4],
+                                            tension: 0.35,
+                                            borderWidth: 2,
+                                            pointRadius: 3,
+                                            pointHoverRadius: 5,
+                                        },
+                                        {
+                                            label: 'Tasks Completed',
+                                            data: @json($chartTasksCompleted),
+                                            borderColor: '#14b8a6',
+                                            backgroundColor: '{{ $chartType === 'line' ? 'rgba(20, 184, 166, 0.1)' : 'rgba(20, 184, 166, 0.85)' }}',
+                                            fill: false,
+                                            tension: 0.35,
+                                            borderWidth: 2,
+                                            pointRadius: 3,
+                                            pointHoverRadius: 5,
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    interaction: {
+                                        mode: 'index',
+                                        intersect: false,
+                                    },
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                            position: 'top',
+                                            labels: {
+                                                color: document.documentElement.classList.contains('dark') ? '#a1a1aa' : '#52525b',
+                                                font: { size: 11, weight: '600' },
+                                                usePointStyle: true,
+                                                boxWidth: 8,
+                                                padding: 14,
+                                            }
+                                        },
+                                        tooltip: {
+                                            padding: 12,
+                                            cornerRadius: 10,
+                                        }
+                                    },
+                                    scales: {
+                                        x: {
+                                            grid: {
+                                                color: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+                                            },
+                                            ticks: {
+                                                color: document.documentElement.classList.contains('dark') ? '#71717a' : '#a1a1aa',
+                                                font: { size: 10 }
+                                            }
+                                        },
+                                        y: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+                                            },
+                                            ticks: {
+                                                color: document.documentElement.classList.contains('dark') ? '#71717a' : '#a1a1aa',
+                                                font: { size: 10 },
+                                                precision: 0
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }"
+                    wire:key="velocity-trend-canvas-{{ $timeRange }}-{{ $selectedYear }}-{{ $selectedMonth }}-{{ $filterProjectId }}-{{ $chartType }}"
+                >
+                    <canvas x-ref="canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 2: Issue Category Breakdown Doughnut -->
+            <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between space-y-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="size-2 rounded-full bg-purple-500"></span>
+                        <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Tickets by Category Breakdown</h3>
+                    </div>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                        Categorical distribution for {{ $timeBoundaries['label'] }}.
+                    </p>
+                </div>
+
+                <div 
+                    class="h-72 w-full relative flex items-center justify-center"
+                    x-data="{
+                        chart: null,
+                        init() {
+                            const ctx = this.$refs.canvas.getContext('2d');
+                            const data = @json($chartCategoryData);
+                            const hasData = data && data.some(v => v > 0);
+                            
+                            this.chart = new Chart(ctx, {
+                                type: 'doughnut',
+                                data: {
+                                    labels: @json($chartCategoryLabels),
+                                    datasets: [{
+                                        data: hasData ? data : [1],
+                                        backgroundColor: hasData ? [
+                                            '#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#14b8a6', '#f43f5e'
+                                        ] : ['#3f3f46'],
+                                        borderWidth: 2,
+                                        borderColor: document.documentElement.classList.contains('dark') ? '#18181b' : '#ffffff',
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            position: 'bottom',
+                                            labels: {
+                                                color: document.documentElement.classList.contains('dark') ? '#a1a1aa' : '#52525b',
+                                                font: { size: 10, weight: '600' },
+                                                boxWidth: 8,
+                                                padding: 8
+                                            }
+                                        }
+                                    },
+                                    cutout: '62%'
+                                }
+                            });
+                        }
+                    }"
+                    wire:key="category-breakdown-canvas-{{ $timeRange }}-{{ $selectedYear }}-{{ $selectedMonth }}-{{ $filterProjectId }}"
+                >
+                    <canvas x-ref="canvas"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Chart 3: Project Workload & Influx Matrix (Horizontal Bar Comparison) -->
+        <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="size-2 rounded-full bg-blue-500"></span>
+                        <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Project Workload vs Ticket Influx Comparison</h3>
+                    </div>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                        Highlights which project is carrying high task backlogs vs incoming ticket volume.
+                    </p>
+                </div>
+                <span class="text-xs font-semibold text-zinc-400">
+                    {{ count($chartProjectNames) }} Projects Tracked
+                </span>
+            </div>
+
+            <div 
+                class="h-64 w-full relative"
+                x-data="{
+                    chart: null,
+                    init() {
+                        const ctx = this.$refs.canvas.getContext('2d');
+                        this.chart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: @json($chartProjectNames),
+                                datasets: [
+                                    {
+                                        label: 'Active/Total Tasks',
+                                        data: @json($chartProjectTasks),
+                                        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                                        borderColor: '#3b82f6',
+                                        borderWidth: 1,
+                                        borderRadius: 6,
+                                    },
+                                    {
+                                        label: 'Incoming Tickets',
+                                        data: @json($chartProjectTickets),
+                                        backgroundColor: 'rgba(168, 85, 247, 0.8)',
+                                        borderColor: '#a855f7',
+                                        borderWidth: 1,
+                                        borderRadius: 6,
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                        labels: {
+                                            color: document.documentElement.classList.contains('dark') ? '#a1a1aa' : '#52525b',
+                                            font: { size: 11, weight: '600' }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        grid: {
+                                            color: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+                                        },
+                                        ticks: {
+                                            color: document.documentElement.classList.contains('dark') ? '#e4e4e7' : '#27272a',
+                                            font: { size: 11, weight: '500' }
+                                        }
+                                    },
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: {
+                                            color: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+                                        },
+                                        ticks: {
+                                            precision: 0,
+                                            color: document.documentElement.classList.contains('dark') ? '#71717a' : '#a1a1aa',
+                                            font: { size: 10 }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }"
+                wire:key="project-matrix-bar-canvas-{{ $timeRange }}-{{ $selectedYear }}-{{ $selectedMonth }}-{{ $filterProjectId }}"
+            >
+                <canvas x-ref="canvas"></canvas>
+            </div>
+        </div>
+
+        <!-- Project Deep-Dive Matrix & Issue Category MoM Comparison Tables -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Project Deep-Dive Matrix Table (2 Columns) -->
+            <div class="lg:col-span-2 p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Project Workload &amp; Influx Breakdown</h3>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400">Month-over-month influx comparisons per project.</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-zinc-100 dark:border-zinc-800 text-[10px] uppercase font-bold text-zinc-400 tracking-wider">
+                                <th class="pb-3 font-bold">Project</th>
+                                <th class="pb-3 font-bold text-center">Tasks (Done/Total)</th>
+                                <th class="pb-3 font-bold text-center">Tickets ({{ $timeBoundaries['label'] }})</th>
+                                <th class="pb-3 font-bold text-center">Tickets ({{ $timeBoundaries['prev_label'] }})</th>
+                                <th class="pb-3 font-bold text-center">MoM Trend</th>
+                                <th class="pb-3 font-bold text-right">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800/80">
+                            @forelse($projectsMatrix as $row)
+                                <tr class="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors">
+                                    <td class="py-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="size-2 rounded-full" style="background-color: {{ $row['space_color'] }}"></span>
+                                            <div>
+                                                <span class="font-bold text-zinc-900 dark:text-white block">{{ $row['project_name'] }}</span>
+                                                <span class="text-[10px] text-zinc-400">{{ $row['space_name'] }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 text-center">
+                                        <span class="font-semibold text-zinc-800 dark:text-zinc-200">{{ $row['completed_tasks'] }}/{{ $row['total_tasks'] }}</span>
+                                        <div class="h-1.5 w-16 mx-auto bg-zinc-100 dark:bg-zinc-800 rounded-full mt-1 overflow-hidden">
+                                            <div 
+                                                class="h-full bg-indigo-500 rounded-full"
+                                                style="width: {{ $row['total_tasks'] > 0 ? round(($row['completed_tasks'] / $row['total_tasks']) * 100) : 0 }}%"
+                                            ></div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 text-center">
+                                        <span class="font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded-lg border border-indigo-200 dark:border-indigo-800/40">
+                                            {{ $row['tickets_count_current'] }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 text-center">
+                                        <span class="font-medium text-zinc-500">
+                                            {{ $row['tickets_count_previous'] }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 text-center">
+                                        <span class="text-[11px] font-bold {{ $row['ticket_delta'] > 0 ? 'text-amber-500' : ($row['ticket_delta'] < 0 ? 'text-emerald-500' : 'text-zinc-400') }}">
+                                            {{ $row['ticket_delta'] > 0 ? '+' : '' }}{{ $row['ticket_delta'] }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 text-right">
+                                        @if($row['open_tickets'] > 3)
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                                                High Attention
+                                            </span>
+                                        @elseif($row['tickets_count_current'] > 0)
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                                Active Influx
+                                            </span>
+                                        @else
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                                Stable
+                                            </span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="py-4 text-center text-zinc-400">No projects found for current filters.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Issue Category MoM Comparison Matrix Table (1 Column) -->
+            <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-4">
+                <div>
+                    <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Issue Category MoM Comparison</h3>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Changes in issue types vs previous period.</p>
+                </div>
+
+                <div class="space-y-3">
+                    @forelse($categoriesMatrix as $cat)
+                        <div class="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800/80 space-y-1.5">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="font-bold text-zinc-900 dark:text-white">{{ $cat['name'] }}</span>
+                                <span class="text-[11px] font-bold {{ $cat['delta'] > 0 ? 'text-amber-500' : ($cat['delta'] < 0 ? 'text-emerald-500' : 'text-zinc-400') }}">
+                                    {{ $cat['delta'] > 0 ? '+' : '' }}{{ $cat['delta'] }} ({{ $cat['pct'] > 0 ? '+' : '' }}{{ $cat['pct'] }}%)
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between text-[10px] text-zinc-400">
+                                <span>This period: <strong class="text-indigo-600 dark:text-indigo-400">{{ $cat['current'] }}</strong></span>
+                                <span>Prior: <strong class="text-zinc-600 dark:text-zinc-300">{{ $cat['previous'] }}</strong></span>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-xs text-zinc-400 text-center py-6">No ticket categories logged.</div>
+                    @endforelse
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Gemini AI Trend Diagnostics & Interactive Query Assistant -->
+        <div class="p-6 rounded-3xl bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-transparent border border-purple-500/20 dark:border-purple-500/30 shadow-xs space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                    <span class="p-2 rounded-2xl bg-purple-600 text-white shadow-xs">
+                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </span>
+                    <div>
+                        <h3 class="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                            <span>Gemini AI Analytics Diagnostics</span>
+                            <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-600 dark:text-purple-400">AI Powered</span>
+                        </h3>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                            Ask questions or generate automated trend diagnosis across projects, ticket spikes, and velocity.
+                        </p>
+                    </div>
+                </div>
+
+                <button 
+                    wire:click="generateAiAnalyticsInsight"
+                    type="button"
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-xs transition-all cursor-pointer shrink-0 disabled:opacity-50"
+                    wire:loading.attr="disabled"
+                >
+                    <span wire:loading.remove wire:target="generateAiAnalyticsInsight">
+                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                    </span>
+                    <span wire:loading wire:target="generateAiAnalyticsInsight" class="animate-spin size-4 border-2 border-white border-t-transparent rounded-full"></span>
+                    <span>Diagnose Trends with AI</span>
+                </button>
+            </div>
+
+            <!-- Custom AI Query Prompt Input -->
+            <form wire:submit="generateAiAnalyticsInsight" class="flex gap-2">
+                <input 
+                    type="text" 
+                    wire:model="aiPromptQuery" 
+                    placeholder="Ask Gemini anything about this data (e.g. 'Why did tickets spike?', 'Which project has the highest risk?')..."
+                    class="flex-1 text-xs px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-hidden focus:ring-1 focus:ring-purple-500"
+                />
+                <button 
+                    type="submit" 
+                    class="px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 transition-colors cursor-pointer"
+                >
+                    Ask
+                </button>
+            </form>
+
+            <!-- Rendered AI Insight -->
+            @if($aiAnalyticsInsight)
+                <div class="p-5 rounded-2xl bg-white/80 dark:bg-zinc-900/80 border border-purple-500/30 text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed space-y-2 animate-in fade-in zoom-in-98 duration-200">
+                    <div class="flex items-center justify-between pb-2 border-b border-zinc-100 dark:border-zinc-800">
+                        <span class="font-bold text-purple-600 dark:text-purple-400">Gemini Trend Insights</span>
+                        <button wire:click="$set('aiAnalyticsInsight', null)" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-xs cursor-pointer">
+                            &times; Clear
+                        </button>
+                    </div>
+                    <div class="prose dark:prose-invert max-w-none text-xs leading-relaxed">
+                        {!! Str::markdown($aiAnalyticsInsight) !!}
+                    </div>
+                </div>
+            @endif
+        </div>
+
+    </div>
+
     <!-- 1. HERO EXECUTIVE KPI CARDS (4 Hero Cards) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         

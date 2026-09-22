@@ -18,6 +18,12 @@
                     <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
                         {{ $ticket->category?->name ?? 'General Support' }}
                     </span>
+                    @if($ticket->project)
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
+                            <svg class="size-3 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>
+                            {{ $ticket->project->name }}
+                        </span>
+                    @endif
 
                     @if($ticket->isOverdue())
                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-red-500/10 text-red-500 border border-red-500/20 animate-pulse">
@@ -53,8 +59,8 @@
                     </div>
                 </div>
 
-                <!-- Meta Properties Row (Status, Priority, Team, Assignee) -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200/80 dark:border-zinc-800">
+                <!-- Meta Properties Row (Status, Priority, Project, Team, Assignee) -->
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200/80 dark:border-zinc-800">
                     <!-- Status -->
                     <div>
                         <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Status</label>
@@ -93,6 +99,28 @@
                         @else
                             <div class="text-xs font-semibold capitalize text-zinc-800 dark:text-zinc-200 mt-1">
                                 {{ $ticket->priority }}
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Related Project -->
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">Project</label>
+                        @if($isStaff || $canManageAssignment)
+                            <select 
+                                wire:change="updateProject($event.target.value ?: null)" 
+                                class="w-full text-xs font-semibold rounded-lg bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 py-1.5 px-2 focus:ring-indigo-500"
+                            >
+                                <option value="">None</option>
+                                @foreach($projects as $proj)
+                                    <option value="{{ $proj->id }}" {{ $proj->id == $ticket->project_id ? 'selected' : '' }}>
+                                        {{ $proj->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        @else
+                            <div class="text-xs font-semibold text-zinc-800 dark:text-zinc-200 mt-1 truncate">
+                                {{ $ticket->project?->name ?? 'None' }}
                             </div>
                         @endif
                     </div>
