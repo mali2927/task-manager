@@ -1,86 +1,177 @@
 <div class="space-y-6 pb-16">
     
-    <!-- Top Executive Header & Context Bar -->
-    <div class="rounded-3xl bg-gradient-to-br from-white via-zinc-50/50 to-indigo-50/30 dark:from-zinc-900 dark:via-zinc-900/90 dark:to-indigo-950/20 border border-zinc-200/80 dark:border-zinc-800/90 p-6 shadow-xs relative overflow-hidden">
-        <!-- Background Ambient Glow -->
-        <div class="absolute -top-24 -right-24 size-72 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-24 -left-24 size-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <!-- Top Executive Header & Command Center Bar -->
+    <div class="rounded-3xl bg-gradient-to-br from-indigo-50/70 via-white to-purple-50/40 dark:from-slate-950 dark:via-indigo-950 dark:to-slate-950 border border-indigo-100 dark:border-indigo-500/30 text-slate-900 dark:text-white p-6 sm:p-7 shadow-xl shadow-indigo-100/40 dark:shadow-indigo-950/30 relative overflow-hidden">
+        <!-- Ambient Glow Orbs -->
+        <div class="absolute -top-32 -right-32 size-96 bg-indigo-500/10 dark:bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-32 -left-32 size-96 bg-purple-500/10 dark:bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute top-1/2 left-1/3 size-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <!-- Greeting & Quick Stats -->
-            <div class="space-y-2">
-                <div class="flex flex-wrap items-center gap-2">
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
-                        <span class="size-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
-                        Live Workspace
+        <div class="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+            <!-- Left: Greeting, Status, Workspace Branding & Quick Metrics -->
+            <div class="space-y-3.5 flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-100/80 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 shadow-xs backdrop-blur-sm">
+                        <span class="size-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse"></span>
+                        Executive Operations Hub
                     </span>
-                    <span class="text-xs text-zinc-400 dark:text-zinc-500">•</span>
-                    <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">{{ now()->format('l, F j, Y') }}</span>
+                    <span class="text-xs text-indigo-300 dark:text-indigo-300/40">•</span>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-white/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/60 shadow-2xs">
+                        <svg class="size-3 text-indigo-500 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                        <span>{{ $workspace->name }}</span>
+                    </span>
                 </div>
 
-                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-zinc-900 dark:text-white flex items-center gap-3">
-                    <span>{{ $greeting }}, {{ auth()->user()->name }}</span>
-                    <span class="text-2xl">👋</span>
-                </h1>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
+                        <span class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-800 dark:from-white dark:via-slate-100 dark:to-indigo-200 bg-clip-text text-transparent">{{ $greeting }}, {{ auth()->user()->name }}</span>
+                        <span class="text-2xl sm:text-3xl animate-bounce">👋</span>
+                    </h1>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-300/90 mt-1 font-normal">
+                        Real-time delivery intelligence, SLA telemetry, and cross-functional capacity across all active spaces.
+                    </p>
+                </div>
 
-                <!-- Workspace Quick Metrics Pills -->
-                <div class="flex flex-wrap items-center gap-2 pt-1">
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-zinc-100 dark:bg-zinc-800/70 border border-zinc-200/60 dark:border-zinc-700/60 text-xs text-zinc-600 dark:text-zinc-300">
-                        <svg class="size-3.5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                        <span><strong class="text-zinc-900 dark:text-white">{{ $spacesProgress->count() }}</strong> Spaces</span>
+                <!-- Rich Workspace Quick Metric Badges -->
+                <div class="flex flex-wrap items-center gap-2.5 pt-1">
+                    <div class="group inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-indigo-100 hover:border-indigo-200 dark:border-indigo-500/20 dark:hover:border-indigo-500/40 text-xs text-slate-600 dark:text-slate-300 transition-all shadow-2xs backdrop-blur-xs">
+                        <span class="p-1 rounded-lg bg-indigo-50 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 group-hover:scale-110 transition-transform">
+                            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                        </span>
+                        <span><strong class="text-slate-900 dark:text-white font-bold text-sm">{{ $spacesProgress->count() }}</strong> Spaces</span>
                     </div>
 
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-zinc-100 dark:bg-zinc-800/70 border border-zinc-200/60 dark:border-zinc-700/60 text-xs text-zinc-600 dark:text-zinc-300">
-                        <svg class="size-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
-                        <span><strong class="text-zinc-900 dark:text-white">{{ $totalTasks }}</strong> Tasks</span>
+                    <div class="group inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-sky-100 hover:border-sky-200 dark:border-sky-500/20 dark:hover:border-sky-500/40 text-xs text-slate-600 dark:text-slate-300 transition-all shadow-2xs backdrop-blur-xs">
+                        <span class="p-1 rounded-lg bg-sky-50 dark:bg-sky-500/20 text-sky-600 dark:text-sky-300 group-hover:scale-110 transition-transform">
+                            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                        </span>
+                        <span><strong class="text-slate-900 dark:text-white font-bold text-sm">{{ $totalTasks }}</strong> Tasks</span>
                     </div>
 
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-zinc-100 dark:bg-zinc-800/70 border border-zinc-200/60 dark:border-zinc-700/60 text-xs text-zinc-600 dark:text-zinc-300">
-                        <svg class="size-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" /></svg>
-                        <span><strong class="text-zinc-900 dark:text-white">{{ $ticketsOpen }}</strong> Open Tickets</span>
+                    <div class="group inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-amber-100 hover:border-amber-200 dark:border-amber-500/20 dark:hover:border-amber-500/40 text-xs text-slate-600 dark:text-slate-300 transition-all shadow-2xs backdrop-blur-xs">
+                        <span class="p-1 rounded-lg bg-amber-50 dark:bg-amber-500/20 text-amber-600 dark:text-amber-300 group-hover:scale-110 transition-transform">
+                            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" /></svg>
+                        </span>
+                        <span><strong class="text-slate-900 dark:text-white font-bold text-sm">{{ $ticketsOpen }}</strong> Open Tickets</span>
                     </div>
 
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-zinc-100 dark:bg-zinc-800/70 border border-zinc-200/60 dark:border-zinc-700/60 text-xs text-zinc-600 dark:text-zinc-300">
-                        <svg class="size-3.5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                        <span><strong class="text-zinc-900 dark:text-white">{{ $members->count() }}</strong> Team Members</span>
+                    <div class="group inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-purple-100 hover:border-purple-200 dark:border-purple-500/20 dark:hover:border-purple-500/40 text-xs text-slate-600 dark:text-slate-300 transition-all shadow-2xs backdrop-blur-xs">
+                        <span class="p-1 rounded-lg bg-purple-50 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 group-hover:scale-110 transition-transform">
+                            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                        </span>
+                        <span><strong class="text-slate-900 dark:text-white font-bold text-sm">{{ $members->count() }}</strong> Team Members</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Header Controls & Actions -->
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                <!-- Space Filter -->
-                <div class="relative w-full sm:w-auto">
-                    <select 
-                        wire:model.live="selectedSpaceId" 
-                        class="w-full sm:w-auto text-xs font-medium rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 py-2 px-3.5 shadow-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-hidden"
-                    >
-                        <option value="">All Spaces Scope</option>
-                        @foreach($spaces as $sp)
-                            <option value="{{ $sp->id }}">{{ $sp->name }}</option>
-                        @endforeach
-                    </select>
+            <!-- Right: Real-Time Live Clock Card + Action Panel -->
+            <div class="flex flex-col sm:flex-row xl:flex-col items-stretch sm:items-center xl:items-end gap-3.5">
+                
+                <!-- EXECUTIVE REAL-TIME CLOCK WIDGET -->
+                <div 
+                    x-data="{
+                        time: '{{ $currentTime }}',
+                        date: '{{ $currentDate }}',
+                        tz: '',
+                        tzShort: '',
+                        init() {
+                            this.update();
+                            setInterval(() => this.update(), 1000);
+                        },
+                        update() {
+                            const now = new Date();
+                            this.time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+                            this.date = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+                            try {
+                                const resolvedTz = Intl.DateTimeFormat().resolvedOptions().timeZone || '{{ $currentTimezone }}';
+                                this.tz = resolvedTz;
+                                const parts = new Intl.DateTimeFormat([], { timeZoneName: 'short' }).formatToParts(now);
+                                const tzPart = parts.find(p => p.type === 'timeZoneName');
+                                this.tzShort = tzPart ? tzPart.value : resolvedTz.split('/').pop().replace('_', ' ');
+                            } catch(e) {
+                                this.tz = '{{ $currentTimezone }}';
+                                this.tzShort = 'UTC';
+                            }
+                        }
+                    }"
+                    class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/95 via-indigo-50/50 to-white/95 dark:from-slate-900/95 dark:via-indigo-950/90 dark:to-slate-900/95 border border-indigo-100 dark:border-indigo-400/35 p-4 shadow-lg shadow-indigo-100/50 dark:shadow-black/50 backdrop-blur-md min-w-[280px] sm:min-w-[310px] transition-all hover:border-indigo-200 dark:hover:border-indigo-400/60 hover:shadow-indigo-200/40 dark:hover:shadow-indigo-500/10"
+                >
+                    <!-- Glowing back-lights -->
+                    <div class="absolute -top-10 -right-10 size-28 bg-indigo-500/10 dark:bg-indigo-500/25 rounded-full blur-2xl pointer-events-none group-hover:bg-indigo-500/20 dark:group-hover:bg-indigo-500/35 transition-all"></div>
+                    <div class="absolute -bottom-10 -left-10 size-28 bg-purple-500/10 dark:bg-purple-500/25 rounded-full blur-2xl pointer-events-none"></div>
+
+                    <!-- Header Row: Live indicator & Timezone Pill -->
+                    <div class="relative z-10 flex items-center justify-between pb-2 border-b border-indigo-100 dark:border-indigo-500/20">
+                        <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-200 dark:border-emerald-500/30 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+                            <span class="size-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse"></span>
+                            <span class="tracking-wide">LIVE SYSTEM CLOCK</span>
+                        </div>
+                        <div class="inline-flex items-center gap-1.5 text-[11px] font-medium text-indigo-700 dark:text-indigo-200 bg-indigo-50 dark:bg-indigo-500/20 px-2.5 py-0.5 rounded-lg border border-indigo-100 dark:border-indigo-500/30">
+                            <svg class="size-3 text-indigo-600 dark:text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span x-text="tzShort || '{{ $currentTimezone }}'">{{ $currentTimezone }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Center: Large Digital Clock -->
+                    <div class="relative z-10 py-2.5 flex items-baseline justify-between">
+                        <div class="flex items-center gap-2">
+                            <span 
+                                class="font-mono text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white tabular-nums drop-shadow-[0_2px_8px_rgba(99,102,241,0.2)] dark:drop-shadow-[0_2px_12px_rgba(99,102,241,0.5)]" 
+                                x-text="time"
+                            >
+                                {{ $currentTime }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Bottom: Full Formatted Date & Location -->
+                    <div class="relative z-10 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-300 pt-2 border-t border-indigo-100 dark:border-indigo-500/20">
+                        <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                            <svg class="size-3.5 text-indigo-500 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span x-text="date">{{ $currentDate }}</span>
+                        </div>
+                        <span class="text-[10px] text-indigo-600/80 dark:text-indigo-300/80 font-mono" x-text="tz ? tz.split('/').pop().replace('_', ' ') : 'Synchronized'">Synchronized</span>
+                    </div>
                 </div>
 
-                <!-- AI Quick Actions -->
-                <div class="flex items-center gap-2 w-full sm:w-auto">
+                <!-- Action Controls: Space filter, AI buttons, CSV export -->
+                <div class="flex flex-wrap items-center gap-2 w-full justify-start sm:justify-end">
+                    <!-- Space Filter -->
+                    <div class="relative flex-1 sm:flex-none">
+                        <select 
+                            wire:model.live="selectedSpaceId" 
+                            class="w-full text-xs font-semibold rounded-xl border border-indigo-200 dark:border-indigo-500/30 bg-white hover:bg-slate-50 dark:bg-slate-800/90 dark:hover:bg-slate-800 text-slate-800 dark:text-white py-2 px-3 shadow-2xs focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-hidden backdrop-blur-xs cursor-pointer"
+                        >
+                            <option value="" class="bg-white text-slate-800 dark:bg-slate-900 dark:text-white">All Spaces Scope</option>
+                            @foreach($spaces as $sp)
+                                <option value="{{ $sp->id }}" class="bg-white text-slate-800 dark:bg-slate-900 dark:text-white">{{ $sp->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- AI Standup Button -->
                     <button 
                         wire:click="generateStandup" 
                         type="button" 
-                        class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30 transition-all cursor-pointer shadow-xs"
+                        class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 dark:bg-purple-500/20 dark:hover:bg-purple-500/30 dark:text-purple-200 dark:border-purple-400/40 transition-all cursor-pointer shadow-2xs active:scale-95"
                         title="Generate personalized daily standup with Google Gemini"
                     >
                         <span wire:loading.remove wire:target="generateStandup">
-                            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                            <svg class="size-3.5 text-purple-600 dark:text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                         </span>
-                        <span wire:loading wire:target="generateStandup" class="animate-spin size-3.5 border-2 border-purple-500 border-t-transparent rounded-full"></span>
+                        <span wire:loading wire:target="generateStandup" class="animate-spin size-3.5 border-2 border-purple-500 dark:border-purple-400 border-t-transparent rounded-full"></span>
                         <span>My Standup</span>
                     </button>
 
+                    <!-- AI Executive Brief Button -->
                     <button 
                         wire:click="generateTeamAiSummary" 
                         type="button" 
-                        class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs transition-all cursor-pointer"
+                        class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white shadow-md shadow-indigo-600/30 transition-all cursor-pointer active:scale-95 border border-indigo-400/30"
                         title="Generate executive team briefing with Google Gemini"
                     >
                         <span wire:loading.remove wire:target="generateTeamAiSummary">
@@ -89,61 +180,62 @@
                         <span wire:loading wire:target="generateTeamAiSummary" class="animate-spin size-3.5 border-2 border-white border-t-transparent rounded-full"></span>
                         <span>AI Executive Brief</span>
                     </button>
+
+                    <!-- CSV Export Buttons -->
+                    <div class="flex items-center gap-1.5">
+                        <button 
+                            wire:click="exportTasksCsv" 
+                            type="button" 
+                            class="p-2 rounded-xl text-xs font-medium bg-white hover:bg-slate-50 dark:bg-slate-800/90 dark:hover:bg-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white border border-indigo-100 dark:border-indigo-500/20 transition-colors shadow-2xs"
+                            title="Export Tasks CSV"
+                        >
+                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                        </button>
+
+                        <button 
+                            wire:click="exportTicketsCsv" 
+                            type="button" 
+                            class="p-2 rounded-xl text-xs font-medium bg-white hover:bg-slate-50 dark:bg-slate-800/90 dark:hover:bg-slate-700 text-indigo-600 hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-white border border-indigo-100 dark:border-indigo-500/20 transition-colors shadow-2xs"
+                            title="Export Tickets CSV"
+                        >
+                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Export CSV Dropdown -->
-                <div class="flex items-center gap-1">
-                    <button 
-                        wire:click="exportTasksCsv" 
-                        type="button" 
-                        class="p-2 rounded-xl text-xs font-medium bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 transition-colors"
-                        title="Export Tasks CSV"
-                    >
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                    </button>
-
-                    <button 
-                        wire:click="exportTicketsCsv" 
-                        type="button" 
-                        class="p-2 rounded-xl text-xs font-medium bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 transition-colors"
-                        title="Export Tickets CSV"
-                    >
-                        <svg class="size-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                    </button>
-                </div>
             </div>
         </div>
 
         <!-- Focus Mode Switcher Tabs -->
-        <div class="mt-6 pt-4 border-t border-zinc-200/60 dark:border-zinc-800/80 flex items-center justify-between gap-4">
-            <div class="inline-flex items-center p-1 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700/80 text-xs">
+        <div class="mt-6 pt-5 border-t border-indigo-100 dark:border-indigo-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="inline-flex items-center p-1 rounded-2xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-indigo-500/20 text-xs shadow-inner">
                 <button 
                     wire:click="setTab('overview')"
-                    class="px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $activeTab === 'overview' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white' }}"
+                    class="px-4 py-2 rounded-xl font-bold transition-all cursor-pointer {{ $activeTab === 'overview' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white' }}"
                 >
                     Unified Overview
                 </button>
                 <button 
                     wire:click="setTab('tasks')"
-                    class="px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $activeTab === 'tasks' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white' }}"
+                    class="px-4 py-2 rounded-xl font-bold transition-all cursor-pointer {{ $activeTab === 'tasks' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white' }}"
                 >
                     Tasks &amp; Delivery
                 </button>
                 <button 
                     wire:click="setTab('tickets')"
-                    class="px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $activeTab === 'tickets' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white' }}"
+                    class="px-4 py-2 rounded-xl font-bold transition-all cursor-pointer {{ $activeTab === 'tickets' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-md shadow-indigo-600/30' : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white' }}"
                 >
                     Support &amp; Helpdesk
                 </button>
             </div>
 
             <!-- Direct Quick Links -->
-            <div class="hidden sm:flex items-center gap-3 text-xs">
-                <a href="{{ route('workspace.tasks', ['workspace' => $workspace->slug]) }}" class="font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors" wire:navigate>
+            <div class="flex items-center gap-3 text-xs">
+                <a href="{{ route('workspace.tasks', ['workspace' => $workspace->slug]) }}" class="font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors" wire:navigate>
                     Task Board &rarr;
                 </a>
-                <span class="text-zinc-300 dark:text-zinc-700">•</span>
-                <a href="{{ route('workspace.tickets.queue', ['workspace' => $workspace->slug]) }}" class="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline" wire:navigate>
+                <span class="text-indigo-300 dark:text-indigo-400/40">•</span>
+                <a href="{{ route('workspace.tickets.queue', ['workspace' => $workspace->slug]) }}" class="font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-white transition-colors" wire:navigate>
                     Triage Queue &rarr;
                 </a>
             </div>
@@ -152,38 +244,38 @@
 
     <!-- AI Briefing Cards (if active) -->
     @if($teamAiSummary)
-        <div class="p-6 rounded-3xl border border-indigo-200 dark:border-indigo-900/60 bg-gradient-to-r from-indigo-50/70 via-purple-50/40 to-white dark:from-indigo-950/40 dark:via-purple-950/20 dark:to-zinc-900 shadow-sm relative animate-in fade-in zoom-in-98 duration-200">
-            <div class="flex items-center justify-between pb-3 border-b border-indigo-200/50 dark:border-indigo-800/50 mb-4">
+        <div class="p-6 sm:p-7 rounded-3xl border border-indigo-400/40 dark:border-indigo-800/80 bg-gradient-to-r from-indigo-500/10 via-purple-500/5 to-white dark:from-indigo-950/60 dark:via-purple-950/30 dark:to-slate-900 shadow-lg shadow-indigo-950/10 relative animate-in fade-in zoom-in-98 duration-200">
+            <div class="flex items-center justify-between pb-3 border-b border-indigo-200/60 dark:border-indigo-800/60 mb-4">
                 <div class="flex items-center gap-2.5 font-bold text-sm text-indigo-950 dark:text-indigo-200">
-                    <span class="p-1.5 rounded-lg bg-indigo-600 text-white shadow-xs">
+                    <span class="p-2 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-md shadow-indigo-500/30">
                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                     </span>
-                    <span>Gemini AI Executive Digest</span>
+                    <span class="text-base tracking-tight">Gemini AI Executive Digest</span>
                 </div>
-                <button wire:click="$set('teamAiSummary', null)" class="text-xs px-2.5 py-1 rounded-lg bg-indigo-100/50 hover:bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 cursor-pointer">
+                <button wire:click="$set('teamAiSummary', null)" class="text-xs px-3 py-1.5 rounded-xl bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-200 font-semibold cursor-pointer transition-colors">
                     &times; Dismiss
                 </button>
             </div>
-            <div class="text-xs text-zinc-800 dark:text-zinc-200 prose dark:prose-invert max-w-none leading-relaxed">
+            <div class="text-xs text-slate-800 dark:text-slate-200 prose dark:prose-invert max-w-none leading-relaxed">
                 {!! Str::markdown($teamAiSummary) !!}
             </div>
         </div>
     @endif
 
     @if($myStandupReport)
-        <div class="p-6 rounded-3xl border border-purple-200 dark:border-purple-900/60 bg-gradient-to-r from-purple-50/70 via-indigo-50/40 to-white dark:from-purple-950/40 dark:via-indigo-950/20 dark:to-zinc-900 shadow-sm relative animate-in fade-in zoom-in-98 duration-200">
-            <div class="flex items-center justify-between pb-3 border-b border-purple-200/50 dark:border-purple-800/50 mb-4">
+        <div class="p-6 sm:p-7 rounded-3xl border border-purple-400/40 dark:border-purple-800/80 bg-gradient-to-r from-purple-500/10 via-indigo-500/5 to-white dark:from-purple-950/60 dark:via-indigo-950/30 dark:to-slate-900 shadow-lg shadow-purple-950/10 relative animate-in fade-in zoom-in-98 duration-200">
+            <div class="flex items-center justify-between pb-3 border-b border-purple-200/60 dark:border-purple-800/60 mb-4">
                 <div class="flex items-center gap-2.5 font-bold text-sm text-purple-950 dark:text-purple-200">
-                    <span class="p-1.5 rounded-lg bg-purple-600 text-white shadow-xs">
+                    <span class="p-2 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/30">
                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                     </span>
-                    <span>Gemini Daily Standup Briefing</span>
+                    <span class="text-base tracking-tight">Gemini Daily Standup Briefing</span>
                 </div>
-                <button wire:click="$set('myStandupReport', null)" class="text-xs px-2.5 py-1 rounded-lg bg-purple-100/50 hover:bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 cursor-pointer">
+                <button wire:click="$set('myStandupReport', null)" class="text-xs px-3 py-1.5 rounded-xl bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/60 text-purple-700 dark:text-purple-200 font-semibold cursor-pointer transition-colors">
                     &times; Dismiss
                 </button>
             </div>
-            <div class="text-xs text-zinc-800 dark:text-zinc-200 prose dark:prose-invert max-w-none leading-relaxed">
+            <div class="text-xs text-slate-800 dark:text-slate-200 prose dark:prose-invert max-w-none leading-relaxed">
                 {!! Str::markdown($myStandupReport) !!}
             </div>
         </div>
@@ -195,28 +287,28 @@
     <div class="space-y-6">
         
         <!-- Interactive Time-Travel & Analytics Toolbar -->
-        <div class="rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/90 p-5 shadow-xs">
+        <div class="rounded-3xl bg-gradient-to-br from-white via-slate-50/90 to-indigo-50/20 dark:from-slate-900 dark:via-slate-900/95 dark:to-indigo-950/20 border border-slate-200/90 dark:border-slate-800 shadow-sm p-5">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 
                 <!-- Left Title & Period Indicator -->
                 <div class="space-y-1">
                     <div class="flex items-center gap-2">
-                        <span class="p-1.5 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                        <span class="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 shadow-xs">
                             <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                             </svg>
                         </span>
-                        <h2 class="text-base font-black text-zinc-900 dark:text-white tracking-tight">
+                        <h2 class="text-base font-black text-slate-900 dark:text-white tracking-tight">
                             Interactive Influx &amp; Workload Analytics
                         </h2>
                     </div>
-                    <p class="text-xs text-zinc-500 dark:text-zinc-400 flex flex-wrap items-center gap-1.5">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-1.5">
                         <span>Comparing</span>
-                        <strong class="text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-1.5 py-0.2 rounded border border-indigo-200 dark:border-indigo-800/60 font-semibold">
+                        <strong class="text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-lg border border-indigo-500/20 font-bold">
                             {{ $timeBoundaries['label'] }}
                         </strong>
                         <span>vs previous period</span>
-                        <strong class="text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800/80 px-1.5 py-0.2 rounded border border-zinc-200 dark:border-zinc-700 font-medium">
+                        <strong class="text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-200 dark:border-slate-700 font-semibold">
                             {{ $timeBoundaries['prev_label'] }}
                         </strong>
                     </p>
@@ -226,28 +318,28 @@
                 <div class="flex flex-wrap items-center gap-2.5">
                     
                     <!-- Time Granularity Switcher Pills -->
-                    <div class="inline-flex items-center p-1 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700/80 text-xs">
+                    <div class="inline-flex items-center p-1 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 text-xs shadow-inner">
                         <button 
                             wire:click="setTimeRange('month')"
-                            class="px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $timeRange === 'month' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white' }}"
+                            class="px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $timeRange === 'month' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-sm shadow-indigo-600/30' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}"
                         >
                             Month-Wise
                         </button>
                         <button 
                             wire:click="setTimeRange('last_month')"
-                            class="px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $timeRange === 'last_month' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white' }}"
+                            class="px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $timeRange === 'last_month' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-sm shadow-indigo-600/30' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}"
                         >
                             Last Month
                         </button>
                         <button 
                             wire:click="setTimeRange('year')"
-                            class="px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $timeRange === 'year' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white' }}"
+                            class="px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $timeRange === 'year' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-sm shadow-indigo-600/30' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}"
                         >
                             Year-Wise
                         </button>
                         <button 
                             wire:click="setTimeRange('all')"
-                            class="px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $timeRange === 'all' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white' }}"
+                            class="px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $timeRange === 'all' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-sm shadow-indigo-600/30' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}"
                         >
                             12 Months
                         </button>
@@ -256,7 +348,7 @@
                     <!-- Year Selector -->
                     <select 
                         wire:model.live="selectedYear"
-                        class="text-xs font-semibold rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 py-1.5 px-2.5 shadow-xs focus:ring-1 focus:ring-indigo-500"
+                        class="text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 py-1.5 px-2.5 shadow-xs focus:ring-1 focus:ring-indigo-500 cursor-pointer"
                         title="Select Year"
                     >
                         @foreach([2024, 2025, 2026, 2027] as $yr)
@@ -268,7 +360,7 @@
                     @if(in_array($timeRange, ['month', 'last_month']))
                         <select 
                             wire:model.live="selectedMonth"
-                            class="text-xs font-semibold rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 py-1.5 px-2.5 shadow-xs focus:ring-1 focus:ring-indigo-500"
+                            class="text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 py-1.5 px-2.5 shadow-xs focus:ring-1 focus:ring-indigo-500 cursor-pointer"
                             title="Select Month"
                         >
                             @for($m = 1; $m <= 12; $m++)
@@ -282,7 +374,7 @@
                     <!-- Project Filter Dropdown -->
                     <select 
                         wire:model.live="filterProjectId"
-                        class="text-xs font-semibold rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 py-1.5 px-2.5 shadow-xs focus:ring-1 focus:ring-indigo-500 max-w-[170px] truncate"
+                        class="text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 py-1.5 px-2.5 shadow-xs focus:ring-1 focus:ring-indigo-500 max-w-[170px] truncate cursor-pointer"
                         title="Filter by Project"
                     >
                         <option value="">All Projects Scope</option>
@@ -292,10 +384,10 @@
                     </select>
 
                     <!-- Chart Style Toggle (Line vs Bar) -->
-                    <div class="inline-flex items-center p-1 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700/80 text-xs">
+                    <div class="inline-flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 text-xs">
                         <button 
                             wire:click="setChartType('line')"
-                            class="p-1.5 rounded-lg transition-colors cursor-pointer {{ $chartType === 'line' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200' }}"
+                            class="p-1.5 rounded-lg transition-colors cursor-pointer {{ $chartType === 'line' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-xs' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200' }}"
                             title="Line Curve View"
                         >
                             <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -304,7 +396,7 @@
                         </button>
                         <button 
                             wire:click="setChartType('bar')"
-                            class="p-1.5 rounded-lg transition-colors cursor-pointer {{ $chartType === 'bar' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200' }}"
+                            class="p-1.5 rounded-lg transition-colors cursor-pointer {{ $chartType === 'bar' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-xs' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200' }}"
                             title="Bar Columns View"
                         >
                             <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -320,14 +412,14 @@
         <!-- Comparative Velocity & Influx KPI Cards (4 Delta Cards) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
-            <!-- 1. Tickets Influx Delta -->
-            <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-3">
+            <!-- 1. Tickets Influx Delta (Rich Indigo/Sapphire) -->
+            <div class="p-5 rounded-3xl bg-gradient-to-br from-indigo-500/[0.08] via-white to-indigo-50/30 dark:from-indigo-950/40 dark:via-slate-900 dark:to-slate-900 border border-indigo-200/80 dark:border-indigo-800/60 shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 hover:shadow-md transition-all flex flex-col justify-between space-y-3">
                 <div class="flex items-start justify-between">
                     <div>
-                        <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Incoming Ticket Influx</span>
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Incoming Ticket Influx</span>
                         <div class="flex items-baseline gap-2 mt-1">
-                            <span class="text-3xl font-black text-zinc-900 dark:text-white">{{ $ticketCreationDelta['current'] }}</span>
-                            <span class="inline-flex items-center gap-0.5 text-[11px] font-bold px-1.5 py-0.5 rounded-md {{ $ticketCreationDelta['pct'] > 0 ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20' : ($ticketCreationDelta['pct'] < 0 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500') }}">
+                            <span class="text-3xl font-black text-slate-900 dark:text-white">{{ $ticketCreationDelta['current'] }}</span>
+                            <span class="inline-flex items-center gap-0.5 text-[11px] font-bold px-2 py-0.5 rounded-lg {{ $ticketCreationDelta['pct'] > 0 ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30' : ($ticketCreationDelta['pct'] < 0 ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-500') }}">
                                 @if($ticketCreationDelta['pct'] > 0)
                                     &uarr; +{{ $ticketCreationDelta['pct'] }}%
                                 @elseif($ticketCreationDelta['pct'] < 0)
@@ -338,26 +430,26 @@
                             </span>
                         </div>
                     </div>
-                    <div class="size-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                    <div class="size-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/30">
                         <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
                         </svg>
                     </div>
                 </div>
-                <div class="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-                    <span>Prior period: <strong class="text-zinc-800 dark:text-zinc-200">{{ $ticketCreationDelta['previous'] }}</strong></span>
-                    <span>Net: <strong class="{{ $ticketCreationDelta['delta'] >= 0 ? 'text-amber-500' : 'text-emerald-500' }}">{{ $ticketCreationDelta['delta'] > 0 ? '+' : '' }}{{ $ticketCreationDelta['delta'] }}</strong></span>
+                <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-2 border-t border-indigo-100/60 dark:border-slate-800">
+                    <span>Prior period: <strong class="text-slate-800 dark:text-slate-200">{{ $ticketCreationDelta['previous'] }}</strong></span>
+                    <span>Net: <strong class="{{ $ticketCreationDelta['delta'] >= 0 ? 'text-amber-500 font-bold' : 'text-emerald-500 font-bold' }}">{{ $ticketCreationDelta['delta'] > 0 ? '+' : '' }}{{ $ticketCreationDelta['delta'] }}</strong></span>
                 </div>
             </div>
 
-            <!-- 2. Tickets Resolved Delta -->
-            <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-3">
+            <!-- 2. Tickets Resolved Delta (Rich Emerald/Jade) -->
+            <div class="p-5 rounded-3xl bg-gradient-to-br from-emerald-500/[0.08] via-white to-emerald-50/30 dark:from-emerald-950/40 dark:via-slate-900 dark:to-slate-900 border border-emerald-200/80 dark:border-emerald-800/60 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 hover:shadow-md transition-all flex flex-col justify-between space-y-3">
                 <div class="flex items-start justify-between">
                     <div>
-                        <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Tickets Resolved</span>
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Tickets Resolved</span>
                         <div class="flex items-baseline gap-2 mt-1">
-                            <span class="text-3xl font-black text-zinc-900 dark:text-white">{{ $ticketResolutionDelta['current'] }}</span>
-                            <span class="inline-flex items-center gap-0.5 text-[11px] font-bold px-1.5 py-0.5 rounded-md {{ $ticketResolutionDelta['pct'] >= 0 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20' }}">
+                            <span class="text-3xl font-black text-slate-900 dark:text-white">{{ $ticketResolutionDelta['current'] }}</span>
+                            <span class="inline-flex items-center gap-0.5 text-[11px] font-bold px-2 py-0.5 rounded-lg {{ $ticketResolutionDelta['pct'] >= 0 ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30' }}">
                                 @if($ticketResolutionDelta['pct'] > 0)
                                     &uarr; +{{ $ticketResolutionDelta['pct'] }}%
                                 @elseif($ticketResolutionDelta['pct'] < 0)
@@ -368,26 +460,26 @@
                             </span>
                         </div>
                     </div>
-                    <div class="size-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <div class="size-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/30">
                         <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                 </div>
-                <div class="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-                    <span>Prior period: <strong class="text-zinc-800 dark:text-zinc-200">{{ $ticketResolutionDelta['previous'] }}</strong></span>
-                    <span>Net: <strong class="{{ $ticketResolutionDelta['delta'] >= 0 ? 'text-emerald-500' : 'text-rose-500' }}">{{ $ticketResolutionDelta['delta'] > 0 ? '+' : '' }}{{ $ticketResolutionDelta['delta'] }}</strong></span>
+                <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-2 border-t border-emerald-100/60 dark:border-slate-800">
+                    <span>Prior period: <strong class="text-slate-800 dark:text-slate-200">{{ $ticketResolutionDelta['previous'] }}</strong></span>
+                    <span>Net: <strong class="{{ $ticketResolutionDelta['delta'] >= 0 ? 'text-emerald-500 font-bold' : 'text-rose-500 font-bold' }}">{{ $ticketResolutionDelta['delta'] > 0 ? '+' : '' }}{{ $ticketResolutionDelta['delta'] }}</strong></span>
                 </div>
             </div>
 
-            <!-- 3. Tasks Created Delta -->
-            <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-3">
+            <!-- 3. Tasks Created Delta (Rich Electric Sky) -->
+            <div class="p-5 rounded-3xl bg-gradient-to-br from-sky-500/[0.08] via-white to-sky-50/30 dark:from-sky-950/40 dark:via-slate-900 dark:to-slate-900 border border-sky-200/80 dark:border-sky-800/60 shadow-sm hover:border-sky-400 dark:hover:border-sky-500 hover:shadow-md transition-all flex flex-col justify-between space-y-3">
                 <div class="flex items-start justify-between">
                     <div>
-                        <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Tasks Created</span>
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Tasks Created</span>
                         <div class="flex items-baseline gap-2 mt-1">
-                            <span class="text-3xl font-black text-zinc-900 dark:text-white">{{ $taskCreationDelta['current'] }}</span>
-                            <span class="inline-flex items-center gap-0.5 text-[11px] font-bold px-1.5 py-0.5 rounded-md {{ $taskCreationDelta['pct'] >= 0 ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                            <span class="text-3xl font-black text-slate-900 dark:text-white">{{ $taskCreationDelta['current'] }}</span>
+                            <span class="inline-flex items-center gap-0.5 text-[11px] font-bold px-2 py-0.5 rounded-lg {{ $taskCreationDelta['pct'] >= 0 ? 'bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-500' }}">
                                 @if($taskCreationDelta['pct'] > 0)
                                     &uarr; +{{ $taskCreationDelta['pct'] }}%
                                 @elseif($taskCreationDelta['pct'] < 0)
@@ -398,26 +490,26 @@
                             </span>
                         </div>
                     </div>
-                    <div class="size-10 rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center">
+                    <div class="size-11 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white flex items-center justify-center shadow-md shadow-sky-500/30">
                         <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
                     </div>
                 </div>
-                <div class="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-                    <span>Prior period: <strong class="text-zinc-800 dark:text-zinc-200">{{ $taskCreationDelta['previous'] }}</strong></span>
-                    <span>Net: <strong class="text-sky-500">{{ $taskCreationDelta['delta'] > 0 ? '+' : '' }}{{ $taskCreationDelta['delta'] }}</strong></span>
+                <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-2 border-t border-sky-100/60 dark:border-slate-800">
+                    <span>Prior period: <strong class="text-slate-800 dark:text-slate-200">{{ $taskCreationDelta['previous'] }}</strong></span>
+                    <span>Net: <strong class="text-sky-500 font-bold">{{ $taskCreationDelta['delta'] > 0 ? '+' : '' }}{{ $taskCreationDelta['delta'] }}</strong></span>
                 </div>
             </div>
 
-            <!-- 4. Tasks Completed Delta -->
-            <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-3">
+            <!-- 4. Tasks Completed Delta (Rich Mint/Teal) -->
+            <div class="p-5 rounded-3xl bg-gradient-to-br from-teal-500/[0.08] via-white to-teal-50/30 dark:from-teal-950/40 dark:via-slate-900 dark:to-slate-900 border border-teal-200/80 dark:border-teal-800/60 shadow-sm hover:border-teal-400 dark:hover:border-teal-500 hover:shadow-md transition-all flex flex-col justify-between space-y-3">
                 <div class="flex items-start justify-between">
                     <div>
-                        <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Tasks Completed</span>
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Tasks Completed</span>
                         <div class="flex items-baseline gap-2 mt-1">
-                            <span class="text-3xl font-black text-zinc-900 dark:text-white">{{ $taskCompletionDelta['current'] }}</span>
-                            <span class="inline-flex items-center gap-0.5 text-[11px] font-bold px-1.5 py-0.5 rounded-md {{ $taskCompletionDelta['pct'] >= 0 ? 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20' }}">
+                            <span class="text-3xl font-black text-slate-900 dark:text-white">{{ $taskCompletionDelta['current'] }}</span>
+                            <span class="inline-flex items-center gap-0.5 text-[11px] font-bold px-2 py-0.5 rounded-lg {{ $taskCompletionDelta['pct'] >= 0 ? 'bg-teal-500/15 text-teal-600 dark:text-teal-400 border border-teal-500/30' : 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30' }}">
                                 @if($taskCompletionDelta['pct'] > 0)
                                     &uarr; +{{ $taskCompletionDelta['pct'] }}%
                                 @elseif($taskCompletionDelta['pct'] < 0)
@@ -428,15 +520,15 @@
                             </span>
                         </div>
                     </div>
-                    <div class="size-10 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+                    <div class="size-11 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center shadow-md shadow-teal-500/30">
                         <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                     </div>
                 </div>
-                <div class="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-                    <span>Prior period: <strong class="text-zinc-800 dark:text-zinc-200">{{ $taskCompletionDelta['previous'] }}</strong></span>
-                    <span>Net: <strong class="{{ $taskCompletionDelta['delta'] >= 0 ? 'text-teal-500' : 'text-rose-500' }}">{{ $taskCompletionDelta['delta'] > 0 ? '+' : '' }}{{ $taskCompletionDelta['delta'] }}</strong></span>
+                <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-2 border-t border-teal-100/60 dark:border-slate-800">
+                    <span>Prior period: <strong class="text-slate-800 dark:text-slate-200">{{ $taskCompletionDelta['previous'] }}</strong></span>
+                    <span>Net: <strong class="{{ $taskCompletionDelta['delta'] >= 0 ? 'text-teal-500 font-bold' : 'text-rose-500 font-bold' }}">{{ $taskCompletionDelta['delta'] > 0 ? '+' : '' }}{{ $taskCompletionDelta['delta'] }}</strong></span>
                 </div>
             </div>
 
@@ -446,27 +538,27 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             <!-- Chart 1 (2 Columns): Velocity Curve: Tickets vs Tasks Trend -->
-            <div class="lg:col-span-2 p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between space-y-4">
+            <div class="lg:col-span-2 p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
                         <div class="flex items-center gap-2">
-                            <span class="size-2 rounded-full bg-indigo-500"></span>
-                            <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Tickets vs Tasks Inflow &amp; Velocity Trend</h3>
+                            <span class="size-2.5 rounded-full bg-indigo-500 animate-pulse"></span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Tickets vs Tasks Inflow &amp; Velocity Trend</h3>
                         </div>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                             Click any legend item to toggle datasets. Hover over points for exact counts.
                         </p>
                     </div>
 
-                    <div class="flex items-center gap-2 text-[11px] text-zinc-400">
-                        <span class="inline-flex items-center gap-1">
-                            <span class="size-2 rounded-full bg-indigo-500"></span> Tickets Influx
+                    <div class="flex items-center gap-2 text-[11px] text-slate-400">
+                        <span class="inline-flex items-center gap-1 font-medium">
+                            <span class="size-2 rounded-full bg-indigo-500"></span> Influx
                         </span>
-                        <span class="inline-flex items-center gap-1">
+                        <span class="inline-flex items-center gap-1 font-medium">
                             <span class="size-2 rounded-full bg-emerald-500"></span> Resolved
                         </span>
-                        <span class="inline-flex items-center gap-1">
-                            <span class="size-2 rounded-full bg-sky-400"></span> Tasks Created
+                        <span class="inline-flex items-center gap-1 font-medium">
+                            <span class="size-2 rounded-full bg-sky-400"></span> Tasks
                         </span>
                     </div>
                 </div>
@@ -491,7 +583,7 @@
                                             label: 'Tickets Influx',
                                             data: @json($chartTicketsCreated),
                                             borderColor: '#6366f1',
-                                            backgroundColor: '{{ $chartType === 'line' ? 'rgba(99, 102, 241, 0.12)' : 'rgba(99, 102, 241, 0.85)' }}',
+                                            backgroundColor: '{{ $chartType === 'line' ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.85)' }}',
                                             fill: true,
                                             tension: 0.35,
                                             borderWidth: 2.5,
@@ -502,7 +594,7 @@
                                             label: 'Tickets Resolved',
                                             data: @json($chartTicketsResolved),
                                             borderColor: '#10b981',
-                                            backgroundColor: '{{ $chartType === 'line' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(16, 185, 129, 0.85)' }}',
+                                            backgroundColor: '{{ $chartType === 'line' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.85)' }}',
                                             fill: true,
                                             tension: 0.35,
                                             borderWidth: 2.5,
@@ -591,13 +683,13 @@
             </div>
 
             <!-- Chart 2: Issue Category Breakdown Doughnut -->
-            <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs flex flex-col justify-between space-y-4">
+            <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4">
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="size-2 rounded-full bg-purple-500"></span>
-                        <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Tickets by Category Breakdown</h3>
+                        <span class="size-2.5 rounded-full bg-purple-500"></span>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Tickets by Category Breakdown</h3>
                     </div>
-                    <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                         Categorical distribution for {{ $timeBoundaries['label'] }}.
                     </p>
                 </div>
@@ -621,7 +713,7 @@
                                             '#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#14b8a6', '#f43f5e'
                                         ] : ['#3f3f46'],
                                         borderWidth: 2,
-                                        borderColor: document.documentElement.classList.contains('dark') ? '#18181b' : '#ffffff',
+                                        borderColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff',
                                     }]
                                 },
                                 options: {
@@ -652,18 +744,18 @@
         </div>
 
         <!-- Chart 3: Project Workload & Influx Matrix (Horizontal Bar Comparison) -->
-        <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-4">
+        <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="size-2 rounded-full bg-blue-500"></span>
-                        <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Project Workload vs Ticket Influx Comparison</h3>
+                        <span class="size-2.5 rounded-full bg-blue-500"></span>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Project Workload vs Ticket Influx Comparison</h3>
                     </div>
-                    <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                         Highlights which project is carrying high task backlogs vs incoming ticket volume.
                     </p>
                 </div>
-                <span class="text-xs font-semibold text-zinc-400">
+                <span class="text-xs font-semibold text-slate-400">
                     {{ count($chartProjectNames) }} Projects Tracked
                 </span>
             </div>
@@ -682,7 +774,7 @@
                                     {
                                         label: 'Active/Total Tasks',
                                         data: @json($chartProjectTasks),
-                                        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                                        backgroundColor: 'rgba(59, 130, 246, 0.85)',
                                         borderColor: '#3b82f6',
                                         borderWidth: 1,
                                         borderRadius: 6,
@@ -690,7 +782,7 @@
                                     {
                                         label: 'Incoming Tickets',
                                         data: @json($chartProjectTickets),
-                                        backgroundColor: 'rgba(168, 85, 247, 0.8)',
+                                        backgroundColor: 'rgba(168, 85, 247, 0.85)',
                                         borderColor: '#a855f7',
                                         borderWidth: 1,
                                         borderRadius: 6,
@@ -745,18 +837,18 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             <!-- Project Deep-Dive Matrix Table (2 Columns) -->
-            <div class="lg:col-span-2 p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-4">
+            <div class="lg:col-span-2 p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Project Workload &amp; Influx Breakdown</h3>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400">Month-over-month influx comparisons per project.</p>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Project Workload &amp; Influx Breakdown</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Month-over-month influx comparisons per project.</p>
                     </div>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs">
                         <thead>
-                            <tr class="border-b border-zinc-100 dark:border-zinc-800 text-[10px] uppercase font-bold text-zinc-400 tracking-wider">
+                            <tr class="border-b border-slate-100 dark:border-slate-800 text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                                 <th class="pb-3 font-bold">Project</th>
                                 <th class="pb-3 font-bold text-center">Tasks (Done/Total)</th>
                                 <th class="pb-3 font-bold text-center">Tickets ({{ $timeBoundaries['label'] }})</th>
@@ -765,23 +857,23 @@
                                 <th class="pb-3 font-bold text-right">Status</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800/80">
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800/80">
                             @forelse($projectsMatrix as $row)
-                                <tr class="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors">
+                                <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors">
                                     <td class="py-3">
                                         <div class="flex items-center gap-2">
-                                            <span class="size-2 rounded-full" style="background-color: {{ $row['space_color'] }}"></span>
+                                            <span class="size-2.5 rounded-full" style="background-color: {{ $row['space_color'] }}"></span>
                                             <div>
-                                                <span class="font-bold text-zinc-900 dark:text-white block">{{ $row['project_name'] }}</span>
-                                                <span class="text-[10px] text-zinc-400">{{ $row['space_name'] }}</span>
+                                                <span class="font-bold text-slate-900 dark:text-white block">{{ $row['project_name'] }}</span>
+                                                <span class="text-[10px] text-slate-400">{{ $row['space_name'] }}</span>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="py-3 text-center">
-                                        <span class="font-semibold text-zinc-800 dark:text-zinc-200">{{ $row['completed_tasks'] }}/{{ $row['total_tasks'] }}</span>
-                                        <div class="h-1.5 w-16 mx-auto bg-zinc-100 dark:bg-zinc-800 rounded-full mt-1 overflow-hidden">
+                                        <span class="font-semibold text-slate-800 dark:text-slate-200">{{ $row['completed_tasks'] }}/{{ $row['total_tasks'] }}</span>
+                                        <div class="h-1.5 w-16 mx-auto bg-slate-100 dark:bg-slate-800 rounded-full mt-1 overflow-hidden">
                                             <div 
-                                                class="h-full bg-indigo-500 rounded-full"
+                                                class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
                                                 style="width: {{ $row['total_tasks'] > 0 ? round(($row['completed_tasks'] / $row['total_tasks']) * 100) : 0 }}%"
                                             ></div>
                                         </div>
@@ -792,26 +884,26 @@
                                         </span>
                                     </td>
                                     <td class="py-3 text-center">
-                                        <span class="font-medium text-zinc-500">
+                                        <span class="font-medium text-slate-500">
                                             {{ $row['tickets_count_previous'] }}
                                         </span>
                                     </td>
                                     <td class="py-3 text-center">
-                                        <span class="text-[11px] font-bold {{ $row['ticket_delta'] > 0 ? 'text-amber-500' : ($row['ticket_delta'] < 0 ? 'text-emerald-500' : 'text-zinc-400') }}">
+                                        <span class="text-[11px] font-bold {{ $row['ticket_delta'] > 0 ? 'text-amber-500' : ($row['ticket_delta'] < 0 ? 'text-emerald-500' : 'text-slate-400') }}">
                                             {{ $row['ticket_delta'] > 0 ? '+' : '' }}{{ $row['ticket_delta'] }}
                                         </span>
                                     </td>
                                     <td class="py-3 text-right">
                                         @if($row['open_tickets'] > 3)
-                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30">
                                                 High Attention
                                             </span>
                                         @elseif($row['tickets_count_current'] > 0)
-                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
                                                 Active Influx
                                             </span>
                                         @else
-                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                                                 Stable
                                             </span>
                                         @endif
@@ -819,7 +911,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="py-4 text-center text-zinc-400">No projects found for current filters.</td>
+                                    <td colspan="6" class="py-4 text-center text-slate-400">No projects found for current filters.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -828,28 +920,28 @@
             </div>
 
             <!-- Issue Category MoM Comparison Matrix Table (1 Column) -->
-            <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-4">
+            <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-4">
                 <div>
-                    <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Issue Category MoM Comparison</h3>
-                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Changes in issue types vs previous period.</p>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Issue Category MoM Comparison</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Changes in issue types vs previous period.</p>
                 </div>
 
                 <div class="space-y-3">
                     @forelse($categoriesMatrix as $cat)
-                        <div class="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800/80 space-y-1.5">
+                        <div class="p-3.5 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-800/40 dark:to-slate-900/60 border border-slate-200/70 dark:border-slate-800/80 space-y-1.5">
                             <div class="flex items-center justify-between text-xs">
-                                <span class="font-bold text-zinc-900 dark:text-white">{{ $cat['name'] }}</span>
-                                <span class="text-[11px] font-bold {{ $cat['delta'] > 0 ? 'text-amber-500' : ($cat['delta'] < 0 ? 'text-emerald-500' : 'text-zinc-400') }}">
+                                <span class="font-bold text-slate-900 dark:text-white">{{ $cat['name'] }}</span>
+                                <span class="text-[11px] font-bold {{ $cat['delta'] > 0 ? 'text-amber-500' : ($cat['delta'] < 0 ? 'text-emerald-500' : 'text-slate-400') }}">
                                     {{ $cat['delta'] > 0 ? '+' : '' }}{{ $cat['delta'] }} ({{ $cat['pct'] > 0 ? '+' : '' }}{{ $cat['pct'] }}%)
                                 </span>
                             </div>
-                            <div class="flex items-center justify-between text-[10px] text-zinc-400">
+                            <div class="flex items-center justify-between text-[10px] text-slate-400">
                                 <span>This period: <strong class="text-indigo-600 dark:text-indigo-400">{{ $cat['current'] }}</strong></span>
-                                <span>Prior: <strong class="text-zinc-600 dark:text-zinc-300">{{ $cat['previous'] }}</strong></span>
+                                <span>Prior: <strong class="text-slate-600 dark:text-slate-300">{{ $cat['previous'] }}</strong></span>
                             </div>
                         </div>
                     @empty
-                        <div class="text-xs text-zinc-400 text-center py-6">No ticket categories logged.</div>
+                        <div class="text-xs text-slate-400 text-center py-6">No ticket categories logged.</div>
                     @endforelse
                 </div>
             </div>
@@ -857,20 +949,22 @@
         </div>
 
         <!-- Gemini AI Trend Diagnostics & Interactive Query Assistant -->
-        <div class="p-6 rounded-3xl bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-transparent border border-purple-500/20 dark:border-purple-500/30 shadow-xs space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div class="flex items-center gap-2.5">
-                    <span class="p-2 rounded-2xl bg-purple-600 text-white shadow-xs">
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-purple-50/70 via-indigo-50/40 to-white dark:from-purple-950/25 dark:via-indigo-950/20 dark:to-slate-900/40 border border-purple-200/80 dark:border-purple-500/40 shadow-sm dark:shadow-xl dark:shadow-purple-950/15 space-y-4 backdrop-blur-xs relative overflow-hidden">
+            <div class="absolute -top-16 -right-16 size-48 bg-purple-500/10 dark:bg-purple-500/15 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <span class="p-2.5 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/30 flex items-center justify-center">
+                        <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
                     </span>
                     <div>
-                        <h3 class="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                             <span>Gemini AI Analytics Diagnostics</span>
-                            <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-600 dark:text-purple-400">AI Powered</span>
+                            <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30">AI Powered</span>
                         </h3>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                             Ask questions or generate automated trend diagnosis across projects, ticket spikes, and velocity.
                         </p>
                     </div>
@@ -879,7 +973,7 @@
                 <button 
                     wire:click="generateAiAnalyticsInsight"
                     type="button"
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-xs transition-all cursor-pointer shrink-0 disabled:opacity-50"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-md shadow-purple-600/30 transition-all cursor-pointer shrink-0 disabled:opacity-50 active:scale-95 border border-purple-400/30"
                     wire:loading.attr="disabled"
                 >
                     <span wire:loading.remove wire:target="generateAiAnalyticsInsight">
@@ -893,16 +987,16 @@
             </div>
 
             <!-- Custom AI Query Prompt Input -->
-            <form wire:submit="generateAiAnalyticsInsight" class="flex gap-2">
+            <form wire:submit="generateAiAnalyticsInsight" class="relative z-10 flex gap-2">
                 <input 
                     type="text" 
                     wire:model="aiPromptQuery" 
                     placeholder="Ask Gemini anything about this data (e.g. 'Why did tickets spike?', 'Which project has the highest risk?')..."
-                    class="flex-1 text-xs px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-hidden focus:ring-1 focus:ring-purple-500"
+                    class="flex-1 text-xs px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900/90 border border-purple-200 dark:border-purple-500/40 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-purple-500 shadow-inner"
                 />
                 <button 
                     type="submit" 
-                    class="px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 transition-colors cursor-pointer"
+                    class="px-5 py-2.5 rounded-xl text-xs font-bold bg-purple-100/80 hover:bg-purple-200/80 text-purple-700 dark:bg-purple-500/10 dark:hover:bg-purple-500/20 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30 transition-colors cursor-pointer"
                 >
                     Ask
                 </button>
@@ -910,10 +1004,10 @@
 
             <!-- Rendered AI Insight -->
             @if($aiAnalyticsInsight)
-                <div class="p-5 rounded-2xl bg-white/80 dark:bg-zinc-900/80 border border-purple-500/30 text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed space-y-2 animate-in fade-in zoom-in-98 duration-200">
-                    <div class="flex items-center justify-between pb-2 border-b border-zinc-100 dark:border-zinc-800">
-                        <span class="font-bold text-purple-600 dark:text-purple-400">Gemini Trend Insights</span>
-                        <button wire:click="$set('aiAnalyticsInsight', null)" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-xs cursor-pointer">
+                <div class="relative z-10 p-5 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-purple-200 dark:border-purple-500/40 text-xs text-slate-800 dark:text-slate-200 leading-relaxed space-y-2 animate-in fade-in zoom-in-98 duration-200 shadow-sm">
+                    <div class="flex items-center justify-between pb-2 border-b border-purple-100 dark:border-purple-500/20">
+                        <span class="font-bold text-purple-600 dark:text-purple-300">Gemini Trend Insights</span>
+                        <button wire:click="$set('aiAnalyticsInsight', null)" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xs cursor-pointer">
                             &times; Clear
                         </button>
                     </div>
@@ -926,112 +1020,112 @@
 
     </div>
 
-    <!-- 1. HERO EXECUTIVE KPI CARDS (4 Hero Cards) -->
+    <!-- 1. HERO EXECUTIVE KPI CARDS (4 Hero Cards with Rich Colors) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <!-- 1. Delivery Velocity & Completion -->
-        <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-4">
+        <!-- 1. Delivery Velocity & Completion (Rich Emerald) -->
+        <div class="p-5 rounded-3xl bg-gradient-to-br from-emerald-500/[0.08] via-white to-emerald-50/30 dark:from-emerald-950/40 dark:via-slate-900 dark:to-slate-900 border border-emerald-200/80 dark:border-emerald-800/60 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 hover:shadow-md transition-all flex flex-col justify-between space-y-4">
             <div class="flex items-start justify-between">
                 <div>
-                    <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Sprint Delivery Velocity</span>
+                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Sprint Delivery Velocity</span>
                     <div class="flex items-baseline gap-2 mt-1">
-                        <span class="text-3xl font-black text-zinc-900 dark:text-white">{{ $completionRate }}%</span>
-                        <span class="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
+                        <span class="text-3xl font-black text-slate-900 dark:text-white">{{ $completionRate }}%</span>
+                        <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-lg">
                             {{ $completionRate >= 50 ? 'On Track' : 'In Flight' }}
                         </span>
                     </div>
                 </div>
-                <div class="size-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                <div class="size-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/30">
                     <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </div>
             </div>
 
             <div class="space-y-1.5">
-                <div class="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                    <div class="h-full bg-emerald-500 rounded-full transition-all duration-700" style="width: {{ $completionRate }}%"></div>
+                <div class="h-2.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-emerald-500/10">
+                    <div class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 rounded-full transition-all duration-700" style="width: {{ $completionRate }}%"></div>
                 </div>
-                <div class="flex justify-between text-[11px] text-zinc-500 dark:text-zinc-400">
+                <div class="flex justify-between text-[11px] text-slate-500 dark:text-slate-400">
                     <span>{{ $completedTasks }} of {{ $totalTasks }} tasks shipped</span>
                     @if($totalBlocked > 0)
-                        <span class="text-rose-500 font-semibold">{{ $totalBlocked }} Blocked</span>
+                        <span class="text-rose-500 font-bold">{{ $totalBlocked }} Blocked</span>
                     @endif
                 </div>
             </div>
         </div>
 
-        <!-- 2. Personal Focus & My Open Tasks -->
-        <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-4">
+        <!-- 2. Personal Focus & My Open Tasks (Rich Sapphire) -->
+        <div class="p-5 rounded-3xl bg-gradient-to-br from-blue-500/[0.08] via-white to-blue-50/30 dark:from-blue-950/40 dark:via-slate-900 dark:to-slate-900 border border-blue-200/80 dark:border-blue-800/60 shadow-sm hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md transition-all flex flex-col justify-between space-y-4">
             <div class="flex items-start justify-between">
                 <div>
-                    <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">My Pending Tasks</span>
+                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">My Pending Tasks</span>
                     <div class="flex items-baseline gap-2 mt-1">
-                        <span class="text-3xl font-black text-zinc-900 dark:text-white">{{ $myOpen }}</span>
+                        <span class="text-3xl font-black text-slate-900 dark:text-white">{{ $myOpen }}</span>
                         @if($myOverdue > 0)
-                            <span class="text-[11px] font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded-md">
+                            <span class="text-[11px] font-bold text-rose-600 dark:text-rose-400 bg-rose-500/15 border border-rose-500/30 px-2 py-0.5 rounded-lg">
                                 {{ $myOverdue }} Overdue
                             </span>
                         @else
-                            <span class="text-[11px] font-medium text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded-md">
-                                Active
+                            <span class="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-500/15 border border-blue-500/30 px-2 py-0.5 rounded-lg">
+                                Active Focus
                             </span>
                         @endif
                     </div>
                 </div>
-                <div class="size-10 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                <div class="size-11 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-blue-500/30">
                     <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
                 </div>
             </div>
 
-            <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 pt-1 border-t border-zinc-100 dark:border-zinc-800">
-                <span>Today: <strong class="text-amber-500">{{ $myDueToday }}</strong></span>
+            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1 border-t border-blue-100/60 dark:border-slate-800">
+                <span>Today: <strong class="text-amber-500 font-bold">{{ $myDueToday }}</strong></span>
                 <span>•</span>
-                <span>This Week: <strong class="text-zinc-800 dark:text-zinc-200">{{ $myDueThisWeek }}</strong></span>
+                <span>This Week: <strong class="text-slate-800 dark:text-slate-200 font-bold">{{ $myDueThisWeek }}</strong></span>
                 <span>•</span>
-                <span>Assigned Tickets: <strong class="text-indigo-500">{{ $ticketsAssignedToMe }}</strong></span>
+                <span>Tickets: <strong class="text-indigo-500 font-bold">{{ $ticketsAssignedToMe }}</strong></span>
             </div>
         </div>
 
-        <!-- 3. Support Helpdesk & SLA Health -->
-        <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/90 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-4">
+        <!-- 3. Support Helpdesk & SLA Health (Rich Royal Violet) -->
+        <div class="p-5 rounded-3xl bg-gradient-to-br from-indigo-500/[0.08] via-white to-purple-50/30 dark:from-indigo-950/40 dark:via-slate-900 dark:to-slate-900 border border-indigo-200/80 dark:border-indigo-800/60 shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 hover:shadow-md transition-all flex flex-col justify-between space-y-4">
             <div class="flex items-start justify-between">
                 <div>
-                    <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Support &amp; SLA Compliance</span>
+                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Support &amp; SLA Compliance</span>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-3xl font-black text-indigo-600 dark:text-indigo-400">{{ $slaComplianceRate }}%</span>
-                        <span class="text-[11px] font-bold {{ $ticketsOverdue > 0 ? 'text-rose-600 dark:text-rose-400 bg-rose-500/10' : 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10' }} px-1.5 py-0.5 rounded-md">
+                        <span class="text-[11px] font-bold {{ $ticketsOverdue > 0 ? 'text-rose-600 dark:text-rose-400 bg-rose-500/15 border border-rose-500/30' : 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 border border-emerald-500/30' }} px-2 py-0.5 rounded-lg">
                             {{ $ticketsOverdue > 0 ? $ticketsOverdue . ' Breached' : '100% Target' }}
                         </span>
                     </div>
                 </div>
-                <div class="size-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                <div class="size-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/30">
                     <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </div>
             </div>
 
-            <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 pt-1 border-t border-zinc-100 dark:border-zinc-800">
-                <span>In Triage: <strong class="text-zinc-900 dark:text-white">{{ $ticketsOpen }}</strong></span>
+            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1 border-t border-indigo-100/60 dark:border-slate-800">
+                <span>In Triage: <strong class="text-slate-900 dark:text-white font-bold">{{ $ticketsOpen }}</strong></span>
                 <span>•</span>
-                <span>In Progress: <strong class="text-zinc-900 dark:text-white">{{ $ticketsInProgress }}</strong></span>
+                <span>In Progress: <strong class="text-slate-900 dark:text-white font-bold">{{ $ticketsInProgress }}</strong></span>
                 <span>•</span>
-                <span>Avg: <strong class="text-emerald-500">{{ $avgResolutionTime }}</strong></span>
+                <span>Avg: <strong class="text-emerald-500 font-bold">{{ $avgResolutionTime }}</strong></span>
             </div>
         </div>
 
-        <!-- 4. Operational Risk & Attention Radar -->
-        <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border {{ $totalAttentionItems > 0 ? 'border-amber-500/30 dark:border-amber-500/20 bg-amber-500/5' : 'border-zinc-200/80 dark:border-zinc-800/90' }} shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-4">
+        <!-- 4. Operational Risk & Attention Radar (Rich Alert/Protective Shield) -->
+        <div class="p-5 rounded-3xl bg-gradient-to-br {{ $totalAttentionItems > 0 ? 'from-amber-500/[0.1] via-white to-rose-50/30 dark:from-amber-950/40 dark:via-slate-900 dark:to-slate-900 border-amber-300 dark:border-amber-700/60' : 'from-emerald-500/[0.08] via-white to-emerald-50/30 dark:from-emerald-950/40 dark:via-slate-900 dark:to-slate-900 border-emerald-200/80 dark:border-emerald-800/60' }} border shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
             <div class="flex items-start justify-between">
                 <div>
-                    <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Platform Risk Radar</span>
+                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Platform Risk Radar</span>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-3xl font-black {{ $totalAttentionItems > 0 ? 'text-amber-500' : 'text-emerald-500' }}">
                             {{ $totalAttentionItems }}
                         </span>
-                        <span class="text-[11px] font-bold {{ $totalAttentionItems > 0 ? 'text-amber-600 dark:text-amber-400 bg-amber-500/10' : 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10' }} px-1.5 py-0.5 rounded-md">
-                            {{ $totalAttentionItems > 0 ? 'Items Require Action' : 'All Clear' }}
+                        <span class="text-[11px] font-bold {{ $totalAttentionItems > 0 ? 'text-amber-600 dark:text-amber-400 bg-amber-500/15 border border-amber-500/30' : 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 border border-emerald-500/30' }} px-2 py-0.5 rounded-lg">
+                            {{ $totalAttentionItems > 0 ? 'Action Required' : 'All Clear' }}
                         </span>
                     </div>
                 </div>
-                <div class="size-10 rounded-2xl {{ $totalAttentionItems > 0 ? 'bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400' : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400' }} flex items-center justify-center">
+                <div class="size-11 rounded-2xl {{ $totalAttentionItems > 0 ? 'bg-gradient-to-br from-amber-500 to-rose-600 text-white shadow-md shadow-amber-500/30' : 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/30' }} flex items-center justify-center">
                     @if($totalAttentionItems > 0)
                         <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                     @else
@@ -1040,44 +1134,47 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 pt-1 border-t border-zinc-100 dark:border-zinc-800">
-                <span>Overdue Tasks: <strong class="{{ $totalOverdue > 0 ? 'text-rose-500' : '' }}">{{ $totalOverdue }}</strong></span>
+            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800">
+                <span>Overdue Tasks: <strong class="{{ $totalOverdue > 0 ? 'text-rose-500 font-bold' : '' }}">{{ $totalOverdue }}</strong></span>
                 <span>•</span>
-                <span>Breached SLAs: <strong class="{{ $ticketsOverdue > 0 ? 'text-rose-500' : '' }}">{{ $ticketsOverdue }}</strong></span>
+                <span>Breached SLAs: <strong class="{{ $ticketsOverdue > 0 ? 'text-rose-500 font-bold' : '' }}">{{ $ticketsOverdue }}</strong></span>
                 <span>•</span>
-                <span>Blocked: <strong class="{{ $totalBlocked > 0 ? 'text-rose-500' : '' }}">{{ $totalBlocked }}</strong></span>
+                <span>Blocked: <strong class="{{ $totalBlocked > 0 ? 'text-rose-500 font-bold' : '' }}">{{ $totalBlocked }}</strong></span>
             </div>
         </div>
     </div>
 
     <!-- 2. URGENT ATTENTION CENTER (When items require action) -->
     @if($criticalTasks->isNotEmpty() || $urgentTickets->isNotEmpty())
-        <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-4">
+        <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-4">
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <span class="size-2 rounded-full bg-rose-500 animate-ping"></span>
-                    <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Needs Immediate Attention</h3>
+                <div class="flex items-center gap-2.5">
+                    <span class="relative flex size-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full size-3 bg-rose-500"></span>
+                    </span>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Needs Immediate Attention</h3>
                 </div>
-                <span class="text-xs text-zinc-400">Click any item to view or resolve immediately</span>
+                <span class="text-xs text-slate-400">Click any item to view or resolve immediately</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Critical Tasks -->
                 <div class="space-y-2">
-                    <div class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center justify-between">
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
                         <span>Critical Tasks ({{ $criticalTasks->count() }})</span>
-                        <a href="{{ route('workspace.tasks', ['workspace' => $workspace->slug]) }}" class="hover:underline text-indigo-500" wire:navigate>View Board &rarr;</a>
+                        <a href="{{ route('workspace.tasks', ['workspace' => $workspace->slug]) }}" class="hover:underline text-indigo-500 font-semibold" wire:navigate>View Board &rarr;</a>
                     </div>
 
-                    <div class="divide-y divide-zinc-100 dark:divide-zinc-800/80 rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 px-3">
+                    <div class="divide-y divide-slate-100 dark:divide-slate-800/80 rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5">
                         @forelse($criticalTasks as $task)
                             <div 
                                 wire:click="$dispatch('open-task-detail', { taskId: {{ $task->id }} })"
-                                class="py-2.5 flex items-center justify-between gap-3 cursor-pointer hover:bg-zinc-100/60 dark:hover:bg-zinc-800/60 -mx-1 px-2 rounded-xl transition-colors group"
+                                class="py-2.5 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100/80 dark:hover:bg-slate-800/80 -mx-1 px-2.5 rounded-xl transition-all group"
                             >
                                 <div class="min-w-0 flex-1">
-                                    <p class="text-xs font-semibold text-zinc-900 dark:text-white group-hover:text-indigo-500 truncate">{{ $task->title }}</p>
-                                    <div class="flex items-center gap-2 text-[10px] text-zinc-400 mt-0.5">
+                                    <p class="text-xs font-semibold text-slate-900 dark:text-white group-hover:text-indigo-500 truncate">{{ $task->title }}</p>
+                                    <div class="flex items-center gap-2 text-[10px] text-slate-400 mt-0.5">
                                         <span>{{ $task->taskList?->project?->name }}</span>
                                         <span>•</span>
                                         <span class="{{ $task->isOverdue() ? 'text-rose-500 font-bold' : '' }}">
@@ -1085,46 +1182,46 @@
                                         </span>
                                     </div>
                                 </div>
-                                <span class="text-[10px] px-2 py-0.5 rounded-md font-semibold {{ $task->isOverdue() ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' : 'bg-amber-500/10 text-amber-500' }}">
+                                <span class="text-[10px] px-2.5 py-0.5 rounded-lg font-bold {{ $task->isOverdue() ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30' : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30' }}">
                                     {{ $task->status?->name }}
                                 </span>
                             </div>
                         @empty
-                            <div class="py-4 text-center text-xs text-zinc-400">Zero critical task blockers.</div>
+                            <div class="py-4 text-center text-xs text-slate-400">Zero critical task blockers.</div>
                         @endforelse
                     </div>
                 </div>
 
                 <!-- Urgent Tickets -->
                 <div class="space-y-2">
-                    <div class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center justify-between">
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
                         <span>Urgent / Breached Tickets ({{ $urgentTickets->count() }})</span>
-                        <a href="{{ route('workspace.tickets.queue', ['workspace' => $workspace->slug]) }}" class="hover:underline text-indigo-500" wire:navigate>Triage Queue &rarr;</a>
+                        <a href="{{ route('workspace.tickets.queue', ['workspace' => $workspace->slug]) }}" class="hover:underline text-indigo-500 font-semibold" wire:navigate>Triage Queue &rarr;</a>
                     </div>
 
-                    <div class="divide-y divide-zinc-100 dark:divide-zinc-800/80 rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 px-3">
+                    <div class="divide-y divide-slate-100 dark:divide-slate-800/80 rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 px-3.5">
                         @forelse($urgentTickets as $tick)
                             <div 
                                 wire:click="$dispatch('open-ticket-detail', { ticketId: {{ $tick->id }} })"
-                                class="py-2.5 flex items-center justify-between gap-3 cursor-pointer hover:bg-zinc-100/60 dark:hover:bg-zinc-800/60 -mx-1 px-2 rounded-xl transition-colors group"
+                                class="py-2.5 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100/80 dark:hover:bg-slate-800/80 -mx-1 px-2.5 rounded-xl transition-all group"
                             >
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-center gap-1.5">
-                                        <span class="text-[10px] font-mono font-bold text-indigo-500">{{ $tick->ticket_number }}</span>
-                                        <p class="text-xs font-semibold text-zinc-900 dark:text-white group-hover:text-indigo-500 truncate">{{ $tick->title }}</p>
+                                        <span class="text-[10px] font-mono font-bold text-indigo-500 dark:text-indigo-400">{{ $tick->ticket_number }}</span>
+                                        <p class="text-xs font-semibold text-slate-900 dark:text-white group-hover:text-indigo-500 truncate">{{ $tick->title }}</p>
                                     </div>
-                                    <div class="flex items-center gap-2 text-[10px] text-zinc-400 mt-0.5">
+                                    <div class="flex items-center gap-2 text-[10px] text-slate-400 mt-0.5">
                                         <span>{{ $tick->category?->name ?? 'General' }}</span>
                                         <span>•</span>
                                         <span>By {{ $tick->raisedBy?->name }}</span>
                                     </div>
                                 </div>
-                                <span class="text-[10px] px-2 py-0.5 rounded-md font-semibold {{ $tick->isOverdue() ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20' : 'bg-amber-500/10 text-amber-500' }}">
+                                <span class="text-[10px] px-2.5 py-0.5 rounded-lg font-bold {{ $tick->isOverdue() ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30' : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30' }}">
                                     {{ ucfirst($tick->priority) }} SLA
                                 </span>
                             </div>
                         @empty
-                            <div class="py-4 text-center text-xs text-zinc-400">All support tickets within SLA parameters.</div>
+                            <div class="py-4 text-center text-xs text-slate-400">All support tickets within SLA parameters.</div>
                         @endforelse
                     </div>
                 </div>
@@ -1137,11 +1234,11 @@
         <div class="space-y-4">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                         <svg class="size-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                         <span>Spaces &amp; Projects Delivery Matrix</span>
                     </h3>
-                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Real-time throughput and execution status across departmental spaces.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Real-time throughput and execution status across departmental spaces.</p>
                 </div>
                 <a href="{{ route('workspace.tasks', ['workspace' => $workspace->slug]) }}" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline" wire:navigate>
                     Browse All Projects &rarr;
@@ -1150,31 +1247,31 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 @foreach($spacesProgress as $sp)
-                    <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs hover:shadow-md hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-4">
+                    <div class="p-5 rounded-3xl bg-gradient-to-br from-white to-slate-50/70 dark:from-slate-900 dark:to-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-indigo-400 dark:hover:border-indigo-500/60 transition-all flex flex-col justify-between space-y-4">
                         <div>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2.5">
-                                    <span class="size-3 rounded-full" style="background-color: {{ $sp['color'] }}"></span>
-                                    <h4 class="text-sm font-bold text-zinc-900 dark:text-white truncate">{{ $sp['name'] }}</h4>
+                                    <span class="size-3.5 rounded-full shadow-xs" style="background-color: {{ $sp['color'] }}"></span>
+                                    <h4 class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ $sp['name'] }}</h4>
                                 </div>
-                                <span class="text-xs font-black text-zinc-900 dark:text-white">{{ $sp['pct'] }}%</span>
+                                <span class="text-xs font-black text-slate-900 dark:text-white">{{ $sp['pct'] }}%</span>
                             </div>
 
-                            <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                                 {{ $sp['projects_count'] }} {{ Str::plural('Project', $sp['projects_count']) }} • {{ $sp['done'] }}/{{ $sp['total_tasks'] }} Tasks Done
                             </p>
                         </div>
 
                         <div class="space-y-2">
-                            <div class="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                            <div class="h-2.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5">
                                 <div 
-                                    class="h-full rounded-full transition-all duration-500" 
+                                    class="h-full rounded-full transition-all duration-500 shadow-xs" 
                                     style="width: {{ $sp['pct'] }}%; background-color: {{ $sp['color'] }}"
                                 ></div>
                             </div>
-                            <div class="flex items-center justify-between text-[10px] text-zinc-400">
-                                <span>Status: {{ $sp['pct'] >= 60 ? 'On Schedule' : 'In Progress' }}</span>
-                                <a href="{{ route('workspace.tasks', ['workspace' => $workspace->slug, 'space' => $sp['id']]) }}" class="hover:underline font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white" wire:navigate>
+                            <div class="flex items-center justify-between text-[10px] text-slate-400">
+                                <span>Status: <strong class="text-slate-600 dark:text-slate-300">{{ $sp['pct'] >= 60 ? 'On Schedule' : 'In Progress' }}</strong></span>
+                                <a href="{{ route('workspace.tasks', ['workspace' => $workspace->slug, 'space' => $sp['id']]) }}" class="hover:underline font-semibold text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400" wire:navigate>
                                     View Board &rarr;
                                 </a>
                             </div>
@@ -1186,14 +1283,14 @@
     @endif
 
     <!-- 4. TEAM WORKLOAD & CAPACITY HEATMAP -->
-    <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-4">
+    <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-                <h3 class="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <svg class="size-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                     <span>Combined Team Workload &amp; Capacity Heatmap</span>
                 </h3>
-                <p class="text-xs text-zinc-500 dark:text-zinc-400">Cross-functional load balancing across sprint tasks and active support tickets.</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Cross-functional load balancing across sprint tasks and active support tickets.</p>
             </div>
             
             <a href="{{ route('workspace.tickets.capacity', ['workspace' => $workspace->slug]) }}" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline" wire:navigate>
@@ -1203,30 +1300,30 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
             @foreach($members->take(8) as $m)
-                <div class="p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-800/30 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all space-y-3">
+                <div class="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/40 dark:to-slate-900/60 hover:border-indigo-400 dark:hover:border-indigo-500/60 hover:shadow-sm transition-all space-y-3">
                     <div class="flex items-center gap-3">
-                        <img src="{{ $m['avatar'] }}" class="size-10 rounded-full ring-2 ring-white dark:ring-zinc-700 object-cover shrink-0" alt="{{ $m['name'] }}" />
+                        <img src="{{ $m['avatar'] }}" class="size-10 rounded-full ring-2 ring-indigo-500/20 object-cover shrink-0" alt="{{ $m['name'] }}" />
                         <div class="min-w-0 flex-1">
-                            <p class="text-xs font-bold text-zinc-900 dark:text-white truncate">{{ $m['name'] }}</p>
-                            <p class="text-[10px] text-zinc-400 truncate">{{ $m['job_title'] }}</p>
+                            <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ $m['name'] }}</p>
+                            <p class="text-[10px] text-slate-400 truncate">{{ $m['job_title'] }}</p>
                         </div>
-                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider {{ $m['status_color'] === 'emerald' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : ($m['status_color'] === 'yellow' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400') }}">
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg uppercase tracking-wider {{ $m['status_color'] === 'emerald' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' : ($m['status_color'] === 'yellow' ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30' : 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30') }}">
                             {{ $m['status_label'] }}
                         </span>
                     </div>
 
                     <!-- Meters -->
-                    <div class="space-y-1.5 pt-1 border-t border-zinc-100 dark:border-zinc-800">
+                    <div class="space-y-1.5 pt-1 border-t border-slate-100 dark:border-slate-800">
                         <div class="flex items-center justify-between text-[11px]">
-                            <span class="text-zinc-500">Active Tasks:</span>
-                            <span class="font-bold text-zinc-800 dark:text-zinc-200">{{ $m['active_tasks'] }}</span>
+                            <span class="text-slate-500">Active Tasks:</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200">{{ $m['active_tasks'] }}</span>
                         </div>
                         <div class="flex items-center justify-between text-[11px]">
-                            <span class="text-zinc-500">Support Tickets:</span>
+                            <span class="text-slate-500">Support Tickets:</span>
                             <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ $m['active_tickets'] }} / {{ $m['capacity_limit'] }}</span>
                         </div>
                         
-                        <div class="h-1.5 w-full bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+                        <div class="h-2 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden p-0.5">
                             <div 
                                 class="h-full rounded-full transition-all duration-500 {{ $m['ticket_load_pct'] >= 100 ? 'bg-rose-500' : ($m['ticket_load_pct'] >= 80 ? 'bg-amber-500' : 'bg-indigo-500') }}" 
                                 style="width: {{ min(100, $m['ticket_load_pct']) }}%"
@@ -1242,26 +1339,26 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         <!-- Task Status Breakdown -->
-        <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-4">
+        <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-4">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-zinc-400">Task Status Distribution</span>
-                <span class="text-xs font-medium text-zinc-500">{{ $totalTasks }} total tasks</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Task Status Distribution</span>
+                <span class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded-lg border border-indigo-200/60 dark:border-indigo-800/40">{{ $totalTasks }} total tasks</span>
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
                 @foreach($statusCounts as $name => $data)
-                    <div class="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800/80 space-y-1">
+                    <div class="p-3 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100/60 dark:from-slate-800/50 dark:to-slate-900/50 border border-slate-200/70 dark:border-slate-800 space-y-1">
                         <div class="flex items-center gap-1.5">
                             <span class="size-2 rounded-full" style="background-color: {{ $data['color'] }}"></span>
-                            <span class="text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 truncate">{{ $name }}</span>
+                            <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 truncate">{{ $name }}</span>
                         </div>
-                        <p class="text-lg font-black text-zinc-900 dark:text-white">{{ $data['count'] }}</p>
+                        <p class="text-lg font-black text-slate-900 dark:text-white">{{ $data['count'] }}</p>
                     </div>
                 @endforeach
             </div>
 
             <!-- Visual Bar Segment -->
-            <div class="h-2.5 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden flex">
+            <div class="h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex shadow-inner">
                 @foreach($statusCounts as $name => $data)
                     @php $pct = $totalTasks > 0 ? ($data['count'] / $totalTasks) * 100 : 0; @endphp
                     @if($pct > 0)
@@ -1272,26 +1369,26 @@
         </div>
 
         <!-- Ticket Priority & SLA Matrix -->
-        <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-4">
+        <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-4">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-zinc-400">Ticket Priority &amp; SLA Breakdown</span>
-                <span class="text-xs font-medium text-zinc-500">{{ $totalTicketsCount }} total tickets</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Ticket Priority &amp; SLA Breakdown</span>
+                <span class="text-xs font-semibold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded-lg border border-purple-200/60 dark:border-purple-800/40">{{ $totalTicketsCount }} total tickets</span>
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 @foreach($ticketPriorityCounts as $pKey => $pData)
-                    <div class="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800/80 space-y-1">
+                    <div class="p-3 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100/60 dark:from-slate-800/50 dark:to-slate-900/50 border border-slate-200/70 dark:border-slate-800 space-y-1">
                         <div class="flex items-center gap-1.5">
                             <span class="size-2 rounded-full" style="background-color: {{ $pData['color'] }}"></span>
-                            <span class="text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 truncate">{{ $pData['label'] }}</span>
+                            <span class="text-[10px] font-semibold text-slate-600 dark:text-slate-400 truncate">{{ $pData['label'] }}</span>
                         </div>
-                        <p class="text-lg font-black text-zinc-900 dark:text-white">{{ $pData['count'] }}</p>
+                        <p class="text-lg font-black text-slate-900 dark:text-white">{{ $pData['count'] }}</p>
                     </div>
                 @endforeach
             </div>
 
             <!-- Stacked Priority Bar -->
-            <div class="h-2.5 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden flex">
+            <div class="h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex shadow-inner">
                 @php $activeTicketTotal = collect($ticketPriorityCounts)->sum('count'); @endphp
                 @foreach($ticketPriorityCounts as $pKey => $pData)
                     @php $pPct = $activeTicketTotal > 0 ? ($pData['count'] / $activeTicketTotal) * 100 : 0; @endphp
@@ -1304,62 +1401,62 @@
     </div>
 
     <!-- 6. UNIFIED AUDIT ACTIVITY FEED -->
-    <div class="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs space-y-4">
+    <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-                <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Workspace Real-Time Audit Feed</h3>
-                <p class="text-xs text-zinc-500 dark:text-zinc-400">Live operational log of all task progress and ticket support lifecycle changes.</p>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white">Workspace Real-Time Audit Feed</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Live operational log of all task progress and ticket support lifecycle changes.</p>
             </div>
 
             <!-- Feed Filter Tabs -->
-            <div class="inline-flex items-center p-1 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 text-xs">
+            <div class="inline-flex items-center p-1 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 text-xs shadow-inner">
                 <button 
                     wire:click="setActivityFilter('all')" 
-                    class="px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer {{ $activityFilter === 'all' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white' }}"
+                    class="px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $activityFilter === 'all' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-sm shadow-indigo-600/30' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white' }}"
                 >
                     All Events
                 </button>
                 <button 
                     wire:click="setActivityFilter('tasks')" 
-                    class="px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer {{ $activityFilter === 'tasks' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white' }}"
+                    class="px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $activityFilter === 'tasks' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-sm shadow-indigo-600/30' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white' }}"
                 >
                     Tasks
                 </button>
                 <button 
                     wire:click="setActivityFilter('tickets')" 
-                    class="px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer {{ $activityFilter === 'tickets' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white' }}"
+                    class="px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer {{ $activityFilter === 'tickets' ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-sm shadow-indigo-600/30' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white' }}"
                 >
                     Support
                 </button>
             </div>
         </div>
 
-        <div class="divide-y divide-zinc-100 dark:divide-zinc-800/80 max-h-96 overflow-y-auto pr-1">
+        <div class="divide-y divide-slate-100 dark:divide-slate-800/80 max-h-96 overflow-y-auto pr-1">
             @forelse($recentActivities as $act)
-                <div class="py-3 flex items-start gap-3.5 text-xs">
+                <div class="py-3.5 flex items-start gap-3.5 text-xs hover:bg-slate-50/50 dark:hover:bg-slate-800/30 -mx-2 px-2 rounded-xl transition-colors">
                     <img 
                         src="{{ $act['user'] ? $act['user']->avatar() : 'https://ui-avatars.com/api/?name=System' }}" 
-                        class="size-7 rounded-full mt-0.5 shrink-0 object-cover ring-1 ring-zinc-200 dark:ring-zinc-700" 
+                        class="size-8 rounded-full mt-0.5 shrink-0 object-cover ring-2 ring-indigo-500/20" 
                         alt="" 
                     />
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-2">
-                            <span class="text-[10px] font-bold px-1.5 py-0.2 rounded-md {{ $act['type'] === 'task' ? 'bg-blue-500/10 text-blue-500' : 'bg-purple-500/10 text-purple-500' }}">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md {{ $act['type'] === 'task' ? 'bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/20' : 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/20' }}">
                                 {{ strtoupper($act['type']) }}
                             </span>
-                            <strong class="text-zinc-900 dark:text-white">{{ $act['user']?->name ?? 'System' }}</strong>
-                            <span class="text-zinc-500 dark:text-zinc-400 truncate">{{ $act['description'] }}</span>
+                            <strong class="text-slate-900 dark:text-white">{{ $act['user']?->name ?? 'System' }}</strong>
+                            <span class="text-slate-500 dark:text-slate-400 truncate">{{ $act['description'] }}</span>
                         </div>
 
-                        <div class="flex items-center gap-2 text-[10px] text-zinc-400 mt-1">
-                            <span class="font-medium text-zinc-600 dark:text-zinc-300 truncate">{{ $act['title'] }}</span>
+                        <div class="flex items-center gap-2 text-[10px] text-slate-400 mt-1">
+                            <span class="font-medium text-slate-600 dark:text-slate-300 truncate">{{ $act['title'] }}</span>
                             <span>•</span>
                             <span>{{ $act['created_at']->diffForHumans() }}</span>
                         </div>
                     </div>
                 </div>
             @empty
-                <div class="py-8 text-center text-xs text-zinc-400">
+                <div class="py-8 text-center text-xs text-slate-400">
                     No recent events found matching your filter.
                 </div>
             @endforelse

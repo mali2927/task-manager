@@ -658,6 +658,10 @@ class Dashboard extends Component
 
         return view('livewire.dashboard.dashboard', [
             'greeting' => $greeting,
+            'currentTime' => now()->format('h:i:s A'),
+            'currentDate' => now()->format('l, F j, Y'),
+            'currentDateShort' => now()->format('D, M j, Y'),
+            'currentTimezone' => config('app.timezone', 'UTC'),
             'timeBoundaries' => $boundaries,
             'ticketCreationDelta' => $ticketCreationDelta,
             'ticketResolutionDelta' => $ticketResolutionDelta,
