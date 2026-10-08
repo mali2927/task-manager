@@ -177,3 +177,41 @@ All accounts are pre-seeded in the database via `php artisan db:seed`.
 5. Change status to **Resolved** &rarr; A modal prompts for **Resolution Summary**.
 6. Type: *"Refactored payment gateway callback timeout threshold and cleared redis cache."* and click **Confirm Resolution**.
 7. Log back in as `requester@example.com` &rarr; Open the ticket &rarr; Verify the resolution summary is displayed in an emerald banner, and the **Reopen Ticket** button is available.
+
+---
+
+### Scenario D: Testing Gemini AI Role Hierarchy & Zero-Leakage Privacy (Member vs Director)
+1. **Testing as Software Engineer (`hamza@stmu.edu.pk` / `password`)**:
+   - Navigate to **AI Assistant** (`/workspace/stmu-mis/ai`).
+   - Notice the role badge at the top says: **Member (Software Engineer)**.
+   - Ask an authorized inquiry: *"What tasks are currently assigned to me?"*
+     - **Observed Result**: Gemini lists only Hamza's personal deliverables.
+   - Attempt an unauthorized peer/executive probe: *"What is Director Khubaib working on?"* or *"List all executive roadmap tasks"*.
+     - **Observed Result**: The 5-layer security engine intercepts the query. Gemini responds with:
+       > 🔒 **Access Restricted by Role Hierarchy**  
+       > Under the workspace Role-Based Access Control policy, your current role as **Software Engineer** authorizes you to view **only your own assigned and created deliverables**. You do not have permission to inspect Director, Team Lead, or peer records.
+     - **Verification**: The Director's tasks were **never loaded from MySQL into the prompt**, ensuring zero data leakage.
+   - Navigate to **Dashboard** and attempt to generate a Team Summary.
+     - **Observed Result**: The pre-execution guardrail blocks the request with an access-restricted notice without consuming external AI tokens.
+
+2. **Testing as Workspace Director (`muhammad.ali@stmu.edu.pk` / `password`)**:
+   - Navigate to **AI Assistant** (`/workspace/stmu-mis/ai`).
+   - Notice the role badge at the top says: **Director / Executive (Director MIS)**.
+   - Inquire: *"Give me a team workload analysis and identify who is saturated."*
+     - **Observed Result**: Gemini analyzes all members across the workspace, generating a full workload vs capacity limit table and identifying capacity bottlenecks.
+   - Inquire: *"What happened in the workspace this week?"*
+     - **Observed Result**: Gemini synthesizes the unified timeline combining task completions, ticket resolutions, and recent audit logs.
+
+---
+
+### Scenario E: Requester Portal Hard-Redirect & Route Guard Testing
+1. Log in as `requester@example.com` (`password`).
+2. Notice you land strictly on `/workspace/stmu-mis/tickets/my`.
+3. In your browser address bar, attempt to manually navigate to internal workspace URLs:
+   - Enter `http://localhost:8000/workspace/stmu-mis/dashboard` &rarr; **Instantly redirected** back to `/tickets/my`.
+   - Enter `http://localhost:8000/workspace/stmu-mis/tasks` &rarr; **Instantly redirected** back to `/tickets/my`.
+   - Enter `http://localhost:8000/workspace/stmu-mis/ai` &rarr; **Instantly redirected** back to `/tickets/my`.
+   - Enter `http://localhost:8000/workspace/stmu-mis/teams` &rarr; **Instantly redirected** back to `/tickets/my`.
+4. Inspect the left sidebar:
+   - Notice that internal links (*Task Board*, *Teams & People*, *Triage Queue*, *Team Capacity*, *AI Assistant*) are completely removed from the DOM tree.
+
