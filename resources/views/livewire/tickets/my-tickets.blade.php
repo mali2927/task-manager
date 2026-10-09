@@ -26,7 +26,7 @@
 
             <a 
                 href="{{ route('workspace.tickets.raise', ['workspace' => $workspace->slug]) }}" 
-                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs transition-colors"
+                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white shadow-xs transition-all hover-lift"
                 wire:navigate
             >
                 <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
@@ -99,7 +99,7 @@
                 @forelse($inProgress as $t)
                     <div 
                         wire:click="$dispatch('open-ticket-detail', { ticketId: {{ $t->id }} })"
-                        class="p-4 rounded-xl bg-white dark:bg-zinc-900 border {{ $t->isOverdue() ? 'border-red-500/40 bg-red-500/5' : 'border-zinc-200 dark:border-zinc-800' }} hover:border-indigo-500/50 hover:shadow-md transition-all cursor-pointer space-y-3"
+                        class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border {{ $t->isOverdue() ? 'border-red-500/40 bg-red-500/5' : 'border-zinc-200 dark:border-zinc-800' }} hover:border-indigo-500/50 hover:shadow-md transition-all cursor-pointer space-y-3 hover-lift-sm"
                     >
                         <div class="flex items-center justify-between">
                             <span class="px-2 py-0.5 rounded text-[11px] font-black bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
@@ -158,7 +158,7 @@
                     @foreach($open as $t)
                         <div 
                             wire:click="$dispatch('open-ticket-detail', { ticketId: {{ $t->id }} })"
-                            class="p-4 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-500/50 hover:shadow-md transition-all cursor-pointer space-y-3"
+                            class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-500/50 hover:shadow-md transition-all cursor-pointer space-y-3 hover-lift-sm"
                         >
                             <div class="flex items-center justify-between">
                                 <span class="px-2 py-0.5 rounded text-[11px] font-black bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
@@ -196,7 +196,7 @@
                     @foreach($resolved as $t)
                         <div 
                             wire:click="$dispatch('open-ticket-detail', { ticketId: {{ $t->id }} })"
-                            class="p-4 rounded-xl bg-zinc-50/60 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all cursor-pointer space-y-2 opacity-80 hover:opacity-100"
+                            class="p-4 rounded-2xl bg-zinc-50/60 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all cursor-pointer space-y-2 opacity-80 hover:opacity-100 hover-lift-sm"
                         >
                             <div class="flex items-center justify-between">
                                 <span class="text-xs font-bold text-zinc-600 dark:text-zinc-400">{{ $t->ticket_number }}</span>

@@ -71,7 +71,7 @@ class MyTasks extends Component
         $tasks = Task::whereHas('taskList.project.space', fn ($q) => $q->where('workspace_id', $this->workspace->id))
             ->whereHas('assignees', fn ($q) => $q->where('users.id', $user->id))
             ->whereNull('parent_id')
-            ->with(['status', 'taskList.project.space', 'tags', 'checklists'])
+            ->with(['status', 'taskList.project.space', 'tags', 'checklists', 'ticket'])
             ->get();
 
         $overdue = $tasks->filter(fn ($t) => $t->isOverdue());

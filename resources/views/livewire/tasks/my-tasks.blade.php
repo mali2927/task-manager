@@ -117,6 +117,7 @@
         @endif
     </div>
 
-    <!-- Embedded Task Detail Slide-Over Modal -->
+    <!-- Embedded Task Detail & Ticket Detail Slide-Over Modals -->
     <livewire:tasks.task-detail-modal />
+    <livewire:tickets.ticket-detail />
 </div>

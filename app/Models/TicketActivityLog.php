@@ -38,6 +38,29 @@ class TicketActivityLog extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function getDescriptionAttribute(): string
+    {
+        return match ($this->action) {
+            'created' => $this->to_value ?: 'Ticket created',
+            'status_changed' => "Status changed" . ($this->from_value ? " from '{$this->from_value}'" : "") . " to '{$this->to_value}'",
+            'assigned_team' => "Assigned to team '{$this->to_value}'",
+            'assigned_user' => "Assigned to '{$this->to_value}'",
+            'priority_changed' => "Priority changed" . ($this->from_value ? " from '{$this->from_value}'" : "") . " to '{$this->to_value}'",
+            'reopened' => 'Ticket reopened by requester',
+            'resolved' => 'Ticket marked as resolved',
+            'closed' => 'Ticket closed',
+            'commented' => $this->to_value ?: 'Added a comment/reply',
+            'attachment_added' => "Uploaded attachment: {$this->to_value}",
+            'project_changed' => "Project changed" . ($this->from_value ? " from '{$this->from_value}'" : "") . " to '{$this->to_value}'",
+            'converted_to_task' => "Converted to task: {$this->to_value}",
+            'linked_to_task' => "Linked to task: {$this->to_value}",
+            'unlinked_from_task' => "Unlinked from task: {$this->to_value}",
+            'created_from_task' => "Created from task: {$this->to_value}",
+            'csat_rated' => "Satisfaction rated: {$this->to_value}",
+            default => $this->to_value ?: ucfirst(str_replace('_', ' ', $this->action)),
+        };
+    }
+
     public static function log(Ticket $ticket, ?User $user, string $action, ?string $from = null, ?string $to = null): self
     {
         return self::create([

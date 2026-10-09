@@ -19,6 +19,12 @@
                 {{ $task->title }}
             </p>
             <div class="flex items-center gap-2 text-[10px] text-zinc-400 mt-0.5">
+                @if($task->ticket)
+                    <span class="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded font-mono font-bold text-[9px] bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                        🎫 {{ $task->ticket->ticket_number }}
+                    </span>
+                    <span>•</span>
+                @endif
                 <span>{{ $task->taskList?->project?->space?->name }}</span>
                 <span>/</span>
                 <span>{{ $task->taskList?->project?->name }}</span>

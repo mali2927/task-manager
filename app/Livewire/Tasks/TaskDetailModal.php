@@ -10,6 +10,8 @@ use App\Models\TaskChecklist;
 use App\Models\TaskComment;
 use App\Models\TaskStatus;
 use App\Models\TaskTimeEntry;
+use App\Models\Ticket;
+use App\Models\TicketActivityLog;
 use App\Models\User;
 use App\Services\GeminiService;
 use Illuminate\Support\Facades\Auth;
@@ -52,6 +54,16 @@ class TaskDetailModal extends Component
     public ?string $manualTimeMinutes = null;
     public ?string $manualTimeDesc = null;
 
+    // Ticket integration
+    public bool $showLinkTicketModal = false;
+    public ?int $selectedTicketIdToLink = null;
+    public string $ticketSearchTerm = '';
+    public bool $showCreateTicketModal = false;
+    public string $createTicketSubject = '';
+    public string $createTicketDescription = '';
+    public ?int $createTicketCategoryId = null;
+    public string $createTicketPriority = 'normal';
+
     // AI
     public ?string $aiSummary = null;
     public bool $isGeneratingAi = false;
@@ -70,6 +82,10 @@ class TaskDetailModal extends Component
         $this->isOpen = false;
         $this->taskId = null;
         $this->task = null;
+        $this->showLinkTicketModal = false;
+        $this->showCreateTicketModal = false;
+        $this->selectedTicketIdToLink = null;
+        $this->ticketSearchTerm = '';
         $this->dispatch('task-updated');
     }
 
@@ -80,6 +96,9 @@ class TaskDetailModal extends Component
         $this->task = Task::with([
             'taskList.project.space.workspace.taskStatuses',
             'status',
+            'ticket.category',
+            'ticket.raisedBy',
+            'ticket.assignedTo',
             'assignees',
             'checklists',
             'subtasks.status',
@@ -387,6 +406,143 @@ class TaskDetailModal extends Component
         }
     }
 
+    public function openLinkTicketModal(): void
+    {
+        $this->showLinkTicketModal = true;
+        $this->selectedTicketIdToLink = null;
+        $this->ticketSearchTerm = '';
+    }
+
+    public function linkTicket(?int $ticketId = null): void
+    {
+        $targetTicketId = $ticketId ?? $this->selectedTicketIdToLink;
+        if (!$this->task || !$targetTicketId) return;
+
+        $ticket = Ticket::find($targetTicketId);
+        if (!$ticket) return;
+
+        $this->task->update(['ticket_id' => $ticket->id]);
+        $ticket->update(['task_id' => $this->task->id]);
+
+        TaskActivity::log(
+            $this->task,
+            Auth::user(),
+            'ticket_linked',
+            "Linked to Service Ticket {$ticket->ticket_number} ({$ticket->subject})"
+        );
+
+        TicketActivityLog::log(
+            $ticket,
+            Auth::user(),
+            'linked_to_task',
+            null,
+            "Linked to Task #{$this->task->id} ({$this->task->title})"
+        );
+
+        $this->showLinkTicketModal = false;
+        $this->loadTask();
+        $this->dispatch('task-updated');
+        $this->dispatch('ticket-updated');
+    }
+
+    public function unlinkTicket(): void
+    {
+        if (!$this->task) return;
+
+        $ticket = $this->task->ticket;
+        if ($ticket) {
+            TaskActivity::log(
+                $this->task,
+                Auth::user(),
+                'ticket_unlinked',
+                "Unlinked from Service Ticket {$ticket->ticket_number} ({$ticket->subject})"
+            );
+
+            TicketActivityLog::log(
+                $ticket,
+                Auth::user(),
+                'unlinked_from_task',
+                null,
+                "Unlinked from Task #{$this->task->id} ({$this->task->title})"
+            );
+
+            if ($ticket->task_id === $this->task->id) {
+                $ticket->update(['task_id' => null]);
+            }
+        }
+
+        $this->task->update(['ticket_id' => null]);
+        $this->loadTask();
+        $this->dispatch('task-updated');
+        $this->dispatch('ticket-updated');
+    }
+
+    public function openCreateTicketModal(): void
+    {
+        if (!$this->task) return;
+
+        $workspace = $this->task->taskList?->project?->space?->workspace;
+        $firstCat = $workspace?->ticketCategories()->first();
+
+        $this->createTicketSubject = $this->task->title;
+        $this->createTicketDescription = $this->task->description ?? '';
+        $this->createTicketPriority = $this->task->priority;
+        $this->createTicketCategoryId = $firstCat?->id;
+        $this->showCreateTicketModal = true;
+    }
+
+    public function createTicketFromTask(): void
+    {
+        $this->validate([
+            'createTicketSubject' => 'required|string|max:255',
+            'createTicketCategoryId' => 'required|exists:ticket_categories,id',
+        ]);
+
+        if (!$this->task) return;
+
+        $workspace = $this->task->taskList?->project?->space?->workspace;
+        if (!$workspace) return;
+
+        $category = \App\Models\TicketCategory::find($this->createTicketCategoryId);
+
+        $ticket = Ticket::create([
+            'workspace_id' => $workspace->id,
+            'ticket_number' => Ticket::generateTicketNumber($workspace->id),
+            'subject' => trim($this->createTicketSubject),
+            'description' => trim($this->createTicketDescription) ?: "Deliverable task #{$this->task->id} converted to support ticket: {$this->task->title}",
+            'category_id' => $this->createTicketCategoryId,
+            'project_id' => $this->task->taskList?->project_id,
+            'task_id' => $this->task->id,
+            'priority' => $this->createTicketPriority,
+            'status' => 'open',
+            'raised_by_user_id' => Auth::id(),
+            'assigned_team_id' => $category?->default_team_id,
+            'due_by' => Ticket::calculateSlaDueDate($this->createTicketPriority),
+        ]);
+
+        $this->task->update(['ticket_id' => $ticket->id]);
+
+        TaskActivity::log(
+            $this->task,
+            Auth::user(),
+            'ticket_created',
+            "Generated Service Ticket {$ticket->ticket_number} ({$ticket->subject}) from this task"
+        );
+
+        TicketActivityLog::log(
+            $ticket,
+            Auth::user(),
+            'created_from_task',
+            null,
+            "Ticket created from Task #{$this->task->id} ({$this->task->title})"
+        );
+
+        $this->showCreateTicketModal = false;
+        $this->loadTask();
+        $this->dispatch('task-updated');
+        $this->dispatch('ticket-updated');
+    }
+
     public function deleteTask(): void
     {
         if (!$this->task) return;
@@ -397,12 +553,36 @@ class TaskDetailModal extends Component
 
     public function render()
     {
-        $allStatuses = $this->task?->taskList?->project?->space?->workspace?->taskStatuses ?? collect();
-        $workspaceUsers = $this->task?->taskList?->project?->space?->workspace?->members ?? collect();
+        $workspace = $this->task?->taskList?->project?->space?->workspace;
+        $allStatuses = $workspace?->taskStatuses ?? collect();
+        $workspaceUsers = $workspace?->members ?? collect();
+        $workspaceCategories = $workspace ? $workspace->ticketCategories()->get() : collect();
+
+        $availableTickets = collect();
+        if ($workspace && $this->showLinkTicketModal) {
+            $tQuery = Ticket::where('workspace_id', $workspace->id)
+                ->where('status', '!=', 'closed')
+                ->where(function ($q) {
+                    $q->whereNull('task_id')
+                      ->orWhere('task_id', '!=', $this->taskId);
+                });
+
+            if (!empty(trim($this->ticketSearchTerm))) {
+                $s = '%' . trim($this->ticketSearchTerm) . '%';
+                $tQuery->where(function ($q) use ($s) {
+                    $q->where('ticket_number', 'like', $s)
+                      ->orWhere('subject', 'like', $s);
+                });
+            }
+
+            $availableTickets = $tQuery->latest('id')->take(20)->get();
+        }
 
         return view('livewire.tasks.task-detail-modal', [
             'allStatuses' => $allStatuses,
             'workspaceUsers' => $workspaceUsers,
+            'workspaceCategories' => $workspaceCategories,
+            'availableTickets' => $availableTickets,
         ]);
     }
 }

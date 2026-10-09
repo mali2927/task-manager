@@ -45,6 +45,99 @@
     ::file-selector-button {
         border-color: var(--color-gray-200, currentColor);
     }
+
+    html.dark {
+        color-scheme: dark;
+    }
+
+    .dark select,
+    .dark input,
+    .dark textarea {
+        color-scheme: dark;
+    }
+
+    .dark select option {
+        background-color: #262626;
+        color: #f5f5f5;
+    }
+}
+
+/* ========================================================================= */
+/* SIGNATURE MODERN UI UTILITIES & MICRO-ANIMATIONS                         */
+/* ========================================================================= */
+
+@keyframes glow-pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+        filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.6));
+    }
+    50% {
+        opacity: 0.85;
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 14px rgba(139, 92, 246, 0.8));
+    }
+}
+
+@keyframes float-slow {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes shimmer-sweep {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(200%);
+    }
+}
+
+.animate-glow-pulse {
+    animation: glow-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-float-slow {
+    animation: float-slow 4s ease-in-out infinite;
+}
+
+.hover-lift {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color 0.25s ease,
+                background-color 0.25s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px -8px rgba(99, 102, 241, 0.16), 0 8px 12px -6px rgba(99, 102, 241, 0.08);
+}
+
+.hover-lift-sm {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.2s ease;
+}
+
+.hover-lift-sm:hover {
+    transform: translateY(-1px);
+}
+
+.glass-panel {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.signature-glow-sm {
+    box-shadow: 0 0 15px -3px rgba(99, 102, 241, 0.3);
+}
+
+.signature-glow-md {
+    box-shadow: 0 0 25px -4px rgba(99, 102, 241, 0.45);
 }
 
 [data-flux-field]:not(ui-radio, ui-checkbox) {
@@ -60,7 +153,3 @@ textarea:focus[data-flux-control],
 select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
 }
-
-/* \[:where(&)\]:size-4 {
-    @apply size-4;
-} */

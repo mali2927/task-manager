@@ -20,6 +20,7 @@ class Ticket extends Model
         'description',
         'category_id',
         'project_id',
+        'task_id',
         'priority',
         'status',
         'raised_by_user_id',
@@ -27,6 +28,8 @@ class Ticket extends Model
         'assigned_to_user_id',
         'due_by',
         'resolution_summary',
+        'rating',
+        'rating_feedback',
         'resolved_at',
         'closed_at',
     ];
@@ -37,6 +40,7 @@ class Ticket extends Model
             'due_by' => 'datetime',
             'resolved_at' => 'datetime',
             'closed_at' => 'datetime',
+            'rating' => 'integer',
         ];
     }
 
@@ -53,6 +57,16 @@ class Ticket extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function task(): BelongsTo
+    {
+        return $this->belongsTo(Task::class);
+    }
+
+    public function hasRating(): bool
+    {
+        return $this->rating !== null && $this->rating > 0;
     }
 
     public function raisedBy(): BelongsTo
@@ -134,6 +148,11 @@ class Ticket extends Model
         $hours = self::slaHoursForPriority($priority);
 
         return $start->addHours($hours);
+    }
+
+    public static function calculateSlaDueDate(string $priority): \Carbon\CarbonInterface
+    {
+        return self::computeDueBy($priority);
     }
 
     public static function generateTicketNumber(int $workspaceId): string

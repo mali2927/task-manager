@@ -6,6 +6,12 @@ use App\Mail\TicketAssignedMail;
 use App\Mail\TicketResolvedMail;
 use App\Mail\TicketStatusChangedMail;
 use App\Models\AppNotification;
+use App\Models\Project;
+use App\Models\Space;
+use App\Models\Task;
+use App\Models\TaskActivity;
+use App\Models\TaskList;
+use App\Models\TaskStatus;
 use App\Models\Team;
 use App\Models\Ticket;
 use App\Models\TicketActivityLog;
@@ -48,6 +54,21 @@ class TicketDetail extends Component
     public bool $showResolveModal = false;
     public string $resolutionSummary = '';
 
+    // Convert Ticket to Task modal
+    public bool $showConvertToTaskModal = false;
+    public ?int $targetSpaceId = null;
+    public ?int $targetProjectId = null;
+    public ?int $targetTaskListId = null;
+    public string $targetTaskTitle = '';
+    public string $targetTaskDescription = '';
+    public string $targetTaskPriority = 'normal';
+    public ?string $targetTaskDueDate = null;
+    public array $targetTaskAssigneeIds = [];
+
+    // CSAT Rating
+    public ?int $csatRating = null;
+    public string $csatFeedback = '';
+
     // Team members capacity for assignment drawer
     public array $teamMembersCapacity = [];
 
@@ -82,6 +103,7 @@ class TicketDetail extends Component
         $this->newCommentBody = '';
         $this->isInternalNote = false;
         $this->showResolveModal = false;
+        $this->showConvertToTaskModal = false;
     }
 
     public function loadTicket(): void
@@ -89,9 +111,11 @@ class TicketDetail extends Component
         if (!$this->ticketId) return;
 
         $this->ticket = Ticket::with([
-            'workspace',
+            'workspace.taskStatuses',
             'category',
             'project.space',
+            'task.status',
+            'task.assignees',
             'raisedBy',
             'assignedTeam.members',
             'assignedTo',
@@ -99,6 +123,11 @@ class TicketDetail extends Component
             'attachments.uploadedBy',
             'activityLogs.user',
         ])->find($this->ticketId);
+
+        if ($this->ticket) {
+            $this->csatRating = $this->ticket->rating;
+            $this->csatFeedback = $this->ticket->rating_feedback ?? '';
+        }
     }
 
     public function updateTeamCapacityMetrics(): void
@@ -416,6 +445,135 @@ class TicketDetail extends Component
         $this->dispatch('ticket-updated');
     }
 
+    public function applyCannedResponse(string $key): void
+    {
+        $template = match ($key) {
+            'need_info' => "Hello! Thank you for contacting STMU MIS Support.\n\nIn order to assist you promptly, could you please provide additional details, specific steps to reproduce, or any relevant error screenshots?",
+            'investigating' => "We have reproduced the reported issue and our technical team is actively investigating the underlying cause. We will provide an update as soon as progress is made.",
+            'fix_deployed' => "A remediation has been applied to address this issue. Please clear your cache, retry the operation, and confirm if everything is working smoothly.",
+            'scheduled' => "This request has been approved and scheduled for implementation in our upcoming sprint release cycle.",
+            default => '',
+        };
+
+        if ($template) {
+            $this->newCommentBody = empty($this->newCommentBody) 
+                ? $template 
+                : $this->newCommentBody . "\n\n" . $template;
+        }
+    }
+
+    public function openConvertToTaskModal(): void
+    {
+        if (!$this->ticket) return;
+
+        $this->targetTaskTitle = $this->ticket->subject;
+        $this->targetTaskDescription = $this->ticket->description ?? '';
+        $this->targetTaskPriority = $this->ticket->priority;
+        $this->targetTaskDueDate = $this->ticket->due_by?->format('Y-m-d');
+        $this->targetProjectId = $this->ticket->project_id;
+        $this->targetSpaceId = $this->ticket->project?->space_id;
+
+        // Auto-select first list in project
+        if ($this->targetProjectId) {
+            $firstList = TaskList::where('project_id', $this->targetProjectId)->first();
+            $this->targetTaskListId = $firstList?->id;
+        } else {
+            $firstList = TaskList::whereHas('project.space', fn ($q) => $q->where('workspace_id', $this->ticket->workspace_id))->first();
+            $this->targetTaskListId = $firstList?->id;
+            $this->targetProjectId = $firstList?->project_id;
+            $this->targetSpaceId = $firstList?->project?->space_id;
+        }
+
+        $this->targetTaskAssigneeIds = $this->ticket->assigned_to_user_id ? [$this->ticket->assigned_to_user_id] : [];
+        $this->showConvertToTaskModal = true;
+    }
+
+    public function onTargetProjectChanged(?int $projectId): void
+    {
+        $this->targetProjectId = $projectId;
+        if ($projectId) {
+            $proj = Project::find($projectId);
+            $this->targetSpaceId = $proj?->space_id;
+            $this->targetTaskListId = TaskList::where('project_id', $projectId)->first()?->id;
+        }
+    }
+
+    public function convertToTask(): void
+    {
+        $this->validate([
+            'targetTaskTitle' => 'required|string|max:255',
+            'targetTaskListId' => 'required|exists:task_lists,id',
+        ]);
+
+        if (!$this->ticket) return;
+
+        $workspace = $this->ticket->workspace;
+        $defaultStatus = $workspace->taskStatuses()->where('is_default', true)->first()
+            ?? $workspace->taskStatuses()->first();
+
+        $task = Task::create([
+            'task_list_id' => $this->targetTaskListId,
+            'ticket_id' => $this->ticket->id,
+            'created_by_id' => Auth::id(),
+            'title' => trim($this->targetTaskTitle),
+            'description' => trim($this->targetTaskDescription) ?: null,
+            'status_id' => $defaultStatus?->id,
+            'priority' => $this->targetTaskPriority,
+            'due_date' => $this->targetTaskDueDate ?: null,
+            'sort_order' => Task::where('task_list_id', $this->targetTaskListId)->count() + 1,
+        ]);
+
+        if (!empty($this->targetTaskAssigneeIds)) {
+            $task->assignees()->sync($this->targetTaskAssigneeIds);
+        }
+
+        // Link on ticket
+        $this->ticket->update(['task_id' => $task->id]);
+
+        // Audit logs
+        TicketActivityLog::log(
+            $this->ticket,
+            Auth::user(),
+            'converted_to_task',
+            null,
+            "Created Task #{$task->id} ({$task->title})"
+        );
+
+        TaskActivity::log(
+            $task,
+            Auth::user(),
+            'converted_from_ticket',
+            "Created from Service Ticket {$this->ticket->ticket_number} ({$this->ticket->subject})"
+        );
+
+        $this->showConvertToTaskModal = false;
+        $this->loadTicket();
+        $this->dispatch('task-created');
+        $this->dispatch('ticket-updated');
+    }
+
+    public function submitCsatRating(int $stars): void
+    {
+        if (!$this->ticket || $stars < 1 || $stars > 5) return;
+
+        $this->ticket->update([
+            'rating' => $stars,
+            'rating_feedback' => trim($this->csatFeedback) ?: null,
+        ]);
+        $this->csatRating = $stars;
+
+        TicketActivityLog::log(
+            $this->ticket,
+            Auth::user(),
+            'csat_rated',
+            null,
+            "{$stars} Stars" . ($this->csatFeedback ? " - {$this->csatFeedback}" : '')
+        );
+
+        $this->loadTicket();
+        $this->dispatch('ticket-updated');
+    }
+
     public function render()
     {
         $user = Auth::user();
@@ -431,12 +589,16 @@ class TicketDetail extends Component
 
         $teams = $workspace ? $workspace->teams()->with('members')->get() : collect();
         $projects = $workspace ? $workspace->projects()->with('space')->orderBy('name')->get() : collect();
+        $workspaceSpaces = $workspace ? $workspace->spaces()->with(['projects.lists'])->get() : collect();
+        $workspaceMembers = $workspace ? $workspace->members : collect();
 
         return view('livewire.tickets.ticket-detail', [
             'isStaff' => $isStaff,
             'canManageAssignment' => $canManageAssignment,
             'teams' => $teams,
             'projects' => $projects,
+            'workspaceSpaces' => $workspaceSpaces,
+            'workspaceMembers' => $workspaceMembers,
         ]);
     }
 }

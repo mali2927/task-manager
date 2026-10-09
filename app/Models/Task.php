@@ -17,6 +17,7 @@ class Task extends Model
     protected $fillable = [
         'task_list_id',
         'parent_id',
+        'ticket_id',
         'created_by_id',
         'title',
         'description',
@@ -46,6 +47,11 @@ class Task extends Model
     public function taskList(): BelongsTo
     {
         return $this->belongsTo(TaskList::class);
+    }
+
+    public function ticket(): BelongsTo
+    {
+        return $this->belongsTo(Ticket::class);
     }
 
     public function parent(): BelongsTo

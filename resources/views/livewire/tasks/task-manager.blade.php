@@ -179,10 +179,17 @@
                                 >
                                     <!-- Top Card Row: Priority & Space -->
                                     <div class="flex items-center justify-between gap-2">
-                                        @php $badge = $task->priorityBadge(); @endphp
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold {{ $badge['bg'] }} {{ $badge['text'] }} border {{ $badge['border'] }}">
-                                            {{ $badge['label'] }}
-                                        </span>
+                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                            @php $badge = $task->priorityBadge(); @endphp
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold {{ $badge['bg'] }} {{ $badge['text'] }} border {{ $badge['border'] }}">
+                                                {{ $badge['label'] }}
+                                            </span>
+                                            @if($task->ticket)
+                                                <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800" title="Linked to {{ $task->ticket->ticket_number }}">
+                                                    🎫 {{ $task->ticket->ticket_number }}
+                                                </span>
+                                            @endif
+                                        </div>
 
                                         <span class="text-[10px] text-zinc-400 truncate max-w-[140px]">
                                             {{ $task->taskList?->project?->name }}
@@ -301,6 +308,11 @@
                                         >
                                             <td class="py-3 px-5 font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
                                                 <div class="flex items-center gap-2">
+                                                    @if($task->ticket)
+                                                        <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 shrink-0" title="Linked to {{ $task->ticket->ticket_number }}">
+                                                            🎫 {{ $task->ticket->ticket_number }}
+                                                        </span>
+                                                    @endif
                                                     <span>{{ $task->title }}</span>
                                                     @if($task->tags->count() > 0)
                                                         <span class="px-1.5 py-0.5 rounded text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-500">
@@ -572,6 +584,7 @@
         </div>
     @endif
 
-    <!-- Embedded Task Detail Slide-Over Modal -->
+    <!-- Embedded Task Detail & Ticket Detail Slide-Over Modals -->
     <livewire:tasks.task-detail-modal />
+    <livewire:tickets.ticket-detail />
 </div>

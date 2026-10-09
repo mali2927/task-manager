@@ -11,6 +11,7 @@ use App\Livewire\Tickets\MyTickets as MyTicketsList;
 use App\Livewire\Tickets\RaiseTicket;
 use App\Livewire\Tickets\TicketCategoryManager;
 use App\Livewire\Tickets\TicketQueue;
+use App\Livewire\Workspace\ActivityLogs;
 use App\Livewire\Workspace\TeamManager;
 use App\Models\Task;
 use App\Models\Ticket;
@@ -57,7 +58,82 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/workspace/{workspace:slug}/tickets/capacity', CapacityDashboard::class)->name('workspace.tickets.capacity');
     Route::get('/workspace/{workspace:slug}/tickets/categories', TicketCategoryManager::class)->name('workspace.tickets.categories');
 
-    // 8. CSV Export of Workspace Tasks
+    // 8. Workspace Audit & Activity Logs (ISO 27001 Compliance)
+    Route::get('/workspace/{workspace:slug}/activity-logs', ActivityLogs::class)->name('workspace.activity-logs');
+
+    // 9. CSV Export of Workspace Audit Logs
+    Route::get('/workspace/{workspace:slug}/activity-logs/export', function (Workspace $workspace) {
+        abort_if(Auth::user()->isWorkspaceRequester($workspace), 403, 'Unauthorized.');
+
+        $ticketLogs = \App\Models\TicketActivityLog::whereHas('ticket', fn ($q) => $q->where('workspace_id', $workspace->id))
+            ->with(['ticket', 'user'])
+            ->latest('created_at')
+            ->get()
+            ->map(fn ($l) => [
+                'type' => 'Ticket',
+                'id' => $l->id,
+                'reference' => $l->ticket?->ticket_number ?? 'TCK-???',
+                'title' => $l->ticket?->subject ?? 'Deleted Ticket',
+                'actor' => $l->user?->name ?? 'System',
+                'actor_email' => $l->user?->email ?? 'N/A',
+                'action' => $l->action,
+                'description' => $l->description,
+                'from_value' => $l->from_value,
+                'to_value' => $l->to_value,
+                'created_at' => $l->created_at->toDateTimeString(),
+            ]);
+
+        $taskLogs = \App\Models\TaskActivity::whereHas('task.taskList.project.space', fn ($q) => $q->where('workspace_id', $workspace->id))
+            ->with(['task', 'user'])
+            ->latest('created_at')
+            ->get()
+            ->map(fn ($l) => [
+                'type' => 'Task',
+                'id' => $l->id,
+                'reference' => "Task #{$l->task_id}",
+                'title' => $l->task?->title ?? 'Deleted Task',
+                'actor' => $l->user?->name ?? 'System',
+                'actor_email' => $l->user?->email ?? 'N/A',
+                'action' => $l->action,
+                'description' => $l->description,
+                'from_value' => $l->old_value,
+                'to_value' => $l->new_value,
+                'created_at' => $l->created_at->toDateTimeString(),
+            ]);
+
+        $allLogs = $ticketLogs->concat($taskLogs)->sortByDesc('created_at')->values();
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"audit-logs-{$workspace->slug}-" . date('Y-m-d') . ".csv\"",
+        ];
+
+        $callback = function () use ($allLogs) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['Type', 'Event ID', 'Reference', 'Record Title', 'Actor Name', 'Actor Email', 'Action Identifier', 'Log Description', 'Old Value', 'New Value', 'Timestamp UTC']);
+
+            foreach ($allLogs as $log) {
+                fputcsv($file, [
+                    $log['type'],
+                    $log['id'],
+                    $log['reference'],
+                    $log['title'],
+                    $log['actor'],
+                    $log['actor_email'],
+                    $log['action'],
+                    $log['description'],
+                    $log['from_value'],
+                    $log['to_value'],
+                    $log['created_at'],
+                ]);
+            }
+            fclose($file);
+        };
+
+        return new StreamedResponse($callback, 200, $headers);
+    })->name('workspace.activity-logs.export');
+
+    // 10. CSV Export of Workspace Tasks
     Route::get('/workspace/{workspace:slug}/export', function (Workspace $workspace) {
         abort_if(Auth::user()->isWorkspaceRequester($workspace), 403, 'Unauthorized. Requesters cannot export workspace internal tasks.');
 

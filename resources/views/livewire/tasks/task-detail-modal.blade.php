@@ -73,6 +73,93 @@
                     </div>
                 @endif
 
+                <!-- Linked Service Ticket Banner / Connect Action -->
+                @if($task->ticket)
+                    <div class="p-4 rounded-xl border border-purple-200 dark:border-purple-900/60 bg-gradient-to-r from-purple-50/80 via-indigo-50/40 to-white dark:from-purple-950/40 dark:via-indigo-950/20 dark:to-zinc-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                        <div class="flex items-start gap-3 min-w-0">
+                            <span class="p-2 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 shrink-0 mt-0.5">
+                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                                </svg>
+                            </span>
+                            <div class="space-y-1 min-w-0">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">Linked Service Ticket</span>
+                                    <span class="px-2 py-0.5 rounded-md text-[11px] font-mono font-black bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-200 border border-purple-300 dark:border-purple-800">
+                                        {{ $task->ticket->ticket_number }}
+                                    </span>
+                                    @if($task->ticket->category)
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                                            {{ $task->ticket->category->name }}
+                                        </span>
+                                    @endif
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border {{ $task->ticket->statusBadgeColor() }}">
+                                        {{ ucfirst(str_replace('_', ' ', $task->ticket->status)) }}
+                                    </span>
+                                </div>
+                                <div class="text-xs font-bold text-zinc-900 dark:text-white truncate">
+                                    {{ $task->ticket->subject }}
+                                </div>
+                                <div class="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
+                                    <span>Raised by <strong>{{ $task->ticket->raisedBy?->name ?? 'Requester' }}</strong></span>
+                                    @if($task->ticket->due_by)
+                                        <span>•</span>
+                                        <span>SLA: {{ $task->ticket->due_by->format('M j, g:i A') }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                            <button 
+                                wire:click="$dispatch('open-ticket-detail', { ticketId: {{ $task->ticket->id }} })"
+                                type="button"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-xs cursor-pointer transition-all"
+                            >
+                                <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                <span>View Ticket</span>
+                            </button>
+                            <button 
+                                wire:confirm="Are you sure you want to unlink this ticket from the task?"
+                                wire:click="unlinkTicket"
+                                type="button"
+                                class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-zinc-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
+                                title="Unlink Ticket"
+                            >
+                                Unlink
+                            </button>
+                        </div>
+                    </div>
+                @else
+                    <!-- Ticket Actions when not linked -->
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-dashed border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500">
+                        <div class="flex items-center gap-2">
+                            <svg class="size-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                            </svg>
+                            <span>Not connected to a customer support ticket</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button 
+                                wire:click="openLinkTicketModal" 
+                                type="button" 
+                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 shadow-2xs transition-colors cursor-pointer"
+                            >
+                                <svg class="size-3.5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.172 13.828a4 4 0 015.656 0l4-4a4 4 0 00-5.656-5.656l-1.102 1.101" /></svg>
+                                <span>Link Ticket</span>
+                            </button>
+                            <button 
+                                wire:click="openCreateTicketModal" 
+                                type="button" 
+                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 shadow-2xs transition-colors cursor-pointer"
+                            >
+                                <svg class="size-3.5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                                <span>Raise Ticket</span>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Title Input -->
                 <div>
                     <input 
@@ -396,5 +483,186 @@
 
             </div>
         </div>
+
+        <!-- Link Existing Ticket Modal -->
+        @if($showLinkTicketModal)
+            <div class="fixed inset-0 bg-black/70 backdrop-blur-xs z-60 flex items-center justify-center p-4">
+                <div class="w-full max-w-lg rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl p-6 space-y-4 animate-in zoom-in-95 duration-150">
+                    <div class="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <span class="p-2 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.172 13.828a4 4 0 015.656 0l4-4a4 4 0 00-5.656-5.656l-1.102 1.101" /></svg>
+                            </span>
+                            <div>
+                                <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Link Service Ticket</h3>
+                                <p class="text-[11px] text-zinc-400">Associate an open ticket with Task #{{ $task->id }}</p>
+                            </div>
+                        </div>
+                        <button wire:click="$set('showLinkTicketModal', false)" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+                            <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+
+                    <div class="space-y-3">
+                        <!-- Search tickets -->
+                        <div class="relative">
+                            <svg class="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input 
+                                type="text" 
+                                wire:model.live.debounce.250ms="ticketSearchTerm" 
+                                placeholder="Search by ticket # or subject..." 
+                                class="w-full text-xs rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 pl-9 pr-3 py-2 text-zinc-800 dark:text-zinc-200"
+                            />
+                        </div>
+
+                        <!-- Ticket Select List -->
+                        <div class="max-h-60 overflow-y-auto space-y-1.5 divide-y divide-zinc-100 dark:divide-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-2 bg-zinc-50/50 dark:bg-zinc-800/30">
+                            @forelse($availableTickets as $avTicket)
+                                <label class="flex items-start gap-2.5 p-2 rounded-lg hover:bg-white dark:hover:bg-zinc-800 cursor-pointer transition-colors {{ $selectedTicketIdToLink === $avTicket->id ? 'bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800' : '' }}">
+                                    <input 
+                                        type="radio" 
+                                        wire:model="selectedTicketIdToLink" 
+                                        value="{{ $avTicket->id }}" 
+                                        class="mt-1 text-purple-600 focus:ring-purple-500"
+                                    />
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center gap-1.5 text-xs">
+                                            <span class="font-mono font-bold text-purple-600 dark:text-purple-400">{{ $avTicket->ticket_number }}</span>
+                                            <span class="px-1.5 py-0.2 rounded text-[10px] font-bold uppercase {{ $avTicket->statusBadgeColor() }} border">
+                                                {{ $avTicket->status }}
+                                            </span>
+                                        </div>
+                                        <div class="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                                            {{ $avTicket->subject }}
+                                        </div>
+                                        <div class="text-[10px] text-zinc-400">
+                                            Raised by {{ $avTicket->raisedBy?->name ?? 'Requester' }}
+                                        </div>
+                                    </div>
+                                </label>
+                            @empty
+                                <div class="py-6 text-center text-xs text-zinc-400">
+                                    No available tickets found in this workspace.
+                                </div>
+                            @endforelse
+                        </div>
+
+                        <!-- Modal Actions -->
+                        <div class="flex items-center justify-end gap-2 pt-3 border-t border-zinc-200 dark:border-zinc-800">
+                            <button 
+                                wire:click="$set('showLinkTicketModal', false)" 
+                                type="button" 
+                                class="px-4 py-2 rounded-xl text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                wire:click="linkTicket" 
+                                type="button" 
+                                class="px-4 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-xs cursor-pointer disabled:opacity-50"
+                                {{ !$selectedTicketIdToLink ? 'disabled' : '' }}
+                            >
+                                Link Selected Ticket
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <!-- Raise / Create Ticket from Task Modal -->
+        @if($showCreateTicketModal)
+            <div class="fixed inset-0 bg-black/70 backdrop-blur-xs z-60 flex items-center justify-center p-4">
+                <div class="w-full max-w-lg rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-2xl p-6 space-y-4 animate-in zoom-in-95 duration-150">
+                    <div class="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <span class="p-2 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                            </span>
+                            <div>
+                                <h3 class="text-sm font-bold text-zinc-900 dark:text-white">Raise Ticket from Task</h3>
+                                <p class="text-[11px] text-zinc-400">Convert Task #{{ $task->id }} into a customer support ticket</p>
+                            </div>
+                        </div>
+                        <button wire:click="$set('showCreateTicketModal', false)" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+                            <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+
+                    <form wire:submit.prevent="createTicketFromTask" class="space-y-3.5 text-xs">
+                        <!-- Subject -->
+                        <div>
+                            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Ticket Subject <span class="text-red-500">*</span></label>
+                            <input 
+                                type="text" 
+                                wire:model="createTicketSubject" 
+                                class="w-full text-xs px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200"
+                                required
+                            />
+                            @error('createTicketSubject') <span class="text-[10px] text-red-500">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- Category & Priority -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Category <span class="text-red-500">*</span></label>
+                                <select 
+                                    wire:model="createTicketCategoryId" 
+                                    class="w-full text-xs px-2.5 py-1.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200"
+                                    required
+                                >
+                                    @foreach($workspaceCategories as $cat)
+                                        <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('createTicketCategoryId') <span class="text-[10px] text-red-500">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div>
+                                <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Priority</label>
+                                <select 
+                                    wire:model="createTicketPriority" 
+                                    class="w-full text-xs px-2.5 py-1.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200"
+                                >
+                                    <option value="urgent">🚨 Urgent (4h SLA)</option>
+                                    <option value="high">🔶 High (8h SLA)</option>
+                                    <option value="normal">🔷 Normal (24h SLA)</option>
+                                    <option value="low">⚪ Low (72h SLA)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label class="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Description</label>
+                            <textarea 
+                                wire:model="createTicketDescription" 
+                                rows="3" 
+                                class="w-full text-xs px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 resize-none"
+                            ></textarea>
+                        </div>
+
+                        <!-- Modal Actions -->
+                        <div class="flex items-center justify-end gap-2 pt-3 border-t border-zinc-200 dark:border-zinc-800">
+                            <button 
+                                wire:click="$set('showCreateTicketModal', false)" 
+                                type="button" 
+                                class="px-4 py-2 rounded-xl text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                type="submit" 
+                                class="px-4 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-xs cursor-pointer"
+                            >
+                                Create Ticket &amp; Link
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
     @endif
 </div>

@@ -216,6 +216,7 @@
         </div>
     @endif
 
-    <!-- Slide-over Ticket Detail Drawer -->
+    <!-- Slide-over Ticket Detail & Task Detail Drawers -->
     <livewire:tickets.ticket-detail />
+    <livewire:tasks.task-detail-modal />
 </div>

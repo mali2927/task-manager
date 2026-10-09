@@ -230,6 +230,7 @@ class TaskManager extends Component
         ->whereNull('parent_id') // Top-level tasks
         ->with([
             'status',
+            'ticket',
             'assignees',
             'checklists',
             'tags',

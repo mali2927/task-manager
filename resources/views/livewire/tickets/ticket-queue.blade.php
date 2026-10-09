@@ -26,7 +26,7 @@
             </a>
             <a 
                 href="{{ route('workspace.tickets.raise', ['workspace' => $workspace->slug]) }}" 
-                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs transition-colors"
+                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white shadow-xs transition-all hover-lift"
                 wire:navigate
             >
                 <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
@@ -38,37 +38,37 @@
     <!-- KPI Metric Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <!-- Open in Triage -->
-        <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between shadow-xs">
+        <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between shadow-xs hover:border-indigo-400 dark:hover:border-zinc-700 transition-all hover-lift">
             <div>
                 <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Open in Triage</span>
                 <div class="text-2xl font-black text-zinc-900 dark:text-white mt-0.5">{{ $openCount }}</div>
                 <div class="text-[11px] text-zinc-500 mt-0.5">Awaiting team assignment</div>
             </div>
-            <div class="size-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+            <div class="size-11 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
                 <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" /></svg>
             </div>
         </div>
 
         <!-- In Progress -->
-        <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between shadow-xs">
+        <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between shadow-xs hover:border-sky-400 dark:hover:border-zinc-700 transition-all hover-lift">
             <div>
                 <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Active Working</span>
                 <div class="text-2xl font-black text-zinc-900 dark:text-white mt-0.5">{{ $assignedCount }}</div>
                 <div class="text-[11px] text-zinc-500 mt-0.5">Assigned to team members</div>
             </div>
-            <div class="size-10 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center">
+            <div class="size-11 rounded-2xl bg-sky-500/10 text-sky-500 flex items-center justify-center">
                 <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </div>
         </div>
 
         <!-- Overdue SLA -->
-        <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border {{ $overdueCount > 0 ? 'border-red-500/40 bg-red-500/5' : 'border-zinc-200 dark:border-zinc-800' }} flex items-center justify-between shadow-xs">
+        <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border {{ $overdueCount > 0 ? 'border-red-500/40 bg-red-500/5' : 'border-zinc-200 dark:border-zinc-800' }} flex items-center justify-between shadow-xs hover:border-rose-400 dark:hover:border-zinc-700 transition-all hover-lift">
             <div>
                 <span class="text-[11px] font-bold uppercase tracking-wider {{ $overdueCount > 0 ? 'text-red-500' : 'text-zinc-400' }}">Overdue SLA</span>
                 <div class="text-2xl font-black {{ $overdueCount > 0 ? 'text-red-500' : 'text-zinc-900 dark:text-white' }} mt-0.5">{{ $overdueCount }}</div>
                 <div class="text-[11px] text-zinc-500 mt-0.5">Passed resolution deadline</div>
             </div>
-            <div class="size-10 rounded-xl {{ $overdueCount > 0 ? 'bg-red-500/20 text-red-500' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400' }} flex items-center justify-center">
+            <div class="size-11 rounded-2xl {{ $overdueCount > 0 ? 'bg-red-500/20 text-red-500' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400' }} flex items-center justify-center">
                 <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
             </div>
         </div>
@@ -378,6 +378,7 @@
         </div>
     @endif
 
-    <!-- Slide-over Ticket Detail Drawer -->
+    <!-- Slide-over Ticket Detail & Task Detail Drawers -->
     <livewire:tickets.ticket-detail />
+    <livewire:tasks.task-detail-modal />
 </div>
