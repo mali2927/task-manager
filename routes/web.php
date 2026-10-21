@@ -33,8 +33,19 @@ Route::get('/register', fn () => redirect()->route('access-requests.create'))->n
 Route::post('/register', fn () => abort(403, 'Public registration is disabled. Please submit an access request.'))->name('register.store');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    // 1. Dashboard
+    // Module Switcher Route (Task Management vs IT Helpdesk)
+    Route::get('/switch-module/{module}', function (string $module) {
+        if (in_array($module, ['tasks', 'helpdesk'])) {
+            session(['active_module' => $module]);
+        }
+        return redirect()->route('dashboard', ['module' => $module]);
+    })->name('module.switch');
+    Route::get('/switch-module-alias/{module}', fn ($module) => redirect()->route('module.switch', ['module' => $module]))->name('switch-module');
+
+    // 1. Dashboard (Supports ?module=tasks and ?module=helpdesk)
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
+    Route::get('/tasks-dashboard', fn () => redirect()->route('dashboard', ['module' => 'tasks']))->name('dashboard.tasks');
+    Route::get('/helpdesk-dashboard', fn () => redirect()->route('dashboard', ['module' => 'helpdesk']))->name('dashboard.helpdesk');
 
     // 2. Personal My Tasks
     Route::get('/my-tasks', MyTasks::class)->name('my-tasks');

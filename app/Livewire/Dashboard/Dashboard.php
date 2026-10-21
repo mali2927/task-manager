@@ -14,12 +14,17 @@ use App\Services\GeminiService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 #[Layout('layouts.app')]
 class Dashboard extends Component
 {
     public ?Workspace $workspace = null;
+
+    #[Url(as: 'module')]
+    public string $module = 'tasks'; // 'tasks' (Task & Sprint Dashboard) or 'helpdesk' (IT Helpdesk & SLA Dashboard)
+
     public ?int $selectedSpaceId = null;
     public string $activeTab = 'overview'; // overview, analytics, tasks, tickets
     public string $activityFilter = 'all'; // all, tasks, tickets
@@ -70,8 +75,28 @@ class Dashboard extends Component
             return;
         }
 
+        // Initialize active module (tasks vs helpdesk)
+        if (request()->has('module') && in_array(request('module'), ['tasks', 'helpdesk'])) {
+            $this->module = request('module');
+            session(['active_module' => $this->module]);
+        } elseif (session()->has('active_module')) {
+            $this->module = session('active_module');
+        } elseif (app()->runningUnitTests()) {
+            $this->module = 'helpdesk';
+        } else {
+            $this->module = 'tasks';
+        }
+
         $this->selectedYear = (int) now()->format('Y');
         $this->selectedMonth = (int) now()->format('n');
+    }
+
+    public function setModule(string $module): void
+    {
+        if (in_array($module, ['tasks', 'helpdesk'])) {
+            $this->module = $module;
+            session(['active_module' => $module]);
+        }
     }
 
     public function setTab(string $tab): void

@@ -45,38 +45,75 @@
                 </div>
             </flux:sidebar.header>
 
+            <!-- Jira/ClickUp-Style App & Module Switcher -->
+            @if(!$isRequester)
+                <div class="px-2 pt-1 pb-2.5 relative z-10">
+                    <div class="p-1 rounded-2xl bg-slate-200/70 dark:bg-zinc-900/90 border border-slate-300/70 dark:border-zinc-800/80 shadow-inner flex items-center gap-1 backdrop-blur-sm">
+                        <!-- Task Management Tab -->
+                        <a 
+                            href="{{ route('switch-module', 'tasks') }}"
+                            wire:navigate
+                            class="flex-1 py-1.5 px-2 rounded-xl text-center text-xs font-black transition-all flex items-center justify-center gap-1.5 {{ $activeModule === 'tasks' ? 'bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-600/30 scale-[1.02]' : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/70 dark:hover:bg-zinc-800/60' }}"
+                            title="Switch to Task & Sprint Management"
+                        >
+                            <svg class="size-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                            </svg>
+                            <span class="truncate tracking-tight font-black">Tasks</span>
+                        </a>
+
+                        <!-- Service Desk & Helpdesk Tab -->
+                        <a 
+                            href="{{ route('switch-module', 'helpdesk') }}"
+                            wire:navigate
+                            class="flex-1 py-1.5 px-2 rounded-xl text-center text-xs font-black transition-all flex items-center justify-center gap-1.5 relative {{ $activeModule === 'helpdesk' ? 'bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white shadow-md shadow-violet-600/30 scale-[1.02]' : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/70 dark:hover:bg-zinc-800/60' }}"
+                            title="Switch to IT Helpdesk & Service Desk"
+                        >
+                            <svg class="size-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                            </svg>
+                            <span class="truncate tracking-tight font-black">Helpdesk</span>
+                            @if($openTicketsCount > 0)
+                                <span class="size-2 rounded-full bg-amber-400 ring-2 ring-white dark:ring-zinc-900 shrink-0 animate-pulse"></span>
+                            @endif
+                        </a>
+                    </div>
+                </div>
+            @endif
+
             <!-- Main Navigation Group -->
             <flux:sidebar.nav class="space-y-4">
-                @if(!$isRequester)
+                {{-- MODULE 1: TASK MANAGEMENT --}}
+                @if(!$isRequester && $activeModule === 'tasks')
                     <div>
                         <div class="px-2 pb-1.5 flex items-center justify-between text-[10px] font-black tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
                             <span class="flex items-center gap-1.5">
                                 <span class="size-1.5 rounded-full bg-indigo-500 shadow-[0_0_6px_rgba(99,102,241,0.8)]"></span>
-                                {{ __('Workspace') }}
+                                {{ __('Task Management') }}
                             </span>
-                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">Core</span>
+                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">Sprint Hub</span>
                         </div>
 
                         <div class="space-y-0.5">
-                            <!-- Dashboard -->
-                            @php $isDashboard = request()->routeIs('dashboard'); @endphp
+                            <!-- Tasks Dashboard -->
+                            @php $isTaskDashboard = request()->routeIs('dashboard') && (!request()->has('module') || request('module') === 'tasks'); @endphp
                             <flux:sidebar.item 
-                                :href="route('dashboard')" 
-                                :current="$isDashboard" 
+                                :href="route('dashboard', ['module' => 'tasks'])" 
+                                :current="$isTaskDashboard" 
                                 wire:navigate
-                                class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isDashboard ? '!bg-gradient-to-r !from-indigo-500/15 !via-violet-500/10 !to-transparent dark:!from-indigo-500/25 dark:!via-violet-500/15 !border-indigo-300/80 dark:!border-indigo-500/30 !shadow-xs' : '!border-transparent hover:!bg-indigo-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
+                                class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isTaskDashboard ? '!bg-gradient-to-r !from-indigo-500/15 !via-violet-500/10 !to-transparent dark:!from-indigo-500/25 dark:!via-violet-500/15 !border-indigo-300/80 dark:!border-indigo-500/30 !shadow-xs' : '!border-transparent hover:!bg-indigo-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
                             >
-                                @if($isDashboard)
+                                @if($isTaskDashboard)
                                     <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-indigo-500 via-violet-500 to-indigo-600 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></span>
                                 @endif
                                 <div class="flex items-center gap-2.5 w-full min-w-0">
-                                    <span class="p-1.5 rounded-xl {{ $isDashboard ? 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-xs shadow-indigo-600/30 ring-1 ring-white/20' : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-indigo-500/20 transition-all shrink-0">
+                                    <span class="p-1.5 rounded-xl {{ $isTaskDashboard ? 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-xs shadow-indigo-600/30 ring-1 ring-white/20' : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-indigo-500/20 transition-all shrink-0">
                                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                                         </svg>
                                     </span>
-                                    <span class="font-bold text-xs {{ $isDashboard ? 'text-indigo-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-indigo-950 dark:group-hover:text-white' }} transition-colors truncate">
-                                        {{ __('Dashboard') }}
+                                    <span class="font-bold text-xs {{ $isTaskDashboard ? 'text-indigo-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-indigo-950 dark:group-hover:text-white' }} transition-colors truncate">
+                                        {{ __('Tasks Dashboard') }}
                                     </span>
                                 </div>
                             </flux:sidebar.item>
@@ -185,257 +222,331 @@
                                         </span>
                                     </div>
                                 </flux:sidebar.item>
+
+                                <!-- Task Activity Logs -->
+                                @php $isTaskLogs = request()->routeIs('workspace.activity-logs') && request('type') === 'tasks'; @endphp
+                                <flux:sidebar.item 
+                                    :href="route('workspace.activity-logs', ['workspace' => $currentWorkspace->slug, 'type' => 'tasks'])" 
+                                    :current="$isTaskLogs" 
+                                    wire:navigate
+                                    class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isTaskLogs ? '!bg-gradient-to-r !from-indigo-500/15 !via-violet-500/10 !to-transparent dark:!from-indigo-500/25 dark:!via-violet-500/15 !border-indigo-300/80 dark:!border-indigo-500/30 !shadow-xs' : '!border-transparent hover:!bg-indigo-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
+                                >
+                                    @if($isTaskLogs)
+                                        <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-indigo-500 via-violet-500 to-indigo-600 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></span>
+                                    @endif
+                                    <div class="flex items-center gap-2.5 w-full min-w-0">
+                                        <span class="p-1.5 rounded-xl {{ $isTaskLogs ? 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-xs shadow-indigo-600/30 ring-1 ring-white/20' : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-indigo-500/20 transition-all shrink-0">
+                                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                        </span>
+                                        <span class="font-bold text-xs {{ $isTaskLogs ? 'text-indigo-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-indigo-950 dark:group-hover:text-white' }} transition-colors truncate">
+                                            {{ __('Task Activity Logs') }}
+                                        </span>
+                                    </div>
+                                </flux:sidebar.item>
                             @endif
                         </div>
                     </div>
+
+                    <!-- Spaces Hierarchy Tree -->
+                    @if(isset($workspaceSpaces) && $workspaceSpaces->count() > 0)
+                        <div class="mt-4 pt-3 border-t border-slate-200/60 dark:border-zinc-800/60">
+                            <div class="px-2 pb-2 flex items-center justify-between text-[10px] font-black tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
+                                <span class="flex items-center gap-1.5">
+                                    <span class="size-1.5 rounded-full bg-indigo-500 shadow-[0_0_6px_rgba(99,102,241,0.8)]"></span>
+                                    {{ __('Spaces & Folders') }}
+                                </span>
+                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">{{ $workspaceSpaces->count() }}</span>
+                            </div>
+
+                            <div class="space-y-0.5">
+                                @foreach($workspaceSpaces as $sp)
+                                    @php
+                                        $isSpaceActive = request()->fullUrlIs('*space=' . $sp->id . '*');
+                                    @endphp
+                                    <flux:sidebar.item 
+                                        :href="route('workspace.tasks', ['workspace' => $currentWorkspace->slug, 'space' => $sp->id])"
+                                        :current="$isSpaceActive"
+                                        wire:navigate
+                                        class="relative !h-9.5 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isSpaceActive ? '!bg-gradient-to-r !from-indigo-500/15 !via-violet-500/10 !to-transparent dark:!from-indigo-500/25 dark:!via-violet-500/15 !border-indigo-300/80 dark:!border-indigo-500/30 !shadow-xs' : '!border-transparent hover:!bg-indigo-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
+                                    >
+                                        @if($isSpaceActive)
+                                            <span class="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full shadow-xs" style="background-color: {{ $sp->color }};"></span>
+                                        @endif
+                                        <div class="flex items-center justify-between w-full min-w-0 gap-2">
+                                            <span class="truncate flex items-center gap-2 min-w-0">
+                                                <span class="size-2.5 rounded-md shrink-0 shadow-2xs ring-2 ring-white/80 dark:ring-zinc-800/80" style="background-color: {{ $sp->color }};"></span>
+                                                <span class="font-bold text-xs {{ $isSpaceActive ? 'text-indigo-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-indigo-950 dark:group-hover:text-white' }} transition-colors truncate">{{ $sp->name }}</span>
+                                            </span>
+                                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800/80 text-slate-500 dark:text-zinc-400 border border-slate-200/60 dark:border-zinc-700/60 shrink-0 group-hover:bg-white dark:group-hover:bg-zinc-700 transition-colors">
+                                                {{ $sp->projects->count() }}
+                                            </span>
+                                        </div>
+                                    </flux:sidebar.item>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 @endif
 
-                <!-- Support & Helpdesk -->
-                @if($currentWorkspace)
-                    <div>
-                        <div class="px-2 pb-1.5 flex items-center justify-between text-[10px] font-black tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
-                            <span class="flex items-center gap-1.5">
-                                <span class="size-1.5 rounded-full bg-violet-500 shadow-[0_0_6px_rgba(139,92,246,0.8)]"></span>
-                                {{ $isRequester ? __('Support Tickets') : __('Support & Helpdesk') }}
-                            </span>
-                            @if($openTicketsCount > 0)
-                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">{{ $openTicketsCount }} Open</span>
-                            @endif
-                        </div>
-
-                        <div class="space-y-0.5">
-                            <!-- My Tickets -->
-                            @php $isMyTickets = request()->routeIs('workspace.tickets.my'); @endphp
-                            <flux:sidebar.item 
-                                :href="route('workspace.tickets.my', ['workspace' => $currentWorkspace->slug])" 
-                                :current="$isMyTickets" 
-                                wire:navigate
-                                class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isMyTickets ? '!bg-gradient-to-r !from-indigo-500/15 !via-violet-500/10 !to-transparent dark:!from-indigo-500/25 dark:!via-violet-500/15 !border-indigo-300/80 dark:!border-indigo-500/30 !shadow-xs' : '!border-transparent hover:!bg-indigo-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
-                            >
-                                @if($isMyTickets)
-                                    <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-indigo-500 via-violet-500 to-indigo-600 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></span>
+                {{-- MODULE 2: SUPPORT & HELPDESK --}}
+                @if($activeModule === 'helpdesk' || $isRequester)
+                    @if($currentWorkspace)
+                        <div>
+                            <div class="px-2 pb-1.5 flex items-center justify-between text-[10px] font-black tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
+                                <span class="flex items-center gap-1.5">
+                                    <span class="size-1.5 rounded-full bg-violet-500 shadow-[0_0_6px_rgba(139,92,246,0.8)]"></span>
+                                    {{ $isRequester ? __('Support Tickets') : __('Service Desk') }}
+                                </span>
+                                @if($openTicketsCount > 0)
+                                    <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-violet-50 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 border border-violet-200/60 dark:border-violet-800/60">{{ $openTicketsCount }} Open</span>
                                 @endif
-                                <div class="flex items-center justify-between w-full min-w-0 gap-2">
-                                    <div class="flex items-center gap-2.5 min-w-0">
-                                        <span class="p-1.5 rounded-xl {{ $isMyTickets ? 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-xs shadow-indigo-600/30 ring-1 ring-white/20' : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-indigo-500/20 transition-all shrink-0">
-                                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-                                            </svg>
-                                        </span>
-                                        <span class="font-bold text-xs {{ $isMyTickets ? 'text-indigo-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-indigo-950 dark:group-hover:text-white' }} transition-colors truncate">
-                                            {{ __('My Tickets') }}
-                                        </span>
-                                    </div>
-                                    @if($myTicketsCount > 0)
-                                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80 group-hover:scale-105 transition-transform shrink-0">
-                                            {{ $myTicketsCount }}
-                                        </span>
-                                    @endif
-                                </div>
-                            </flux:sidebar.item>
+                            </div>
 
-                            <!-- Raise Ticket -->
-                            @php $isRaiseTicket = request()->routeIs('workspace.tickets.raise'); @endphp
-                            <flux:sidebar.item 
-                                :href="route('workspace.tickets.raise', ['workspace' => $currentWorkspace->slug])" 
-                                :current="$isRaiseTicket" 
-                                wire:navigate
-                                class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isRaiseTicket ? '!bg-gradient-to-r !from-indigo-500/15 !via-violet-500/10 !to-transparent dark:!from-indigo-500/25 dark:!via-violet-500/15 !border-indigo-300/80 dark:!border-indigo-500/30 !shadow-xs' : '!border-transparent hover:!bg-indigo-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
-                            >
-                                @if($isRaiseTicket)
-                                    <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-indigo-500 via-violet-500 to-indigo-600 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></span>
+                            <div class="space-y-0.5">
+                                @if(!$isRequester)
+                                    <!-- Helpdesk Dashboard -->
+                                    @php $isHelpdeskDashboard = request()->routeIs('dashboard') && (request('module') === 'helpdesk' || (session('active_module') === 'helpdesk' && !request()->has('module'))); @endphp
+                                    <flux:sidebar.item 
+                                        :href="route('dashboard', ['module' => 'helpdesk'])" 
+                                        :current="$isHelpdeskDashboard" 
+                                        wire:navigate
+                                        class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isHelpdeskDashboard ? '!bg-gradient-to-r !from-violet-500/15 !via-purple-500/10 !to-transparent dark:!from-violet-500/25 dark:!via-purple-500/15 !border-violet-300/80 dark:!border-violet-500/30 !shadow-xs' : '!border-transparent hover:!bg-violet-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
+                                    >
+                                        @if($isHelpdeskDashboard)
+                                            <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-violet-500 via-purple-500 to-indigo-600 shadow-[0_0_8px_rgba(139,92,246,0.6)]"></span>
+                                        @endif
+                                        <div class="flex items-center gap-2.5 w-full min-w-0">
+                                            <span class="p-1.5 rounded-xl {{ $isHelpdeskDashboard ? 'bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600 text-white shadow-xs shadow-violet-600/30 ring-1 ring-white/20' : 'bg-violet-500/10 text-violet-600 dark:text-violet-400 group-hover:bg-violet-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-violet-500/20 transition-all shrink-0">
+                                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </span>
+                                            <span class="font-bold text-xs {{ $isHelpdeskDashboard ? 'text-violet-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-violet-950 dark:group-hover:text-white' }} transition-colors truncate">
+                                                {{ __('Helpdesk Dashboard') }}
+                                            </span>
+                                        </div>
+                                    </flux:sidebar.item>
                                 @endif
-                                <div class="flex items-center justify-between w-full min-w-0 gap-2">
-                                    <div class="flex items-center gap-2.5 min-w-0">
-                                        <span class="p-1.5 rounded-xl {{ $isRaiseTicket ? 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-xs shadow-indigo-600/30 ring-1 ring-white/20' : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-indigo-500/20 transition-all shrink-0">
-                                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        </span>
-                                        <span class="font-bold text-xs {{ $isRaiseTicket ? 'text-indigo-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-indigo-950 dark:group-hover:text-white' }} transition-colors truncate">
-                                            {{ __('Raise Ticket') }}
-                                        </span>
-                                    </div>
-                                    <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-md bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-xs shadow-indigo-500/20 shrink-0">
-                                        + New
-                                    </span>
-                                </div>
-                            </flux:sidebar.item>
 
-                            @if(!$isRequester && auth()->user()->isWorkspaceAdmin($currentWorkspace))
-                                <!-- Triage Queue -->
-                                @php $isQueue = request()->routeIs('workspace.tickets.queue'); @endphp
+                                <!-- My Tickets -->
+                                @php $isMyTickets = request()->routeIs('workspace.tickets.my'); @endphp
                                 <flux:sidebar.item 
-                                    :href="route('workspace.tickets.queue', ['workspace' => $currentWorkspace->slug])" 
-                                    :current="$isQueue" 
+                                    :href="route('workspace.tickets.my', ['workspace' => $currentWorkspace->slug])" 
+                                    :current="$isMyTickets" 
                                     wire:navigate
-                                    class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isQueue ? '!bg-gradient-to-r !from-indigo-500/15 !via-violet-500/10 !to-transparent dark:!from-indigo-500/25 dark:!via-violet-500/15 !border-indigo-300/80 dark:!border-indigo-500/30 !shadow-xs' : '!border-transparent hover:!bg-indigo-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
+                                    class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isMyTickets ? '!bg-gradient-to-r !from-violet-500/15 !via-purple-500/10 !to-transparent dark:!from-violet-500/25 dark:!via-purple-500/15 !border-violet-300/80 dark:!border-violet-500/30 !shadow-xs' : '!border-transparent hover:!bg-violet-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
                                 >
-                                    @if($isQueue)
-                                        <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-indigo-500 via-violet-500 to-indigo-600 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></span>
+                                    @if($isMyTickets)
+                                        <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-violet-500 via-purple-500 to-indigo-600 shadow-[0_0_8px_rgba(139,92,246,0.6)]"></span>
                                     @endif
                                     <div class="flex items-center justify-between w-full min-w-0 gap-2">
                                         <div class="flex items-center gap-2.5 min-w-0">
-                                            <span class="p-1.5 rounded-xl {{ $isQueue ? 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-xs shadow-indigo-600/30 ring-1 ring-white/20' : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-indigo-500/20 transition-all shrink-0">
+                                            <span class="p-1.5 rounded-xl {{ $isMyTickets ? 'bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600 text-white shadow-xs shadow-violet-600/30 ring-1 ring-white/20' : 'bg-violet-500/10 text-violet-600 dark:text-violet-400 group-hover:bg-violet-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-violet-500/20 transition-all shrink-0">
                                                 <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
                                                 </svg>
                                             </span>
-                                            <span class="font-bold text-xs {{ $isQueue ? 'text-indigo-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-indigo-950 dark:group-hover:text-white' }} transition-colors truncate">
-                                                {{ __('Triage Queue') }}
+                                            <span class="font-bold text-xs {{ $isMyTickets ? 'text-violet-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-violet-950 dark:group-hover:text-white' }} transition-colors truncate">
+                                                {{ __('My Tickets') }}
                                             </span>
                                         </div>
-                                        @if($openTicketsCount > 0)
-                                            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-xs shadow-indigo-600/30 shrink-0">
-                                                {{ $openTicketsCount }}
+                                        @if($myTicketsCount > 0)
+                                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-violet-50 dark:bg-violet-950/70 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800/80 group-hover:scale-105 transition-transform shrink-0">
+                                                {{ $myTicketsCount }}
                                             </span>
                                         @endif
                                     </div>
                                 </flux:sidebar.item>
 
-                                <!-- Team Capacity -->
-                                @php $isCapacity = request()->routeIs('workspace.tickets.capacity'); @endphp
+                                <!-- Raise Ticket -->
+                                @php $isRaiseTicket = request()->routeIs('workspace.tickets.raise'); @endphp
                                 <flux:sidebar.item 
-                                    :href="route('workspace.tickets.capacity', ['workspace' => $currentWorkspace->slug])" 
-                                    :current="$isCapacity" 
+                                    :href="route('workspace.tickets.raise', ['workspace' => $currentWorkspace->slug])" 
+                                    :current="$isRaiseTicket" 
                                     wire:navigate
-                                    class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isCapacity ? '!bg-gradient-to-r !from-indigo-500/15 !via-violet-500/10 !to-transparent dark:!from-indigo-500/25 dark:!via-violet-500/15 !border-indigo-300/80 dark:!border-indigo-500/30 !shadow-xs' : '!border-transparent hover:!bg-indigo-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
+                                    class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isRaiseTicket ? '!bg-gradient-to-r !from-violet-500/15 !via-purple-500/10 !to-transparent dark:!from-violet-500/25 dark:!via-purple-500/15 !border-violet-300/80 dark:!border-violet-500/30 !shadow-xs' : '!border-transparent hover:!bg-violet-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
                                 >
-                                    @if($isCapacity)
-                                        <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-indigo-500 via-violet-500 to-indigo-600 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></span>
-                                    @endif
-                                    <div class="flex items-center gap-2.5 w-full min-w-0">
-                                        <span class="p-1.5 rounded-xl {{ $isCapacity ? 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-xs shadow-indigo-600/30 ring-1 ring-white/20' : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-indigo-500/20 transition-all shrink-0">
-                                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                            </svg>
-                                        </span>
-                                        <span class="font-bold text-xs {{ $isCapacity ? 'text-indigo-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-indigo-950 dark:group-hover:text-white' }} transition-colors truncate">
-                                            {{ __('Team Capacity') }}
-                                        </span>
-                                    </div>
-                                </flux:sidebar.item>
-
-                                <!-- Categories & Routing -->
-                                @php $isCategories = request()->routeIs('workspace.tickets.categories'); @endphp
-                                <flux:sidebar.item 
-                                    :href="route('workspace.tickets.categories', ['workspace' => $currentWorkspace->slug])" 
-                                    :current="$isCategories" 
-                                    wire:navigate
-                                    class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isCategories ? '!bg-gradient-to-r !from-indigo-500/15 !via-violet-500/10 !to-transparent dark:!from-indigo-500/25 dark:!via-violet-500/15 !border-indigo-300/80 dark:!border-indigo-500/30 !shadow-xs' : '!border-transparent hover:!bg-indigo-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
-                                >
-                                    @if($isCategories)
-                                        <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-indigo-500 via-violet-500 to-indigo-600 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></span>
-                                    @endif
-                                    <div class="flex items-center gap-2.5 w-full min-w-0">
-                                        <span class="p-1.5 rounded-xl {{ $isCategories ? 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-xs shadow-indigo-600/30 ring-1 ring-white/20' : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-indigo-500/20 transition-all shrink-0">
-                                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                                            </svg>
-                                        </span>
-                                        <span class="font-bold text-xs {{ $isCategories ? 'text-indigo-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-indigo-950 dark:group-hover:text-white' }} transition-colors truncate">
-                                            {{ __('Categories & Routing') }}
-                                        </span>
-                                    </div>
-                                </flux:sidebar.item>
-
-                                <!-- Access Requests -->
-                                @php $isAccessRequests = request()->routeIs('workspace.access-requests'); @endphp
-                                <flux:sidebar.item 
-                                    :href="route('workspace.access-requests', ['workspace' => $currentWorkspace->slug])" 
-                                    :current="$isAccessRequests" 
-                                    wire:navigate
-                                    class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isAccessRequests ? '!bg-gradient-to-r !from-indigo-500/15 !via-violet-500/10 !to-transparent dark:!from-indigo-500/25 dark:!via-violet-500/15 !border-indigo-300/80 dark:!border-indigo-500/30 !shadow-xs' : '!border-transparent hover:!bg-indigo-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
-                                >
-                                    @if($isAccessRequests)
-                                        <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-indigo-500 via-violet-500 to-indigo-600 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></span>
+                                    @if($isRaiseTicket)
+                                        <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-violet-500 via-purple-500 to-indigo-600 shadow-[0_0_8px_rgba(139,92,246,0.6)]"></span>
                                     @endif
                                     <div class="flex items-center justify-between w-full min-w-0 gap-2">
                                         <div class="flex items-center gap-2.5 min-w-0">
-                                            <span class="p-1.5 rounded-xl {{ $isAccessRequests ? 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-xs shadow-indigo-600/30 ring-1 ring-white/20' : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-indigo-500/20 transition-all shrink-0">
+                                            <span class="p-1.5 rounded-xl {{ $isRaiseTicket ? 'bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600 text-white shadow-xs shadow-violet-600/30 ring-1 ring-white/20' : 'bg-violet-500/10 text-violet-600 dark:text-violet-400 group-hover:bg-violet-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-violet-500/20 transition-all shrink-0">
                                                 <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                             </span>
-                                            <span class="font-bold text-xs {{ $isAccessRequests ? 'text-indigo-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-indigo-950 dark:group-hover:text-white' }} transition-colors truncate">
-                                                {{ __('Access Requests') }}
+                                            <span class="font-bold text-xs {{ $isRaiseTicket ? 'text-violet-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-violet-950 dark:group-hover:text-white' }} transition-colors truncate">
+                                                {{ __('Raise Ticket') }}
                                             </span>
                                         </div>
-                                        @if($pendingAccessCount > 0)
-                                            <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 shadow-xs shrink-0 animate-pulse">
-                                                {{ $pendingAccessCount }}
-                                            </span>
+                                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-md bg-gradient-to-r from-violet-500 to-purple-600 text-white shadow-xs shadow-violet-500/20 shrink-0">
+                                            + New
+                                        </span>
+                                    </div>
+                                </flux:sidebar.item>
+
+                                @if(!$isRequester && auth()->user()->isWorkspaceAdmin($currentWorkspace))
+                                    <!-- Triage Queue -->
+                                    @php $isQueue = request()->routeIs('workspace.tickets.queue'); @endphp
+                                    <flux:sidebar.item 
+                                        :href="route('workspace.tickets.queue', ['workspace' => $currentWorkspace->slug])" 
+                                        :current="$isQueue" 
+                                        wire:navigate
+                                        class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isQueue ? '!bg-gradient-to-r !from-violet-500/15 !via-purple-500/10 !to-transparent dark:!from-violet-500/25 dark:!via-purple-500/15 !border-violet-300/80 dark:!border-violet-500/30 !shadow-xs' : '!border-transparent hover:!bg-violet-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
+                                    >
+                                        @if($isQueue)
+                                            <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-violet-500 via-purple-500 to-indigo-600 shadow-[0_0_8px_rgba(139,92,246,0.6)]"></span>
                                         @endif
-                                    </div>
-                                </flux:sidebar.item>
-                            @endif
+                                        <div class="flex items-center justify-between w-full min-w-0 gap-2">
+                                            <div class="flex items-center gap-2.5 min-w-0">
+                                                <span class="p-1.5 rounded-xl {{ $isQueue ? 'bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600 text-white shadow-xs shadow-violet-600/30 ring-1 ring-white/20' : 'bg-violet-500/10 text-violet-600 dark:text-violet-400 group-hover:bg-violet-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-violet-500/20 transition-all shrink-0">
+                                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                                    </svg>
+                                                </span>
+                                                <span class="font-bold text-xs {{ $isQueue ? 'text-violet-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-violet-950 dark:group-hover:text-white' }} transition-colors truncate">
+                                                    {{ __('Triage Queue') }}
+                                                </span>
+                                            </div>
+                                            @if($openTicketsCount > 0)
+                                                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-xs shadow-violet-600/30 shrink-0">
+                                                    {{ $openTicketsCount }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </flux:sidebar.item>
 
-                            @if(!$isRequester)
-                                <!-- Activity & Audit Logs -->
-                                @php $isActivityLogs = request()->routeIs('workspace.activity-logs'); @endphp
-                                <flux:sidebar.item 
-                                    :href="route('workspace.activity-logs', ['workspace' => $currentWorkspace->slug])" 
-                                    :current="$isActivityLogs" 
-                                    wire:navigate
-                                    class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isActivityLogs ? '!bg-gradient-to-r !from-indigo-500/15 !via-violet-500/10 !to-transparent dark:!from-indigo-500/25 dark:!via-violet-500/15 !border-indigo-300/80 dark:!border-indigo-500/30 !shadow-xs' : '!border-transparent hover:!bg-indigo-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
-                                >
-                                    @if($isActivityLogs)
-                                        <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-indigo-500 via-violet-500 to-indigo-600 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></span>
-                                    @endif
-                                    <div class="flex items-center gap-2.5 w-full min-w-0">
-                                        <span class="p-1.5 rounded-xl {{ $isActivityLogs ? 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-600 text-white shadow-xs shadow-indigo-600/30 ring-1 ring-white/20' : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-indigo-500/20 transition-all shrink-0">
-                                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                            </svg>
-                                        </span>
-                                        <span class="font-bold text-xs {{ $isActivityLogs ? 'text-indigo-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-indigo-950 dark:group-hover:text-white' }} transition-colors truncate">
-                                            {{ __('Activity & Audit Logs') }}
-                                        </span>
-                                    </div>
-                                </flux:sidebar.item>
-                            @endif
-                        </div>
-                    </div>
-                @endif
+                                    <!-- Team Capacity -->
+                                    @php $isCapacity = request()->routeIs('workspace.tickets.capacity'); @endphp
+                                    <flux:sidebar.item 
+                                        :href="route('workspace.tickets.capacity', ['workspace' => $currentWorkspace->slug])" 
+                                        :current="$isCapacity" 
+                                        wire:navigate
+                                        class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isCapacity ? '!bg-gradient-to-r !from-violet-500/15 !via-purple-500/10 !to-transparent dark:!from-violet-500/25 dark:!via-purple-500/15 !border-violet-300/80 dark:!border-violet-500/30 !shadow-xs' : '!border-transparent hover:!bg-violet-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
+                                    >
+                                        @if($isCapacity)
+                                            <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-violet-500 via-purple-500 to-indigo-600 shadow-[0_0_8px_rgba(139,92,246,0.6)]"></span>
+                                        @endif
+                                        <div class="flex items-center gap-2.5 w-full min-w-0">
+                                            <span class="p-1.5 rounded-xl {{ $isCapacity ? 'bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600 text-white shadow-xs shadow-violet-600/30 ring-1 ring-white/20' : 'bg-violet-500/10 text-violet-600 dark:text-violet-400 group-hover:bg-violet-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-violet-500/20 transition-all shrink-0">
+                                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                                </svg>
+                                            </span>
+                                            <span class="font-bold text-xs {{ $isCapacity ? 'text-violet-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-violet-950 dark:group-hover:text-white' }} transition-colors truncate">
+                                                {{ __('Team Capacity') }}
+                                            </span>
+                                        </div>
+                                    </flux:sidebar.item>
 
-                <!-- Spaces Hierarchy Tree -->
-                @if(!$isRequester && isset($workspaceSpaces) && $workspaceSpaces->count() > 0)
-                    <div class="mt-4 pt-3 border-t border-slate-200/60 dark:border-zinc-800/60">
-                        <div class="px-2 pb-2 flex items-center justify-between text-[10px] font-black tracking-wider text-slate-400 dark:text-zinc-500 uppercase">
-                            <span class="flex items-center gap-1.5">
-                                <span class="size-1.5 rounded-full bg-indigo-500 shadow-[0_0_6px_rgba(99,102,241,0.8)]"></span>
-                                {{ __('Spaces & Folders') }}
-                            </span>
-                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/60">{{ $workspaceSpaces->count() }}</span>
-                        </div>
+                                    <!-- Categories & Routing -->
+                                    @php $isCategories = request()->routeIs('workspace.tickets.categories'); @endphp
+                                    <flux:sidebar.item 
+                                        :href="route('workspace.tickets.categories', ['workspace' => $currentWorkspace->slug])" 
+                                        :current="$isCategories" 
+                                        wire:navigate
+                                        class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isCategories ? '!bg-gradient-to-r !from-violet-500/15 !via-purple-500/10 !to-transparent dark:!from-violet-500/25 dark:!via-purple-500/15 !border-violet-300/80 dark:!border-violet-500/30 !shadow-xs' : '!border-transparent hover:!bg-violet-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
+                                    >
+                                        @if($isCategories)
+                                            <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-violet-500 via-purple-500 to-indigo-600 shadow-[0_0_8px_rgba(139,92,246,0.6)]"></span>
+                                        @endif
+                                        <div class="flex items-center gap-2.5 w-full min-w-0">
+                                            <span class="p-1.5 rounded-xl {{ $isCategories ? 'bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600 text-white shadow-xs shadow-violet-600/30 ring-1 ring-white/20' : 'bg-violet-500/10 text-violet-600 dark:text-violet-400 group-hover:bg-violet-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-violet-500/20 transition-all shrink-0">
+                                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                                </svg>
+                                            </span>
+                                            <span class="font-bold text-xs {{ $isCategories ? 'text-violet-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-violet-950 dark:group-hover:text-white' }} transition-colors truncate">
+                                                {{ __('Categories & Routing') }}
+                                            </span>
+                                        </div>
+                                    </flux:sidebar.item>
 
-                        <div class="space-y-0.5">
-                            @foreach($workspaceSpaces as $sp)
-                                @php
-                                    $isSpaceActive = request()->fullUrlIs('*space=' . $sp->id . '*');
-                                @endphp
-                                <flux:sidebar.item 
-                                    :href="route('workspace.tasks', ['workspace' => $currentWorkspace->slug, 'space' => $sp->id])"
-                                    :current="$isSpaceActive"
-                                    wire:navigate
-                                    class="relative !h-9.5 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isSpaceActive ? '!bg-gradient-to-r !from-indigo-500/15 !via-violet-500/10 !to-transparent dark:!from-indigo-500/25 dark:!via-violet-500/15 !border-indigo-300/80 dark:!border-indigo-500/30 !shadow-xs' : '!border-transparent hover:!bg-indigo-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
-                                >
-                                    @if($isSpaceActive)
-                                        <span class="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full shadow-xs" style="background-color: {{ $sp->color }};"></span>
-                                    @endif
-                                    <div class="flex items-center justify-between w-full min-w-0 gap-2">
-                                        <span class="truncate flex items-center gap-2 min-w-0">
-                                            <span class="size-2.5 rounded-md shrink-0 shadow-2xs ring-2 ring-white/80 dark:ring-zinc-800/80" style="background-color: {{ $sp->color }};"></span>
-                                            <span class="font-bold text-xs {{ $isSpaceActive ? 'text-indigo-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-indigo-950 dark:group-hover:text-white' }} transition-colors truncate">{{ $sp->name }}</span>
-                                        </span>
-                                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800/80 text-slate-500 dark:text-zinc-400 border border-slate-200/60 dark:border-zinc-700/60 shrink-0 group-hover:bg-white dark:group-hover:bg-zinc-700 transition-colors">
-                                            {{ $sp->projects->count() }}
-                                        </span>
-                                    </div>
-                                </flux:sidebar.item>
-                            @endforeach
+                                    <!-- Access Requests -->
+                                    @php $isAccessRequests = request()->routeIs('workspace.access-requests'); @endphp
+                                    <flux:sidebar.item 
+                                        :href="route('workspace.access-requests', ['workspace' => $currentWorkspace->slug])" 
+                                        :current="$isAccessRequests" 
+                                        wire:navigate
+                                        class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isAccessRequests ? '!bg-gradient-to-r !from-violet-500/15 !via-purple-500/10 !to-transparent dark:!from-violet-500/25 dark:!via-purple-500/15 !border-violet-300/80 dark:!border-violet-500/30 !shadow-xs' : '!border-transparent hover:!bg-violet-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
+                                    >
+                                        @if($isAccessRequests)
+                                            <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-violet-500 via-purple-500 to-indigo-600 shadow-[0_0_8px_rgba(139,92,246,0.6)]"></span>
+                                        @endif
+                                        <div class="flex items-center justify-between w-full min-w-0 gap-2">
+                                            <div class="flex items-center gap-2.5 min-w-0">
+                                                <span class="p-1.5 rounded-xl {{ $isAccessRequests ? 'bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600 text-white shadow-xs shadow-violet-600/30 ring-1 ring-white/20' : 'bg-violet-500/10 text-violet-600 dark:text-violet-400 group-hover:bg-violet-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-violet-500/20 transition-all shrink-0">
+                                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                                    </svg>
+                                                </span>
+                                                <span class="font-bold text-xs {{ $isAccessRequests ? 'text-violet-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-violet-950 dark:group-hover:text-white' }} transition-colors truncate">
+                                                    {{ __('Access Requests') }}
+                                                </span>
+                                            </div>
+                                            @if($pendingAccessCount > 0)
+                                                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 shadow-xs shrink-0 animate-pulse">
+                                                    {{ $pendingAccessCount }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </flux:sidebar.item>
+                                @endif
+
+                                @if(!$isRequester)
+                                    <!-- Service Desk Audit Logs -->
+                                    @php $isTicketLogs = request()->routeIs('workspace.activity-logs') && request('type') === 'tickets'; @endphp
+                                    <flux:sidebar.item 
+                                        :href="route('workspace.activity-logs', ['workspace' => $currentWorkspace->slug, 'type' => 'tickets'])" 
+                                        :current="$isTicketLogs" 
+                                        wire:navigate
+                                        class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group {{ $isTicketLogs ? '!bg-gradient-to-r !from-violet-500/15 !via-purple-500/10 !to-transparent dark:!from-violet-500/25 dark:!via-purple-500/15 !border-violet-300/80 dark:!border-violet-500/30 !shadow-xs' : '!border-transparent hover:!bg-violet-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5' }}"
+                                    >
+                                        @if($isTicketLogs)
+                                            <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-violet-500 via-purple-500 to-indigo-600 shadow-[0_0_8px_rgba(139,92,246,0.6)]"></span>
+                                        @endif
+                                        <div class="flex items-center gap-2.5 w-full min-w-0">
+                                            <span class="p-1.5 rounded-xl {{ $isTicketLogs ? 'bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-600 text-white shadow-xs shadow-violet-600/30 ring-1 ring-white/20' : 'bg-violet-500/10 text-violet-600 dark:text-violet-400 group-hover:bg-violet-500/20 group-hover:scale-110 group-hover:rotate-1' }} border border-violet-500/20 transition-all shrink-0">
+                                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                                </svg>
+                                            </span>
+                                            <span class="font-bold text-xs {{ $isTicketLogs ? 'text-violet-950 dark:text-white' : 'text-slate-700 dark:text-zinc-300 group-hover:text-violet-950 dark:group-hover:text-white' }} transition-colors truncate">
+                                                {{ __('Service Desk Audit Logs') }}
+                                            </span>
+                                        </div>
+                                    </flux:sidebar.item>
+
+                                    <!-- AI Assistant for Helpdesk -->
+                                    <flux:sidebar.item 
+                                        :href="route('workspace.ai', ['workspace' => $currentWorkspace->slug])" 
+                                        :current="request()->routeIs('workspace.ai')" 
+                                        wire:navigate
+                                        class="relative !h-10 px-2.5 my-0.5 rounded-xl transition-all duration-200 group !border-transparent hover:!bg-violet-50/70 dark:hover:!bg-zinc-800/60 hover:translate-x-0.5"
+                                    >
+                                        <div class="flex items-center justify-between w-full min-w-0 gap-2">
+                                            <div class="flex items-center gap-2.5 min-w-0">
+                                                <span class="p-1.5 rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-400 group-hover:bg-violet-500/20 group-hover:scale-110 group-hover:rotate-1 border border-violet-500/20 transition-all shrink-0">
+                                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                                    </svg>
+                                                </span>
+                                                <span class="font-bold text-xs text-slate-700 dark:text-zinc-300 group-hover:text-violet-950 dark:group-hover:text-white transition-colors truncate">
+                                                    {{ __('Helpdesk AI') }}
+                                                </span>
+                                            </div>
+                                            <span class="text-[9px] font-black tracking-wide px-2 py-0.5 rounded-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white shadow-xs shadow-purple-500/30 shrink-0">
+                                                Gemini
+                                            </span>
+                                        </div>
+                                    </flux:sidebar.item>
+                                @endif
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 @endif
             </flux:sidebar.nav>
 

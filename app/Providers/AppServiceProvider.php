@@ -65,9 +65,28 @@ class AppServiceProvider extends ServiceProvider
                 $userWorkspaces = $user->workspaces()->get();
                 $workspaceSpaces = $currentWorkspace ? $currentWorkspace->spaces()->with('projects.lists')->get() : collect();
 
+                $isRequester = $currentWorkspace ? $user->isWorkspaceRequester($currentWorkspace) : false;
+
+                // Determine active navigation module: 'tasks' vs 'helpdesk'
+                if ($isRequester) {
+                    $activeModule = 'helpdesk';
+                } elseif (request()->has('module') && in_array(request('module'), ['tasks', 'helpdesk'])) {
+                    $activeModule = request('module');
+                    session(['active_module' => $activeModule]);
+                } elseif (request()->routeIs('workspace.tickets.*')) {
+                    $activeModule = 'helpdesk';
+                    session(['active_module' => 'helpdesk']);
+                } elseif (request()->routeIs('workspace.tasks*') || request()->routeIs('my-tasks')) {
+                    $activeModule = 'tasks';
+                    session(['active_module' => 'tasks']);
+                } else {
+                    $activeModule = session('active_module', 'tasks');
+                }
+
                 $view->with('currentWorkspace', $currentWorkspace)
                      ->with('userWorkspaces', $userWorkspaces)
-                     ->with('workspaceSpaces', $workspaceSpaces);
+                     ->with('workspaceSpaces', $workspaceSpaces)
+                     ->with('activeModule', $activeModule);
             }
         });
     }
